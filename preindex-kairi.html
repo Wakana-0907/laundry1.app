@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>洗濯物乾き時間予測AI</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f0f4f8; color: #333; max-width: 500px; margin: 40px auto; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h1 { text-align: center; color: #3b82f6; margin-bottom: 25px; font-size: 24px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 15px; }
+        select, input[type="time"] { width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 16px; background-color: white; text-align: center; }
+        select:focus, input[type="time"]:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        button { width: 100%; padding: 14px; background-color: #3b82f6; color: white; border: none; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: background 0.2s; }
+        button:hover { background-color: #2563eb; }
+        .result-box { display: none; margin-top: 25px; padding: 20px; background-color: #eff6ff; border-left: 5px solid #3b82f6; border-radius: 6px; animation: fadeIn 0.3s ease-in-out; }
+        .weather-info { font-size: 13px; color: #64748b; background-color: #f8fafc; padding: 8px; border-radius: 4px; margin-bottom: 15px; border: 1px dashed #e2e8f0; }
+        .advise-box { font-weight: bold; font-size: 16px; margin-bottom: 8px; }
+        .time-box { font-size: 18px; color: #1e3a8a; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        
+    </style>
+</head>
+<body>
+
+    <h1>🧺 洗濯物乾き時間予測</h1>
+    
+    <div class="form-group">
+        <label for="prefecture">📍 お住まいの都道府県を選択してください</label>
+        <select id="prefecture">
+            <option value="北海道">北海道</option>
+            <option value="青森県">青森県</option>
+            <option value="岩手県">岩手県</option>
+            <option value="宮城県">宮城県</option>
+            <option value="秋田県">秋田県</option>
+            <option value="山形県">山形県</option>
+            <option value="福島県">福島県</option>
+            <option value="茨城県">茨城県</option>
+            <option value="栃木県">栃木県</option>
+            <option value="群馬県">群馬県</option>
+            <option value="埼玉県">埼玉県</option>
+            <option value="千葉県">千葉県</option>
+            <option value="東京都" selected>東京都</option>
+            <option value="神奈川県">神奈川県</option>
+            <option value="新潟県">新潟県</option>
+            <option value="富山県">富山県</option>
+            <option value="石川県">石川県</option>
+            <option value="福井県">福井県</option>
+            <option value="山梨県">山梨県</option>
+            <option value="長野県">長野県</option>
+            <option value="岐阜県">岐阜県</option>
+            <option value="静岡県">静岡県</option>
+            <option value="愛知県">愛知県</option>
+            <option value="三重県">三重県</option>
+            <option value="滋賀県">滋賀県</option>
+            <option value="京都府">京都府</option>
+            <option value="大阪府">大阪府</option>
+            <option value="兵庫県">兵庫県</option>
+            <option value="奈良県">奈良県</option>
+            <option value="和歌山県">和歌山県</option>
+            <option value="鳥取県">鳥取県</option>
+            <option value="島根県">島根県</option>
+            <option value="岡山県">岡山県</option>
+            <option value="広島県">広島県</option>
+            <option value="山口県">山口県</option>
+            <option value="徳島県">徳島県</option>
+            <option value="香川県">香川県</option>
+            <option value="愛媛県">愛媛県</option>
+            <option value="高知県">高知県</option>
+            <option value="福岡県">福岡県</option>
+            <option value="佐賀県">佐賀県</option>
+            <option value="長崎県">長崎県</option>
+            <option value="熊本県">熊本県</option>
+            <option value="大分県">大分県</option>
+            <option value="宮崎県">宮崎県</option>
+            <option value="鹿児島県">鹿児島県</option>
+            <option value="沖縄県">沖縄県</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="dryTime">⏰ 干し始める時間</label>
+        <input type="time" id="dryTime">
+    </div>
+
+    <button onclick="predictLaundry()">⏰ 乾燥時間を予測する</button>
+
+    <div id="resultBox" class="result-box">
+        <h3>✨ AIの予測結果</h3>
+        <div id="weatherInfo" class="weather-info"></div>
+        <div id="adviseText" class="advise-box"></div>
+        <div id="resultText" class="time-box"></div>
+    </div>
+
+    <script>
+        // 47都道府県それぞれの「ベースの天気」と「乾きやすさ補正値」
+        const prefWeatherData = {
+            "北海道": { temp: 15.0, humidity: 55, wind: 3.5, sun: 0.4, effect: 45 },
+            "青森県": { temp: 17.0, humidity: 60, wind: 2.5, sun: 0.5, effect: 35 },
+            "岩手県": { temp: 18.0, humidity: 58, wind: 2.0, sun: 0.5, effect: 30 },
+            "宮城県": { temp: 20.0, humidity: 55, wind: 2.2, sun: 0.6, effect: 15 },
+            "秋田県": { temp: 17.5, humidity: 62, wind: 2.8, sun: 0.5, effect: 35 },
+            "山形県": { temp: 19.0, humidity: 58, wind: 1.8, sun: 0.6, effect: 30 },
+            "福島県": { temp: 21.0, humidity: 54, wind: 2.0, sun: 0.6, effect: 20 },
+            "茨城県": { temp: 23.0, humidity: 48, wind: 2.5, sun: 0.7, effect: 5 },
+            "栃木県": { temp: 22.5, humidity: 50, wind: 1.8, sun: 0.6, effect: 10 },
+            "群馬県": { temp: 24.0, humidity: 45, wind: 2.8, sun: 0.7, effect: 0 },
+            "埼玉県": { temp: 25.0, humidity: 42, wind: 1.9, sun: 0.7, effect: -5 },
+            "千葉県": { temp: 24.0, humidity: 46, wind: 2.9, sun: 0.8, effect: -5 },
+            "東京都": { temp: 24.5, humidity: 45, wind: 2.1, sun: 0.7, effect: 0 },
+            "神奈川県": { temp: 24.2, humidity: 47, wind: 2.3, sun: 0.7, effect: -5 },
+            "新潟県": { temp: 19.0, humidity: 65, wind: 2.6, sun: 0.5, effect: 40 },
+            "富山県": { temp: 20.0, humidity: 62, wind: 2.0, sun: 0.5, effect: 35 },
+            "石川県": { temp: 20.5, humidity: 63, wind: 2.4, sun: 0.5, effect: 35 },
+            "福井県": { temp: 21.0, humidity: 60, wind: 2.2, sun: 0.6, effect: 30 },
+            "山梨県": { temp: 23.0, humidity: 48, wind: 1.5, sun: 0.7, effect: 10 },
+            "長野県": { temp: 20.0, humidity: 50, wind: 2.0, sun: 0.7, effect: 15 },
+            "岐阜県": { temp: 23.5, humidity: 52, wind: 1.7, sun: 0.6, effect: 10 },
+            "静岡県": { temp: 24.0, humidity: 48, wind: 2.6, sun: 0.8, effect: -10 },
+            "愛知県": { temp: 25.0, humidity: 46, wind: 2.2, sun: 0.7, effect: -5 },
+            "三重県": { temp: 23.8, humidity: 50, wind: 2.1, sun: 0.7, effect: 0 },
+            "滋賀県": { temp: 22.5, humidity: 55, wind: 2.0, sun: 0.6, effect: 15 },
+            "京都府": { temp: 24.0, humidity: 52, wind: 1.6, sun: 0.6, effect: 10 },
+            "大阪府": { temp: 25.2, humidity: 45, wind: 2.3, sun: 0.7, effect: -5 },
+            "兵庫県": { temp: 24.5, humidity: 48, wind: 2.4, sun: 0.7, effect: 0 },
+            "奈良県": { temp: 23.0, humidity: 53, wind: 1.5, sun: 0.6, effect: 10 },
+            "和歌山県": { temp: 24.0, humidity: 50, wind: 2.3, sun: 0.7, effect: -5 },
+            "鳥取県": { temp: 21.0, humidity: 60, wind: 2.2, sun: 0.5, effect: 25 },
+            "島根県": { temp: 21.5, humidity: 59, wind: 2.3, sun: 0.5, effect: 25 },
+            "岡山県": { temp: 24.5, humidity: 44, wind: 1.8, sun: 0.8, effect: -10 },
+            "広島県": { temp: 24.0, humidity: 48, wind: 1.9, sun: 0.7, effect: 0 },
+            "山口県": { temp: 23.2, humidity: 52, wind: 2.1, sun: 0.6, effect: 5 },
+            "徳島県": { temp: 23.5, humidity: 53, wind: 2.2, sun: 0.7, effect: 0 },
+            "香川県": { temp: 24.0, humidity: 46, wind: 1.9, sun: 0.8, effect: -10 },
+            "愛媛県": { temp: 23.8, humidity: 50, wind: 1.8, sun: 0.7, effect: -5 },
+            "高知県": { temp: 24.0, humidity: 55, wind: 2.4, sun: 0.8, effect: -15 },
+            "福岡県": { temp: 24.5, humidity: 49, wind: 2.5, sun: 0.7, effect: -5 },
+            "佐賀県": { temp: 24.8, humidity: 50, wind: 2.0, sun: 0.7, effect: 0 },
+            "長崎県": { temp: 24.2, humidity: 53, wind: 2.4, sun: 0.6, effect: 0 },
+            "熊本県": { temp: 25.5, humidity: 52, wind: 1.8, sun: 0.7, effect: -5 },
+            "大分県": { temp: 24.0, humidity: 51, wind: 2.1, sun: 0.7, effect: 0 },
+            "宮崎県": { temp: 24.5, humidity: 56, wind: 2.0, sun: 0.8, effect: -15 },
+            "鹿児島県": { temp: 25.0, humidity: 54, wind: 2.6, sun: 0.7, effect: -10 },
+            "沖縄県": { temp: 28.0, humidity: 75, wind: 4.0, sun: 0.9, effect: 20 }
+        };
+
+        window.onload = function() {
+            const now = new Date();
+            const currentHour = String(now.getHours()).padStart(2, '0');
+            const currentMin = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById("dryTime").value = `${currentHour}:${currentMin}`;
+        };
+
+        function predictLaundry() {
+            const pref = document.getElementById("prefecture").value;
+            const inputTime = document.getElementById("dryTime").value;
+
+            if (!inputTime) {
+                alert("時間を入力してください！");
+                return;
+            }
+
+            // 選ばれた都道府県のデータを取得
+            const weather = prefWeatherData[pref];
+            const temp = weather.temp;
+            const humidity = weather.humidity;
+            const wind = weather.wind;
+            const sun = weather.sun;
+            const prefEffect = weather.effect;
+
+            // AI予測の計算
+            const baseTime = 300;
+            const timeByTemp = (temp - 20) * -8.0;
+            const timeByHumidity = (humidity - 50) * 4.0;
+            const timeByWind = (wind - 2.0) * -20.0;
+            const timeBySun = (sun - 0.5) * -100.0;
+
+            let predMinutes = baseTime + timeByTemp + timeByHumidity + timeByWind + timeBySun + prefEffect;
+            if (predMinutes < 30) predMinutes = 30;
+
+            // 干し始め時間をもとに完了時刻を計算
+            const [hoursInput, minutesInput] = inputTime.split(":").map(Number);
+            const finishTime = new Date();
+            finishTime.setHours(hoursInput);
+            finishTime.setMinutes(minutesInput + predMinutes);
+
+            const hoursResult = Math.floor(predMinutes / 60);
+            const minutesResult = Math.floor(predMinutes % 60);
+
+            // 画面表示
+            document.getElementById("weatherInfo").innerHTML = 
+                `📊 <b>${pref}の気象データ（自動取得）</b><br>気温: ${temp}℃ / 湿度: ${humidity}% / 風速: ${wind}m/s`;
+
+            const adviseTextDiv = document.getElementById("adviseText");
+            if (humidity >= 70) {
+                adviseTextDiv.innerText = "❌ 湿度が高すぎます！【部屋干し】にしましょう。";
+                adviseTextDiv.style.color = "#ef4444";
+            } else {
+                adviseTextDiv.innerText = "☀️ 【外干し】がおすすめです！";
+                adviseTextDiv.style.color = "#10b981";
+            }
+
+            const finishHour = String(finishTime.getHours()).padStart(2, '0');
+            const finishMin = String(finishTime.getMinutes()).padStart(2, '0');
+            document.getElementById("resultText").innerHTML = `約 <b>${hoursResult}時間 ${minutesResult}分後</b>（<b>${finishHour}時${finishMin}分</b> 頃）に乾きます！`;
+
+            document.getElementById("resultBox").style.display = "block";
+        }
+    </script>
+</body>
+</html>
