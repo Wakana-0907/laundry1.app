@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>洗濯ものナビ</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Hiragino Sans', sans-serif;
+    background: #f5f5f0;
+    color: #1a1a1a;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .app {
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .step { display: none; }
+  .step.active { display: block; }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 2rem; }
+  .header h1 { font-size: 28px; font-weight: 500; margin-bottom: 6px; }
+  .header p { font-size: 14px; color: #666; }
+
+  /* Progress dots */
+  .progress-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 1.5rem; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: #ccc; transition: background 0.2s; }
+  .dot.active { background: #1D9E75; }
+
+  /* Section label */
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #888;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  /* Region grid — 47都道府県対応 */
+  .region-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 6px;
+    margin-bottom: 1.5rem;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+  .region-btn {
+    background: #fff;
+    border: 0.5px solid #ccc;
+    border-radius: 8px;
+    padding: 10px 4px;
+    font-size: 12px;
+    color: #666;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+  .region-btn:hover { background: #f0f0ea; color: #1a1a1a; }
+  .region-btn.selected {
+    background: #E1F5EE;
+    border: 1.5px solid #1D9E75;
+    color: #0F6E56;
+    font-weight: 500;
+  }
+
+  /* Cards */
+  .card {
+    background: #fff;
+    border: 0.5px solid #e0e0d8;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Weather grid */
+  .weather-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .weather-metric { background: #f5f5f0; border-radius: 8px; padding: 12px; }
+  .weather-metric .label { font-size: 11px; color: #888; margin-bottom: 4px; }
+  .weather-metric .value { font-size: 22px; font-weight: 500; }
+  .weather-metric .unit { font-size: 12px; color: #888; margin-left: 2px; }
+
+  /* Time section */
+  .time-section { margin-bottom: 1.5rem; }
+  .time-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: #888;
+  }
+  .drum-roll-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+  }
+  .drum-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .drum-display {
+    background: #fff;
+    border: 0.5px solid #ccc;
+    border-radius: 8px;
+    width: 64px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: 500;
+    user-select: none;
+  }
+  .drum-btn {
+    background: none;
+    border: 0.5px solid #e0e0d8;
+    border-radius: 4px;
+    width: 64px;
+    padding: 3px 0;
+    cursor: pointer;
+    font-size: 14px;
+    color: #888;
+    transition: background 0.1s;
+  }
+  .drum-btn:hover { background: #f0f0ea; }
+  .drum-sep { font-size: 26px; font-weight: 500; color: #888; }
+
+  /* Buttons */
+  .primary-btn {
+    display: block;
+    width: 100%;
+    background: #1D9E75;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .primary-btn:hover { background: #0F6E56; }
+  .primary-btn:active { transform: scale(0.98); }
+  .primary-btn:disabled { background: #e0e0d8; color: #aaa; cursor: not-allowed; }
+
+  .back-btn {
+    background: none;
+    border: none;
+    font-size: 13px;
+    color: #888;
+    cursor: pointer;
+    padding: 4px 0;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .back-btn:hover { color: #1a1a1a; }
+
+  /* Result */
+  .result-hero { text-align: center; padding: 1.5rem 0 1rem; }
+  .weather-icon-big { font-size: 64px; margin-bottom: 8px; }
+  .recommendation-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+  .badge-outside { background: #E1F5EE; color: #0F6E56; }
+  .badge-inside  { background: #FAECE7; color: #993C1D; }
+  .badge-either  { background: #FAEEDA; color: #854F0B; }
+
+  .dry-time-card {
+    background: #fff;
+    border: 0.5px solid #e0e0d8;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 1.25rem;
+  }
+  .dry-time-label    { font-size: 13px; color: #888; margin-bottom: 4px; }
+  .dry-time-finish   { font-size: 36px; font-weight: 500; margin-bottom: 4px; }
+  .dry-time-countdown{ font-size: 14px; color: #888; }
+
+  /* Factor list */
+  .factor-list { margin-bottom: 1.25rem; }
+  .factor-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 0.5px solid #e0e0d8;
+    font-size: 13px;
+  }
+  .factor-row:last-child { border-bottom: none; }
+  .factor-name   { color: #888; }
+  .factor-effect { font-weight: 500; }
+  .effect-minus  { color: #0F6E56; }
+  .effect-plus   { color: #993C1D; }
+  .effect-zero   { color: #888; }
+
+  .dry-btn {
+    background: #fff;
+    border: 0.5px solid #ccc;
+    border-radius: 8px;
+    padding: 12px;
+    width: 100%;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.15s;
+    margin-bottom: 8px;
+  }
+  .dry-btn:hover { background: #f5f5f0; }
+
+  /* Memory */
+  .memory-card {
+    background: #f5f5f0;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+    font-size: 13px;
+    color: #888;
+  }
+  .memory-title { font-weight: 500; color: #1a1a1a; margin-bottom: 8px; }
+  .memory-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 0.5px solid #e0e0d8;
+  }
+  .memory-row:last-child { border-bottom: none; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div style="font-size:36px; margin-bottom:6px">🫧</div>
+    <h1>洗濯ものナビ</h1>
+    <p>気象データから最適な干し方を提案します</p>
+  </div>
+
+  <div class="progress-dots">
+    <div class="dot active" id="dot1"></div>
+    <div class="dot" id="dot2"></div>
+    <div class="dot" id="dot3"></div>
+  </div>
+
+  <!-- Step 1: Region -->
+  <div class="step active" id="step1">
+    <div class="section-label">Step 1 — 地域を選択</div>
+    <div class="region-grid" id="regionGrid"></div>
+    <button class="primary-btn" id="toStep2Btn" disabled>次へ → 天気を確認する</button>
+  </div>
+
+  <!-- Step 2: Weather + Time -->
+  <div class="step" id="step2">
+    <button class="back-btn" onclick="goToStep(1)">
+      <i class="ti ti-arrow-left"></i> 地域を選び直す
+    </button>
+    <div class="card">
+      <div class="card-title">
+        <i class="ti ti-cloud-sun"></i>
+        <span id="weatherTitle">今日の天気</span>
+      </div>
+      <div class="weather-grid">
+        <div class="weather-metric">
+          <div class="label">気温</div>
+          <div><span class="value" id="wTemp">--</span><span class="unit">°C</span></div>
+        </div>
+        <div class="weather-metric">
+          <div class="label">湿度</div>
+          <div><span class="value" id="wHumid">--</span><span class="unit">%</span></div>
+        </div>
+        <div class="weather-metric">
+          <div class="label">風速</div>
+          <div><span class="value" id="wWind">--</span><span class="unit">m/s</span></div>
+        </div>
+        <div class="weather-metric">
+          <div class="label">日射量</div>
+          <div><span class="value" id="wSolar">--</span><span class="unit">kW/m²</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="time-section">
+      <div class="section-label">干し始める時間を選ぶ</div>
+      <div class="time-display">
+        <i class="ti ti-clock"></i>
+        <span id="currentTimeDisplay">現在 --:--</span>
+      </div>
+      <div class="drum-roll-container">
+        <div class="drum-col">
+          <button class="drum-btn" id="hUp"><i class="ti ti-chevron-up"></i></button>
+          <div class="drum-display" id="hourDisplay">09</div>
+          <button class="drum-btn" id="hDn"><i class="ti ti-chevron-down"></i></button>
+        </div>
+        <span class="drum-sep">:</span>
+        <div class="drum-col">
+          <button class="drum-btn" id="mUp"><i class="ti ti-chevron-up"></i></button>
+          <div class="drum-display" id="minDisplay">00</div>
+          <button class="drum-btn" id="mDn"><i class="ti ti-chevron-down"></i></button>
+        </div>
+      </div>
+    </div>
+    <button class="primary-btn" onclick="calculate()">計算する →</button>
+  </div>
+
+  <!-- Step 3: Result -->
+  <div class="step" id="step3">
+    <button class="back-btn" onclick="goToStep(2)">
+      <i class="ti ti-arrow-left"></i> 戻る
+    </button>
+    <div class="result-hero">
+      <div class="weather-icon-big" id="resultIcon">☀️</div>
+      <div class="recommendation-badge" id="resultBadge"></div>
+    </div>
+    <div class="dry-time-card">
+      <div class="dry-time-label">乾き上がる予想時刻</div>
+      <div class="dry-time-finish" id="finishTime">--:--</div>
+      <div class="dry-time-countdown" id="countdownText">干し始めから約 --</div>
+    </div>
+    <div class="section-label">乾燥時間の内訳</div>
+    <div class="factor-list" id="factorList"></div>
+    <button class="dry-btn" id="driedBtn" onclick="markDried()">
+      <i class="ti ti-checks"></i> 乾いた！（実際の乾燥時間を記録）
+    </button>
+    <div class="memory-card" id="memoryCard" style="display:none">
+      <div class="memory-title"><i class="ti ti-history" style="margin-right:4px"></i>過去の記録</div>
+      <div id="memoryList"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── 状態変数 ─────────────────────────────────────────────────
+let csvData          = {};   // { '東京都': [ {temp, humid, wind, solar, dryMin}, ... ], ... }
+let csvLoaded        = false;
+let selectedRegion   = null;
+let startHour        = 9;
+let startMin         = 0;
+let currentWeather   = null; // CSVからランダムに選んだ1行
+let calculatedDryMin = 0;
+let startedAt        = null;
+
+// ─── 線形回帰モデル ───────────────────────────────────────────
+// 特徴量: [気温, 湿度, 風速, 日射量]  目的変数: 乾燥時間(分)
+// 正規方程式 w = (X^T X)^{-1} X^T y を JavaScript のみで実装
+
+let lrWeights = null; // [w0(bias), w1, w2, w3, w4]
+
+// 行列演算ユーティリティ
+function matMul(A, B) {
+  const rows = A.length, cols = B[0].length, inner = B.length;
+  return Array.from({ length: rows }, (_, i) =>
+    Array.from({ length: cols }, (_, j) =>
+      A[i].reduce((s, _, k) => s + A[i][k] * B[k][j], 0)
+    )
+  );
+}
+function matTrans(A) {
+  return A[0].map((_, j) => A.map(row => row[j]));
+}
+// 4×4 行列の逆行列（ガウス・ジョルダン法）
+function matInv(M) {
+  const n = M.length;
+  const A = M.map((row, i) => [...row, ...Array.from({ length: n }, (_, j) => i === j ? 1 : 0)]);
+  for (let col = 0; col < n; col++) {
+    let pivot = col;
+    for (let row = col + 1; row < n; row++)
+      if (Math.abs(A[row][col]) > Math.abs(A[pivot][col])) pivot = row;
+    [A[col], A[pivot]] = [A[pivot], A[col]];
+    const d = A[col][col];
+    if (Math.abs(d) < 1e-12) return null; // 特異行列
+    for (let j = 0; j < 2 * n; j++) A[col][j] /= d;
+    for (let row = 0; row < n; row++) {
+      if (row === col) continue;
+      const f = A[row][col];
+      for (let j = 0; j < 2 * n; j++) A[row][j] -= f * A[col][j];
+    }
+  }
+  return A.map(row => row.slice(n));
+}
+
+// 全CSVデータを使って学習（正規方程式）
+function trainModel() {
+  const allRows = Object.values(csvData).flat();
+  if (allRows.length < 5) return;
+
+  // X: バイアス項1 + 4特徴量, y: 乾燥時間
+  const X = allRows.map(r => [1, r.temp, r.humid, r.wind, r.solar]);
+  const y = allRows.map(r => [r.dryMin]);
+
+  const Xt   = matTrans(X);
+  const XtX  = matMul(Xt, X);
+  const XtXi = matInv(XtX);
+  if (!XtXi) return;
+  const Xty  = matMul(Xt, y);
+  const w    = matMul(XtXi, Xty); // [[w0],[w1],[w2],[w3],[w4]]
+  lrWeights  = w.map(r => r[0]);
+}
+
+// モデルで乾燥時間を予測
+function predict(temp, humid, wind, solar) {
+  if (!lrWeights) return null;
+  const [w0, w1, w2, w3, w4] = lrWeights;
+  return Math.max(10, Math.round(w0 + w1*temp + w2*humid + w3*wind + w4*solar));
+}
+
+// ─── CSV読み込み ──────────────────────────────────────────────
+// CSVカラム: 都道府県,気温,湿度,風速,日射量,乾燥時間(分)
+async function loadCSV() {
+  try {
+    const res  = await fetch('laundry_data_47_prefectures.csv');
+    const text = await res.text();
+    const lines = text.trim().split('\n');
+    // 1行目はヘッダーなのでスキップ
+    lines.slice(1).forEach(line => {
+      const cols = line.split(',');
+      if (cols.length < 6) return;
+      const pref   = cols[0].trim();
+      const temp   = parseFloat(cols[1]);
+      const humid  = parseFloat(cols[2]);
+      const wind   = parseFloat(cols[3]);
+      const solar  = parseFloat(cols[4]);
+      const dryMin = parseFloat(cols[5]);
+      if (!csvData[pref]) csvData[pref] = [];
+      csvData[pref].push({ temp, humid, wind, solar, dryMin });
+    });
+    csvLoaded = true;
+    trainModel(); // 学習はCSV読み込み完了後に1回だけ実行
+  } catch(e) {
+    alert('weather_data.csv が読み込めませんでした。\nHTMLと同じフォルダに置いてください。');
+  }
+}
+
+// 都道府県名からCSVの行をランダムに1つ選ぶ
+function pickRandomRow(pref) {
+  const rows = csvData[pref];
+  if (!rows || rows.length === 0) return null;
+  return rows[Math.floor(Math.random() * rows.length)];
+}
+
+// 気象値から天気アイコンを簡易判定
+function guessIcon(humid, solar) {
+  if (humid >= 80)                return '🌧️';
+  if (humid >= 70)                return '🌥️';
+  if (solar >= 0.7)               return '☀️';
+  if (solar >= 0.5)               return '🌤️';
+  if (humid <= 55 && solar >= 0.4) return '☀️';
+  return '⛅';
+}
+
+// ─── 初期化 ───────────────────────────────────────────────────
+function buildRegionGrid() {
+  // CSVに含まれる都道府県をボタンとして生成（読み込み後に呼ぶ）
+  const grid = document.getElementById('regionGrid');
+  grid.innerHTML = '';
+  Object.keys(csvData).forEach(pref => {
+    const btn = document.createElement('button');
+    btn.className   = 'region-btn';
+    btn.textContent = pref;
+    btn.onclick     = () => selectRegion(pref);
+    grid.appendChild(btn);
+  });
+}
+
+function selectRegion(r) {
+  selectedRegion = r;
+  document.querySelectorAll('.region-btn').forEach(b =>
+    b.classList.toggle('selected', b.textContent === r)
+  );
+  document.getElementById('toStep2Btn').disabled = false;
+}
+
+// ─── ドラムロール ─────────────────────────────────────────────
+function updateCurrentTime() {
+  const now = new Date();
+  const h   = String(now.getHours()).padStart(2, '0');
+  const m   = String(now.getMinutes()).padStart(2, '0');
+  document.getElementById('currentTimeDisplay').textContent = `現在 ${h}:${m}`;
+
+  startHour = now.getHours();
+  startMin  = now.getMinutes();
+  updateDrumDisplay();
+}
+
+function adjustHour(d) {
+  startHour = (startHour + d + 24) % 24;
+  updateDrumDisplay();
+}
+function adjustMin(d) {
+  startMin = (startMin + d + 60) % 60;
+  updateDrumDisplay();
+}
+function updateDrumDisplay() {
+  document.getElementById('hourDisplay').textContent = String(startHour).padStart(2, '0');
+  document.getElementById('minDisplay').textContent  = String(startMin).padStart(2, '0');
+}
+
+// ─── 天気データ読み込み（CSV行をランダム選択） ────────────────
+function loadWeather() {
+  const row = pickRandomRow(selectedRegion);
+  if (!row) { alert('データが見つかりませんでした'); return; }
+  currentWeather = row;
+  const icon = guessIcon(row.humid, row.solar);
+  document.getElementById('weatherTitle').textContent =
+    `${selectedRegion}の今日の天気 ${icon}`;
+  document.getElementById('wTemp').textContent  = row.temp.toFixed(1);
+  document.getElementById('wHumid').textContent = row.humid.toFixed(0);
+  document.getElementById('wWind').textContent  = row.wind.toFixed(1);
+  document.getElementById('wSolar').textContent = row.solar.toFixed(2);
+}
+
+// ─── 計算（線形回帰モデルで乾燥時間を予測） ─────────────────
+function calculate() {
+  const w = currentWeather;
+
+  // 線形回帰モデルで予測（失敗時はCSV値にフォールバック）
+  calculatedDryMin = predict(w.temp, w.humid, w.wind, w.solar) ?? Math.round(w.dryMin);
+
+  // 終了時刻
+  const totalMin = startHour * 60 + startMin + calculatedDryMin;
+  const finishH  = Math.floor(totalMin / 60) % 24;
+  const finishM  = totalMin % 60;
+  document.getElementById('finishTime').textContent =
+    `${String(finishH).padStart(2,'0')}:${String(finishM).padStart(2,'0')}`;
+
+  const hrs  = Math.floor(calculatedDryMin / 60);
+  const mins = calculatedDryMin % 60;
+  document.getElementById('countdownText').textContent =
+    `${String(startHour).padStart(2,'0')}:${String(startMin).padStart(2,'0')} から干して約 ` +
+    `${hrs}時間${mins > 0 ? mins + '分' : ''}`;
+
+  // おすすめ干し場所の判定
+  let recText, recClass, icon;
+  if (w.humid >= 75 || w.wind < 1.0) {
+    recText  = '🏠 室内干しがおすすめ';
+    recClass = 'badge-inside';
+    icon     = '🌧️';
+  } else if (w.humid < 65 && w.wind >= 2.0) {
+    recText  = '☀️ 外干しがおすすめ';
+    recClass = 'badge-outside';
+    icon     = '☀️';
+  } else {
+    recText  = '⛅ どちらでもOK';
+    recClass = 'badge-either';
+    icon     = '⛅';
+  }
+  const badge = document.getElementById('resultBadge');
+  badge.textContent = recText;
+  badge.className   = `recommendation-badge ${recClass}`;
+  document.getElementById('resultIcon').textContent = icon;
+
+  // 内訳テーブル（気象値 + 回帰係数の寄与）
+  const [w0, w1, w2, w3, w4] = lrWeights ?? [0,0,0,0,0];
+  const contribs = [
+    { name: '気温',   val: `${w.temp.toFixed(1)} °C`,    coef: w1, input: w.temp  },
+    { name: '湿度',   val: `${w.humid.toFixed(0)} %`,    coef: w2, input: w.humid },
+    { name: '風速',   val: `${w.wind.toFixed(1)} m/s`,   coef: w3, input: w.wind  },
+    { name: '日射量', val: `${w.solar.toFixed(2)} kW/m²`,coef: w4, input: w.solar },
+  ];
+
+  const list = document.getElementById('factorList');
+  list.innerHTML = '';
+
+  // ヘッダー行
+  const hdr = document.createElement('div');
+  hdr.className = 'factor-row';
+  hdr.style.fontSize = '11px';
+  hdr.innerHTML = `<span style="color:#888">項目（係数）</span><span style="color:#888">値 / 寄与(分)</span>`;
+  list.appendChild(hdr);
+
+  contribs.forEach(f => {
+    const contrib = Math.round(f.coef * f.input);
+    const sign    = contrib >= 0 ? '+' : '';
+    const cls     = contrib <= -5 ? 'effect-minus' : contrib >= 5 ? 'effect-plus' : 'effect-zero';
+    const row = document.createElement('div');
+    row.className = 'factor-row';
+    row.innerHTML = `
+      <span class="factor-name">${f.name} <span style="font-size:10px;color:#bbb">(${f.coef >= 0 ? '+' : ''}${f.coef.toFixed(2)})</span></span>
+      <span class="factor-effect ${cls}">${f.val} → ${sign}${contrib}分</span>`;
+    list.appendChild(row);
+  });
+
+  // 合計行
+  const total = document.createElement('div');
+  total.className = 'factor-row';
+  total.innerHTML = `
+    <span class="factor-name" style="font-weight:500;color:#1a1a1a">予測乾燥時間</span>
+    <span class="factor-effect" style="font-size:15px;font-weight:500">${hrs}時間${mins > 0 ? mins + '分' : ''}</span>`;
+  list.appendChild(total);
+
+  // 「乾いた」ボタンをリセット
+  const driedBtn = document.getElementById('driedBtn');
+  driedBtn.innerHTML = '<i class="ti ti-checks"></i> 乾いた！（実際の乾燥時間を記録）';
+  driedBtn.style.color = '';
+
+  startedAt = Date.now();
+  loadMemory();
+  goToStep(3);
+}
+
+// ─── 「乾いた」記録 ───────────────────────────────────────────
+function markDried() {
+  if (!startedAt) return;
+  const actualMin = Math.round((Date.now() - startedAt) / 60000);
+  const record = {
+    region:    selectedRegion,
+    date:      new Date().toLocaleDateString('ja-JP'),
+    predicted: calculatedDryMin,
+    actual:    actualMin > 0 ? actualMin : calculatedDryMin,
+    temp:      currentWeather.temp,
+    humid:     currentWeather.humid,
+  };
+  const records = JSON.parse(localStorage.getItem('laundry_records') || '[]');
+  records.unshift(record);
+  if (records.length > 5) records.pop();
+  localStorage.setItem('laundry_records', JSON.stringify(records));
+
+  const driedBtn = document.getElementById('driedBtn');
+  driedBtn.innerHTML = '<i class="ti ti-check"></i> 記録しました！';
+  driedBtn.style.color = '#0F6E56';
+  loadMemory();
+}
+
+// ─── 過去の記録表示 ───────────────────────────────────────────
+function loadMemory() {
+  try {
+    const records = JSON.parse(localStorage.getItem('laundry_records') || '[]');
+    if (records.length === 0) return;
+    const mc = document.getElementById('memoryCard');
+    const ml = document.getElementById('memoryList');
+    mc.style.display = 'block';
+    ml.innerHTML = '';
+    records.forEach(r => {
+      const row = document.createElement('div');
+      row.className = 'memory-row';
+      row.innerHTML = `<span>${r.date} ${r.region}</span><span>予測 ${r.predicted}分 → 実際 ${r.actual}分</span>`;
+      ml.appendChild(row);
+    });
+  } catch(e) {}
+}
+
+// ─── ステップ遷移 ─────────────────────────────────────────────
+function goToStep(n) {
+  document.querySelectorAll('.step').forEach((s, i) =>
+    s.classList.toggle('active', i === n - 1)
+  );
+  document.querySelectorAll('.dot').forEach((d, i) =>
+    d.classList.toggle('active', i < n)
+  );
+  if (n === 2) { loadWeather(); updateCurrentTime(); }
+}
+
+// ─── 起動 ─────────────────────────────────────────────────────
+document.getElementById('toStep2Btn').addEventListener('click', () => goToStep(2));
+
+// ドラムボタンに長押し早送りを設定
+function setupDrumBtn(id, fn) {
+  const el = document.getElementById(id);
+  let timer = null;
+  let speed = 300;
+  const fire = () => { fn(); timer = setTimeout(fire, speed = Math.max(50, speed - 20)); };
+  el.addEventListener('click', fn);
+  el.addEventListener('mousedown',  () => { speed = 300; timer = setTimeout(fire, 400); });
+  el.addEventListener('touchstart', () => { speed = 300; timer = setTimeout(fire, 400); }, { passive: true });
+  const stop = () => clearTimeout(timer);
+  el.addEventListener('mouseup',   stop);
+  el.addEventListener('mouseleave',stop);
+  el.addEventListener('touchend',  stop);
+}
+setupDrumBtn('hUp', () => adjustHour(1));
+setupDrumBtn('hDn', () => adjustHour(-1));
+setupDrumBtn('mUp', () => adjustMin(1));
+setupDrumBtn('mDn', () => adjustMin(-1));
+
+
+// CSV読み込み完了後にグリッドを構築
+(async () => {
+  await loadCSV();
+  buildRegionGrid();
+  updateCurrentTime();
+})();
+</script>
+</body>
+</html>
