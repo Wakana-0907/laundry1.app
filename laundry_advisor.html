@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Laundry Advisor</title>
+<title>洗濯ものナビ</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -258,7 +258,7 @@
 <div class="app">
   <div class="header">
     <div style="font-size:36px; margin-bottom:6px">🫧</div>
-    <h1>Smart Laundry Advisor</h1>
+    <h1>洗濯ものナビ</h1>
     <p>気象データから最適な干し方を提案します</p>
   </div>
 
@@ -305,7 +305,7 @@
       </div>
     </div>
 
-    <div class="time-section">
+    [12:06]<div class="time-section">
       <div class="section-label">干し始める時間を選ぶ</div>
       <div class="time-display">
         <i class="ti ti-clock"></i>
@@ -365,6 +365,70 @@ let currentWeather   = null; // CSVからランダムに選んだ1行
 let calculatedDryMin = 0;
 let startedAt        = null;
 
+// ─── 線形回帰モデル ───────────────────────────────────────────
+// 特徴量: [気温, 湿度, 風速, 日射量]  目的変数: 乾燥時間(分)
+// 正規方程式 w = (X^T X)^{-1} X^T y を JavaScript のみで実装
+
+let lrWeights = null; // [w0(bias), w1, w2, w3, w4]
+
+// 行列演算ユーティリティ
+function matMul(A, B) {
+  const rows = A.length, cols = B[0].length, inner = B.length;
+  return Array.from({ length: rows }, (_, i) =>
+    Array.from({ length: cols }, (_, j) =>
+      A[i].reduce((s, _, k) => s + A[i][k] * B[k][j], 0)
+    )
+  );
+}
+function matTrans(A) {
+  return A[0].map((_, j) => A.map(row => row[j]));
+}
+// 4×4 行列の逆行列（ガウス・ジョルダン法）
+function matInv(M) {
+  const n = M.length;
+  const A = M.map((row, i) => [...row, ...Array.from({ length: n }, (_, j) => i === j ? 1 : 0)]);
+  for (let col = 0; col < n; col++) {
+    let pivot = col;
+    for (let row = col + 1; row < n; row++)
+      if (Math.abs(A[row][col]) > Math.abs(A[pivot][col])) pivot = row;
+    [A[col], A[pivot]] = [A[pivot], A[col]];
+    const d = A[col][col];
+    if (Math.abs(d) < 1e-12) return null; // 特異行列
+    for (let j = 0; j < 2 * n; j++) A[col][j] /= d;
+    for (let row = 0; row < n; row++) {
+      if (row === col) continue;
+      const f = A[row][col];
+      for (let j = 0; j < 2 * n; j++) A[row][j] -= f * A[col][j];
+    }
+  }
+  return A.map(row => row.slice(n));
+}
+
+// 全CSVデータを使って学習（正規方程式）
+function trainModel() {
+  const allRows = Object.values(csvData).flat();
+  if (allRows.length < 5) return;
+
+  // X: バイアス項1 + 4特徴量, y: 乾燥時間
+  const X = allRows.map(r => [1, r.temp, r.humid, r.wind, r.solar]);
+  const y = allRows.map(r => [r.dryMin]);
+
+  const Xt   = matTrans(X);
+  const XtX  = matMul(Xt, X);
+  const XtXi = matInv(XtX);
+  if (!XtXi) return;
+  const Xty  = matMul(Xt, y);
+  const w    = matMul(XtXi, Xty); // [[w0],[w1],[w2],[w3],[w4]]
+  lrWeights  = w.map(r => r[0]);
+}
+
+// モデルで乾燥時間を予測
+function predict(temp, humid, wind, solar) {
+  if (!lrWeights) return null;
+  const [w0, w1, w2, w3, w4] = lrWeights;
+  return Math.max(10, Math.round(w0 + w1*temp + w2*humid + w3*wind + w4*solar));
+}
+
 // ─── CSV読み込み ──────────────────────────────────────────────
 // CSVカラム: 都道府県,気温,湿度,風速,日射量,乾燥時間(分)
 async function loadCSV() {
@@ -386,8 +450,9 @@ async function loadCSV() {
       csvData[pref].push({ temp, humid, wind, solar, dryMin });
     });
     csvLoaded = true;
+    trainModel(); // 学習はCSV読み込み完了後に1回だけ実行
   } catch(e) {
-    alert('laundry_data_47_prefectures.csv が読み込めませんでした。\nHTMLと同じフォルダに置いてください。');
+    alert('weather_data.csv が読み込めませんでした。\nHTMLと同じフォルダに置いてください。');
   }
 }
 
@@ -469,12 +534,12 @@ function loadWeather() {
   document.getElementById('wSolar').textContent = row.solar.toFixed(2);
 }
 
-// ─── 計算（乾燥時間はCSV値をそのまま使う） ───────────────────
+// ─── 計算（線形回帰モデルで乾燥時間を予測） ─────────────────
 function calculate() {
   const w = currentWeather;
 
-  // CSV の「乾燥時間(分)」をそのまま使う
-  calculatedDryMin = Math.round(w.dryMin);
+  // 線形回帰モデルで予測（失敗時はCSV値にフォールバック）
+  calculatedDryMin = predict(w.temp, w.humid, w.wind, w.solar) ?? Math.round(w.dryMin);
 
   // 終了時刻
   const totalMin = startHour * 60 + startMin + calculatedDryMin;
@@ -509,25 +574,44 @@ function calculate() {
   badge.className   = `recommendation-badge ${recClass}`;
   document.getElementById('resultIcon').textContent = icon;
 
-  // 内訳テーブル（CSVの値をそのまま表示）
-  const factors = [
-    { name: '気温',       val: `${w.temp.toFixed(1)} °C` },
-    { name: '湿度',       val: `${w.humid.toFixed(0)} %` },
-    { name: '風速',       val: `${w.wind.toFixed(1)} m/s` },
-    { name: '日射量',     val: `${w.solar.toFixed(2)} kW/m²` },
-    { name: '予測乾燥時間', val: `${hrs}時間${mins > 0 ? mins + '分' : ''}`, bold: true },
+  // 内訳テーブル（気象値 + 回帰係数の寄与）
+  const [w0, w1, w2, w3, w4] = lrWeights ?? [0,0,0,0,0];
+  const contribs = [
+    { name: '気温',   val: `${w.temp.toFixed(1)} °C`,    coef: w1, input: w.temp  },
+    { name: '湿度',   val: `${w.humid.toFixed(0)} %`,    coef: w2, input: w.humid },
+    { name: '風速',   val: `${w.wind.toFixed(1)} m/s`,   coef: w3, input: w.wind  },
+    { name: '日射量', val: `${w.solar.toFixed(2)} kW/m²`,coef: w4, input: w.solar },
   ];
 
   const list = document.getElementById('factorList');
   list.innerHTML = '';
-  factors.forEach(f => {
+
+  // ヘッダー行
+  const hdr = document.createElement('div');
+  hdr.className = 'factor-row';
+  hdr.style.fontSize = '11px';
+  hdr.innerHTML = `<span style="color:#888">項目（係数）</span><span style="color:#888">値 / 寄与(分)</span>`;
+  list.appendChild(hdr);
+
+  contribs.forEach(f => {
+    const contrib = Math.round(f.coef * f.input);
+    const sign    = contrib >= 0 ? '+' : '';
+    const cls     = contrib <= -5 ? 'effect-minus' : contrib >= 5 ? 'effect-plus' : 'effect-zero';
     const row = document.createElement('div');
     row.className = 'factor-row';
     row.innerHTML = `
-      <span class="factor-name" style="${f.bold ? 'font-weight:500; color:#1a1a1a' : ''}">${f.name}</span>
-      <span class="factor-effect" style="${f.bold ? 'font-size:15px; font-weight:500' : ''}">${f.val}</span>`;
+      <span class="factor-name">${f.name} <span style="font-size:10px;color:#bbb">(${f.coef >= 0 ? '+' : ''}${f.coef.toFixed(2)})</span></span>
+      <span class="factor-effect ${cls}">${f.val} → ${sign}${contrib}分</span>`;
     list.appendChild(row);
   });
+
+  // 合計行
+  const total = document.createElement('div');
+  total.className = 'factor-row';
+  total.innerHTML = `
+    <span class="factor-name" style="font-weight:500;color:#1a1a1a">予測乾燥時間</span>
+    <span class="factor-effect" style="font-size:15px;font-weight:500">${hrs}時間${mins > 0 ? mins + '分' : ''}</span>`;
+  list.appendChild(total);
 
   // 「乾いた」ボタンをリセット
   const driedBtn = document.getElementById('driedBtn');
@@ -612,6 +696,7 @@ setupDrumBtn('hUp', () => adjustHour(1));
 setupDrumBtn('hDn', () => adjustHour(-1));
 setupDrumBtn('mUp', () => adjustMin(1));
 setupDrumBtn('mDn', () => adjustMin(-1));
+
 
 // CSV読み込み完了後にグリッドを構築
 (async () => {
