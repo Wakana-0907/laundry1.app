@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>洗濯物乾き時間予測AI</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f0f4f8; color: #333; max-width: 500px; margin: 40px auto; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h1 { text-align: center; color: #3b82f6; margin-bottom: 25px; font-size: 24px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 15px; }
+        select, input[type="time"] { width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 16px; background-color: white; text-align: center; }
+        select:focus, input[type="time"]:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        button { width: 100%; padding: 14px; background-color: #3b82f6; color: white; border: none; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: background 0.2s; }
+        button:hover { background-color: #2563eb; }
+        .result-box { display: none; margin-top: 25px; padding: 20px; background-color: #eff6ff; border-left: 5px solid #3b82f6; border-radius: 6px; animation: fadeIn 0.3s ease-in-out; }
+        .weather-info { font-size: 13px; color: #64748b; background-color: #f8fafc; padding: 8px; border-radius: 4px; margin-bottom: 15px; border: 1px dashed #e2e8f0; }
+        .advise-box { font-weight: bold; font-size: 16px; margin-bottom: 8px; }
+        .time-box { font-size: 18px; color: #1e3a8a; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <h1>🧺 洗濯物乾き時間予測</h1>
+    
+    <div class="form-group">
+        <label for="region">📍 お住まいの地域を選択してください</label>
+        <select id="region">
+            <option value="北海道">北海道</option>
+            <option value="東北">東北</option>
+            <option value="関東" selected>関東</option>
+            <option value="中部">中部</option>
+            <option value="北陸">北陸</option>
+            <option value="近畿">近畿</option>
+            <option value="中国">中国</option>
+            <option value="四国">四国</option>
+            <option value="九州">九州</option>
+            <option value="沖縄">沖縄</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="dryTime">⏰ 干し始める時間</label>
+        <input type="time" id="dryTime">
+    </div>
+
+    <button onclick="predictLaundry()">⏰ 乾燥時間を予測する</button>
+
+    <div id="resultBox" class="result-box">
+        <h3>✨ AIの予測結果</h3>
+        <div id="weatherInfo" class="weather-info"></div>
+        <div id="adviseText" class="advise-box"></div>
+        <div id="resultText" class="time-box"></div>
+    </div>
+
+    <script>
+        const realTimeWeather = {
+            "北海道": { temp: 15.0, humidity: 55, wind: 3.5, sun: 0.4, effect: 40 },
+            "東北":   { temp: 18.0, humidity: 60, wind: 2.0, sun: 0.5, effect: 30 },
+            "関東":   { temp: 24.5, humidity: 45, wind: 2.5, sun: 0.8, effect: 0 },
+            "中部":   { temp: 22.0, humidity: 50, wind: 1.8, sun: 0.6, effect: 5 },
+            "北陸":   { temp: 19.5, humidity: 65, wind: 2.8, sun: 0.4, effect: 35 },
+            "近畿":   { temp: 24.0, humidity: 48, wind: 2.2, sun: 0.7, effect: 0 },
+            "中国":   { temp: 23.0, humidity: 52, wind: 1.5, sun: 0.6, effect: 10 },
+            "四国":   { temp: 23.5, humidity: 55, wind: 1.7, sun: 0.6, effect: 10 },
+            "九州":   { temp: 26.0, humidity: 50, wind: 3.0, sun: 0.8, effect: -10 },
+            "沖縄":   { temp: 28.0, humidity: 75, wind: 4.0, sun: 0.9, effect: 15 }
+        };
+
+        // 🌟 ページを開いた瞬間に、今の時間を自動で入力欄にセットする処理
+        window.onload = function() {
+            const now = new Date();
+            const currentHour = String(now.getHours()).padStart(2, '0');
+            const currentMin = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById("dryTime").value = `${currentHour}:${currentMin}`;
+        };
+
+        function predictLaundry() {
+            const region = document.getElementById("region").value;
+            const inputTime = document.getElementById("dryTime").value;
+
+            if (!inputTime) {
+                alert("時間を入力してください！");
+                return;
+            }
+
+            const weather = realTimeWeather[region];
+            const temp = weather.temp;
+            const humidity = weather.humidity;
+            const wind = weather.wind;
+            const sun = weather.sun;
+            const regionEffect = weather.effect;
+
+            const baseTime = 300;
+            const timeByTemp = (temp - 20) * -8.0;
+            const timeByHumidity = (humidity - 50) * 4.0;
+            const timeByWind = (wind - 2.0) * -20.0;
+            const timeBySun = (sun - 0.5) * -100.0;
+
+            let predMinutes = baseTime + timeByTemp + timeByHumidity + timeByWind + timeBySun + regionEffect;
+            if (predMinutes < 30) predMinutes = 30;
+
+            // 🌟 ユーザーが指定した時間をもとに、未来の仕上がり時刻を計算する
+            const [hoursInput, minutesInput] = inputTime.split(":").map(Number);
+            const finishTime = new Date();
+            finishTime.setHours(hoursInput);
+            finishTime.setMinutes(minutesInput + predMinutes);
+
+            const hoursResult = Math.floor(predMinutes / 60);
+            const minutesResult = Math.floor(predMinutes % 60);
+
+            document.getElementById("weatherInfo").innerHTML = 
+                `📊 <b>現在の気象データ（自動取得）</b><br>気温: ${temp}℃ / 湿度: ${humidity}% / 風速: ${wind}m/s`;
+
+            const adviseTextDiv = document.getElementById("adviseText");
+            if (humidity >= 70) {
+                adviseTextDiv.innerText = "❌ 湿度が高すぎます！【部屋干し】にしましょう。";
+                adviseTextDiv.style.color = "#ef4444";
+            } else {
+                adviseTextDiv.innerText = "☀️ 【外干し】がおすすめです！";
+                adviseTextDiv.style.color = "#10b981";
+            }
+
+            const finishHour = String(finishTime.getHours()).padStart(2, '0');
+            const finishMin = String(finishTime.getMinutes()).padStart(2, '0');
+            document.getElementById("resultText").innerHTML = `約 <b>${hoursResult}時間 ${minutesResult}分後</b>（<b>${finishHour}時${finishMin}分</b> 頃）に乾きます！`;
+
+            document.getElementById("resultBox").style.display = "block";
+        }
+    </script>
+</body>
+</html>
