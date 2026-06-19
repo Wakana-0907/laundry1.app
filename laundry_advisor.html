@@ -14,12 +14,7 @@
     min-height: 100vh;
     padding: 2rem 1rem;
   }
-
-  .app {
-    max-width: 520px;
-    margin: 0 auto;
-  }
-
+  .app { max-width: 520px; margin: 0 auto; }
   .step { display: none; }
   .step.active { display: block; }
 
@@ -35,57 +30,60 @@
 
   /* Section label */
   .section-label {
-    font-size: 11px;
-    font-weight: 500;
-    color: #888;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
+    font-size: 11px; font-weight: 500; color: #888;
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px;
   }
 
-  /* Region grid — 47都道府県対応 */
-  .region-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-    gap: 6px;
-    margin-bottom: 1.5rem;
-    max-height: 260px;
-    overflow-y: auto;
+  /* ── 地方タブ ── */
+  .region-tabs {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 12px;
   }
-  .region-btn {
-    background: #fff;
-    border: 0.5px solid #ccc;
-    border-radius: 8px;
-    padding: 10px 4px;
-    font-size: 12px;
-    color: #666;
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.15s;
+  .region-tab {
+    background: #fff; border: 0.5px solid #ccc; border-radius: 20px;
+    padding: 5px 13px; font-size: 12px; color: #666; cursor: pointer;
+    transition: all 0.15s; white-space: nowrap;
   }
-  .region-btn:hover { background: #f0f0ea; color: #1a1a1a; }
-  .region-btn.selected {
-    background: #E1F5EE;
-    border: 1.5px solid #1D9E75;
-    color: #0F6E56;
-    font-weight: 500;
+  .region-tab:hover { background: #f0f0ea; color: #1a1a1a; }
+  .region-tab.active {
+    background: #1D9E75; border-color: #1D9E75; color: #fff; font-weight: 500;
   }
+
+  /* ── 都道府県グリッド ── */
+  .pref-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 6px; margin-bottom: 1.5rem;
+    max-height: 200px; overflow-y: auto;
+  }
+  .pref-grid::-webkit-scrollbar { width: 3px; }
+  .pref-grid::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
+  .pref-btn {
+    background: #fff; border: 0.5px solid #ccc; border-radius: 8px;
+    padding: 10px 4px; font-size: 12px; color: #666; cursor: pointer;
+    text-align: center; transition: all 0.15s;
+  }
+  .pref-btn:hover { background: #f0f0ea; color: #1a1a1a; }
+  .pref-btn.selected {
+    background: #E1F5EE; border: 1.5px solid #1D9E75; color: #0F6E56; font-weight: 500;
+  }
+
+  /* ── 選択状態バナー ── */
+  .selected-pref-banner {
+    display: none; align-items: center; gap: 8px;
+    background: #E1F5EE; border: 1px solid #1D9E75; border-radius: 8px;
+    padding: 8px 12px; margin-bottom: 12px; font-size: 13px; color: #0F6E56;
+  }
+  .selected-pref-banner.visible { display: flex; }
+  .selected-pref-banner strong { font-weight: 600; }
 
   /* Cards */
   .card {
-    background: #fff;
-    border: 0.5px solid #e0e0d8;
-    border-radius: 12px;
-    padding: 1.25rem;
-    margin-bottom: 1.25rem;
+    background: #fff; border: 0.5px solid #e0e0d8;
+    border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem;
   }
   .card-title {
-    font-size: 15px;
-    font-weight: 500;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-size: 15px; font-weight: 500; margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 8px;
   }
 
   /* Weather grid */
@@ -95,118 +93,53 @@
   .weather-metric .value { font-size: 22px; font-weight: 500; }
   .weather-metric .unit { font-size: 12px; color: #888; margin-left: 2px; }
 
-  /* Laundry condition controls */
+  /* Condition choices */
   .condition-card { margin-top: -0.25rem; }
   .condition-section + .condition-section { margin-top: 1rem; }
-  .condition-label {
-    font-size: 12px;
-    font-weight: 500;
-    color: #666;
-    margin-bottom: 8px;
-  }
+  .condition-label { font-size: 12px; font-weight: 500; color: #666; margin-bottom: 8px; }
   .choice-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
-    gap: 8px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: 8px;
   }
   .choice-btn {
-    background: #fff;
-    border: 0.5px solid #ccc;
-    border-radius: 8px;
-    padding: 10px 8px;
-    font-size: 13px;
-    color: #666;
-    cursor: pointer;
-    transition: all 0.15s;
+    background: #fff; border: 0.5px solid #ccc; border-radius: 8px;
+    padding: 10px 8px; font-size: 13px; color: #666; cursor: pointer; transition: all 0.15s;
   }
   .choice-btn:hover { background: #f0f0ea; color: #1a1a1a; }
   .choice-btn.selected {
-    background: #E1F5EE;
-    border: 1.5px solid #1D9E75;
-    color: #0F6E56;
-    font-weight: 500;
+    background: #E1F5EE; border: 1.5px solid #1D9E75; color: #0F6E56; font-weight: 500;
   }
-  .condition-hint {
-    font-size: 12px;
-    color: #888;
-    margin-top: 10px;
-    line-height: 1.5;
-  }
+  .condition-hint { font-size: 12px; color: #888; margin-top: 10px; line-height: 1.5; }
 
   /* Time section */
   .time-section { margin-bottom: 1.5rem; }
-  .time-display {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
-    font-size: 13px;
-    color: #888;
-  }
-  .drum-roll-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    justify-content: center;
-  }
+  .time-display { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 13px; color: #888; }
+  .drum-roll-container { display: flex; align-items: center; gap: 10px; justify-content: center; }
   .drum-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
   .drum-display {
-    background: #fff;
-    border: 0.5px solid #ccc;
-    border-radius: 8px;
-    width: 64px;
-    height: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    font-weight: 500;
-    user-select: none;
+    background: #fff; border: 0.5px solid #ccc; border-radius: 8px;
+    width: 64px; height: 52px; display: flex; align-items: center; justify-content: center;
+    font-size: 26px; font-weight: 500; user-select: none;
   }
   .drum-btn {
-    background: none;
-    border: 0.5px solid #e0e0d8;
-    border-radius: 4px;
-    width: 64px;
-    padding: 3px 0;
-    cursor: pointer;
-    font-size: 14px;
-    color: #888;
-    transition: background 0.1s;
+    background: none; border: 0.5px solid #e0e0d8; border-radius: 4px;
+    width: 64px; padding: 3px 0; cursor: pointer; font-size: 14px; color: #888; transition: background 0.1s;
   }
   .drum-btn:hover { background: #f0f0ea; }
   .drum-sep { font-size: 26px; font-weight: 500; color: #888; }
 
   /* Buttons */
   .primary-btn {
-    display: block;
-    width: 100%;
-    background: #1D9E75;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 14px;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    margin-top: 1rem;
-    transition: background 0.15s, transform 0.1s;
+    display: block; width: 100%; background: #1D9E75; color: #fff;
+    border: none; border-radius: 8px; padding: 14px; font-size: 15px; font-weight: 500;
+    cursor: pointer; margin-top: 1rem; transition: background 0.15s, transform 0.1s;
   }
   .primary-btn:hover { background: #0F6E56; }
   .primary-btn:active { transform: scale(0.98); }
   .primary-btn:disabled { background: #e0e0d8; color: #aaa; cursor: not-allowed; }
-
   .back-btn {
-    background: none;
-    border: none;
-    font-size: 13px;
-    color: #888;
-    cursor: pointer;
-    padding: 4px 0;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    background: none; border: none; font-size: 13px; color: #888;
+    cursor: pointer; padding: 4px 0; margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 4px;
   }
   .back-btn:hover { color: #1a1a1a; }
 
@@ -214,26 +147,15 @@
   .result-hero { text-align: center; padding: 1.5rem 0 1rem; }
   .weather-icon-big { font-size: 64px; margin-bottom: 8px; }
   .recommendation-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 18px;
-    border-radius: 999px;
-    font-size: 15px;
-    font-weight: 500;
-    margin-bottom: 1rem;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 18px; border-radius: 999px; font-size: 15px; font-weight: 500; margin-bottom: 1rem;
   }
   .badge-outside { background: #E1F5EE; color: #0F6E56; }
   .badge-inside  { background: #FAECE7; color: #993C1D; }
   .badge-either  { background: #FAEEDA; color: #854F0B; }
-
   .dry-time-card {
-    background: #fff;
-    border: 0.5px solid #e0e0d8;
-    border-radius: 12px;
-    padding: 1.5rem;
-    text-align: center;
-    margin-bottom: 1.25rem;
+    background: #fff; border: 0.5px solid #e0e0d8; border-radius: 12px;
+    padding: 1.5rem; text-align: center; margin-bottom: 1.25rem;
   }
   .dry-time-label    { font-size: 13px; color: #888; margin-bottom: 4px; }
   .dry-time-finish   { font-size: 36px; font-weight: 500; margin-bottom: 4px; }
@@ -241,20 +163,10 @@
 
   /* Factor list */
   .factor-list { margin-bottom: 1.25rem; }
-  .factor-group-label {
-    font-size: 11px;
-    font-weight: 500;
-    color: #888;
-    margin: 8px 0 4px;
-    letter-spacing: 0.04em;
-  }
+  .factor-group-label { font-size: 11px; font-weight: 500; color: #888; margin: 8px 0 4px; letter-spacing: 0.04em; }
   .factor-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 0.5px solid #e0e0d8;
-    font-size: 13px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 0; border-bottom: 0.5px solid #e0e0d8; font-size: 13px;
   }
   .factor-row:last-child { border-bottom: none; }
   .factor-name   { color: #888; }
@@ -264,37 +176,20 @@
   .effect-zero   { color: #888; }
 
   .dry-btn {
-    background: #fff;
-    border: 0.5px solid #ccc;
-    border-radius: 8px;
-    padding: 12px;
-    width: 100%;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: background 0.15s;
-    margin-bottom: 8px;
+    background: #fff; border: 0.5px solid #ccc; border-radius: 8px; padding: 12px; width: 100%;
+    font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    gap: 8px; transition: background 0.15s; margin-bottom: 8px;
   }
   .dry-btn:hover { background: #f5f5f0; }
 
   /* Memory */
   .memory-card {
-    background: #f5f5f0;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-top: 1rem;
-    font-size: 13px;
-    color: #888;
+    background: #f5f5f0; border-radius: 8px; padding: 1rem;
+    margin-top: 1rem; font-size: 13px; color: #888;
   }
   .memory-title { font-weight: 500; color: #1a1a1a; margin-bottom: 8px; }
   .memory-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 4px 0;
-    border-bottom: 0.5px solid #e0e0d8;
+    display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 0.5px solid #e0e0d8;
   }
   .memory-row:last-child { border-bottom: none; }
 </style>
@@ -313,14 +208,26 @@
     <div class="dot" id="dot3"></div>
   </div>
 
-  <!-- Step 1: Region -->
+  <!-- Step 1: 地方 → 都道府県 -->
   <div class="step active" id="step1">
-    <div class="section-label">Step 1 — 地域を選択</div>
-    <div class="region-grid" id="regionGrid"></div>
+    <div class="section-label">Step 1 — 地域・都道府県を選択</div>
+
+    <!-- 選択済みバナー -->
+    <div class="selected-pref-banner" id="selectedPrefBanner">
+      <i class="ti ti-map-pin"></i>
+      <span><strong id="bannerPrefName"></strong> を選択中</span>
+    </div>
+
+    <!-- 地方タブ -->
+    <div class="region-tabs" id="regionTabs"></div>
+
+    <!-- 都道府県グリッド -->
+    <div class="pref-grid" id="prefGrid"></div>
+
     <button class="primary-btn" id="toStep2Btn" disabled>次へ → 天気を確認する</button>
   </div>
 
-  <!-- Step 2: Weather + Time -->
+  <!-- Step 2: Weather + Conditions + Time -->
   <div class="step" id="step2">
     <button class="back-btn" onclick="goToStep(1)">
       <i class="ti ti-arrow-left"></i> 地域を選び直す
@@ -350,6 +257,7 @@
       </div>
     </div>
 
+    <!-- 洗濯物の条件（室内・室外なし） -->
     <div class="card condition-card">
       <div class="card-title">
         <i class="ti ti-shirt"></i>
@@ -362,10 +270,6 @@
       <div class="condition-section">
         <div class="condition-label">厚さ</div>
         <div class="choice-grid" id="thicknessChoices"></div>
-      </div>
-      <div class="condition-section">
-        <div class="condition-label">干す場所</div>
-        <div class="choice-grid" id="placeChoices"></div>
       </div>
       <div class="condition-hint">選択した条件を乾燥時間の予測に反映します。</div>
     </div>
@@ -420,55 +324,55 @@
 </div>
 
 <script>
-// ─── 状態変数 ─────────────────────────────────────────────────
-let csvData          = {};   // { '東京都': [ {temp, humid, wind, solar, dryMin}, ... ], ... }
-let csvLoaded        = false;
-let selectedRegion   = null;
-let startHour        = 9;
-let startMin         = 0;
-let currentWeather   = null; // CSVからランダムに選んだ1行
-let calculatedDryMin = 0;
-let startedAt        = null;
-let selectedMaterial = '綿';
+// ─── 地方 → 都道府県 マッピング ───────────────────────────────
+const REGIONS = [
+  { name: '北海道',   prefs: ['北海道'] },
+  { name: '東北',     prefs: ['青森県','岩手県','宮城県','秋田県','山形県','福島県'] },
+  { name: '関東',     prefs: ['茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県'] },
+  { name: '中部',     prefs: ['新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県'] },
+  { name: '近畿',     prefs: ['三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県'] },
+  { name: '中国',     prefs: ['鳥取県','島根県','岡山県','広島県','山口県'] },
+  { name: '四国',     prefs: ['徳島県','香川県','愛媛県','高知県'] },
+  { name: '九州・沖縄', prefs: ['福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県'] },
+];
+
+// ─── 状態変数 ──────────────────────────────────────────────────
+let csvData           = {};
+let csvLoaded         = false;
+let selectedRegionIdx = 0;       // 地方インデックス
+let selectedRegion    = null;    // 都道府県名
+let startHour         = 9;
+let startMin          = 0;
+let currentWeather    = null;
+let calculatedDryMin  = 0;
+let startedAt         = null;
+let selectedMaterial  = '綿';
 let selectedThickness = '普通';
-let selectedDryingPlace = '室外';
 
-const materialOptions = ['綿', 'ポリエステル', '混紡', 'ウール'];
-const thicknessOptions = ['薄手', '普通', '厚手'];
-const placeOptions = ['室内', '室外'];
-const materialAdjustments = { '綿': 0, 'ポリエステル': -10, '混紡': -5, 'ウール': 15 };
+const materialOptions   = ['綿', 'ポリエステル', '混紡', 'ウール'];
+const thicknessOptions  = ['薄手', '普通', '厚手'];
+const materialAdjustments  = { '綿': 0, 'ポリエステル': -10, '混紡': -5, 'ウール': 15 };
 const thicknessAdjustments = { '薄手': -12, '普通': 0, '厚手': 18 };
-const placeAdjustments = { '室内': 18, '室外': 0 };
 
-// ─── 線形回帰モデル ───────────────────────────────────────────
-// 特徴量: [気温, 湿度, 風速, 日射量]  目的変数: 乾燥時間(分)
-// 正規方程式 w = (X^T X)^{-1} X^T y を JavaScript のみで実装
+// ─── 線形回帰モデル ────────────────────────────────────────────
+let lrWeights = null;
 
-let lrWeights = null; // [w0(bias), w1, w2, w3, w4]
-
-// 行列演算ユーティリティ
 function matMul(A, B) {
-  const rows = A.length, cols = B[0].length, inner = B.length;
-  return Array.from({ length: rows }, (_, i) =>
-    Array.from({ length: cols }, (_, j) =>
-      A[i].reduce((s, _, k) => s + A[i][k] * B[k][j], 0)
-    )
-  );
+  return Array.from({length: A.length}, (_, i) =>
+    Array.from({length: B[0].length}, (_, j) =>
+      A[i].reduce((s, _, k) => s + A[i][k] * B[k][j], 0)));
 }
-function matTrans(A) {
-  return A[0].map((_, j) => A.map(row => row[j]));
-}
-// 4×4 行列の逆行列（ガウス・ジョルダン法）
+function matTrans(A) { return A[0].map((_, j) => A.map(r => r[j])); }
 function matInv(M) {
   const n = M.length;
-  const A = M.map((row, i) => [...row, ...Array.from({ length: n }, (_, j) => i === j ? 1 : 0)]);
+  const A = M.map((row, i) => [...row, ...Array.from({length: n}, (_, j) => i === j ? 1 : 0)]);
   for (let col = 0; col < n; col++) {
     let pivot = col;
     for (let row = col + 1; row < n; row++)
       if (Math.abs(A[row][col]) > Math.abs(A[pivot][col])) pivot = row;
     [A[col], A[pivot]] = [A[pivot], A[col]];
     const d = A[col][col];
-    if (Math.abs(d) < 1e-12) return null; // 特異行列
+    if (Math.abs(d) < 1e-12) return null;
     for (let j = 0; j < 2 * n; j++) A[col][j] /= d;
     for (let row = 0; row < n; row++) {
       if (row === col) continue;
@@ -478,240 +382,215 @@ function matInv(M) {
   }
   return A.map(row => row.slice(n));
 }
-
-// 全CSVデータを使って学習（正規方程式）
 function trainModel() {
   const allRows = Object.values(csvData).flat();
   if (allRows.length < 5) return;
-
-  // X: バイアス項1 + 4特徴量, y: 乾燥時間
-  const X = allRows.map(r => [1, r.temp, r.humid, r.wind, r.solar]);
-  const y = allRows.map(r => [r.dryMin]);
-
-  const Xt   = matTrans(X);
-  const XtX  = matMul(Xt, X);
-  const XtXi = matInv(XtX);
-  if (!XtXi) return;
-  const Xty  = matMul(Xt, y);
-  const w    = matMul(XtXi, Xty); // [[w0],[w1],[w2],[w3],[w4]]
-  lrWeights  = w.map(r => r[0]);
+  const X  = allRows.map(r => [1, r.temp, r.humid, r.wind, r.solar]);
+  const y  = allRows.map(r => [r.dryMin]);
+  const Xt = matTrans(X);
+  const inv = matInv(matMul(Xt, X));
+  if (!inv) return;
+  lrWeights = matMul(matMul(inv, Xt), y).map(r => r[0]);
 }
-
-// モデルで乾燥時間を予測
 function predict(temp, humid, wind, solar) {
   if (!lrWeights) return null;
   const [w0, w1, w2, w3, w4] = lrWeights;
   return Math.max(10, Math.round(w0 + w1*temp + w2*humid + w3*wind + w4*solar));
 }
-
-function getLaundryConditionAdjustment() {
+function getLaundryAdj() {
   return (materialAdjustments[selectedMaterial] ?? 0)
-    + (thicknessAdjustments[selectedThickness] ?? 0)
-    + (placeAdjustments[selectedDryingPlace] ?? 0);
+       + (thicknessAdjustments[selectedThickness] ?? 0);
 }
-
-function predictWithLaundryConditions(temp, humid, wind, solar) {
+function predictWithConditions(temp, humid, wind, solar) {
   const base = predict(temp, humid, wind, solar);
   if (base == null) return null;
-  return Math.max(10, Math.round(base + getLaundryConditionAdjustment()));
+  return Math.max(10, Math.round(base + getLaundryAdj()));
 }
 
-// ─── CSV読み込み ──────────────────────────────────────────────
-// CSVカラム: 都道府県,気温,湿度,風速,日射量,乾燥時間(分)
+// ─── CSV 読み込み ──────────────────────────────────────────────
 async function loadCSV() {
-  try {
-    const res  = await fetch('laundry_data_47_prefectures.csv');
-    const text = await res.text();
-    const lines = text.trim().split('\n');
-    // 1行目はヘッダーなのでスキップ
-    lines.slice(1).forEach(line => {
-      const cols = line.split(',');
-      if (cols.length < 6) return;
-      const pref   = cols[0].trim();
-      const temp   = parseFloat(cols[1]);
-      const humid  = parseFloat(cols[2]);
-      const wind   = parseFloat(cols[3]);
-      const solar  = parseFloat(cols[4]);
-      const dryMin = parseFloat(cols[5]);
-      if (!csvData[pref]) csvData[pref] = [];
-      csvData[pref].push({ temp, humid, wind, solar, dryMin });
-    });
-    csvLoaded = true;
-    trainModel(); // 学習はCSV読み込み完了後に1回だけ実行
-  } catch(e) {
-    alert('weather_data.csv が読み込めませんでした。\nHTMLと同じフォルダに置いてください。');
+  const fnames = ['laundry_data_47_prefectures.csv', 'laundry_data_extended.csv', 'weather_data.csv'];
+  for (const fn of fnames) {
+    try {
+      const res = await fetch(fn);
+      if (!res.ok) continue;
+      const text = await res.text();
+      const lines = text.trim().split('\n');
+      lines.slice(1).forEach(line => {
+        const cols = line.split(',');
+        if (cols.length < 6) return;
+        const pref   = cols[0].trim();
+        const temp   = parseFloat(cols[1]);
+        const humid  = parseFloat(cols[2]);
+        const wind   = parseFloat(cols[3]);
+        const solar  = parseFloat(cols[4]);
+        const dryMin = parseFloat(cols[5]);
+        if (isNaN(dryMin)) return;
+        if (!csvData[pref]) csvData[pref] = [];
+        csvData[pref].push({ temp, humid, wind, solar, dryMin });
+      });
+      csvLoaded = true;
+      trainModel();
+      return;
+    } catch(e) {}
   }
+  alert('CSVファイルが読み込めませんでした。\nlaundry_data_47_prefectures.csv をHTMLと同じフォルダに置いてください。');
 }
-
-// 都道府県名からCSVの行をランダムに1つ選ぶ
 function pickRandomRow(pref) {
   const rows = csvData[pref];
-  if (!rows || rows.length === 0) return null;
+  if (!rows || !rows.length) return null;
   return rows[Math.floor(Math.random() * rows.length)];
 }
-
-// 気象値から天気アイコンを簡易判定
 function guessIcon(humid, solar) {
-  if (humid >= 80)                return '🌧️';
-  if (humid >= 70)                return '🌥️';
-  if (solar >= 0.7)               return '☀️';
-  if (solar >= 0.5)               return '🌤️';
+  if (humid >= 80)                 return '🌧️';
+  if (humid >= 70)                 return '🌥️';
+  if (solar >= 0.7)                return '☀️';
+  if (solar >= 0.5)                return '🌤️';
   if (humid <= 55 && solar >= 0.4) return '☀️';
   return '⛅';
 }
 
-// ─── 初期化 ───────────────────────────────────────────────────
-function buildRegionGrid() {
-  // CSVに含まれる都道府県をボタンとして生成（読み込み後に呼ぶ）
-  const grid = document.getElementById('regionGrid');
-  grid.innerHTML = '';
-  Object.keys(csvData).forEach(pref => {
-    const btn = document.createElement('button');
-    btn.className   = 'region-btn';
-    btn.textContent = pref;
-    btn.onclick     = () => selectRegion(pref);
-    grid.appendChild(btn);
-  });
-}
-
-function selectRegion(r) {
-  selectedRegion = r;
-  document.querySelectorAll('.region-btn').forEach(b =>
-    b.classList.toggle('selected', b.textContent === r)
-  );
-  document.getElementById('toStep2Btn').disabled = false;
-}
-
-function renderChoiceGroup(containerId, options, selectedValue, onSelect) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = '';
-  options.forEach(option => {
-    const btn = document.createElement('button');
-    btn.className = 'choice-btn';
-    btn.textContent = option;
-    btn.classList.toggle('selected', option === selectedValue);
-    btn.onclick = () => {
-      onSelect(option);
-      renderConditionChoices();
+// ─── 地方タブ ・ 都道府県グリッド ──────────────────────────────
+function buildRegionUI() {
+  const tabsEl = document.getElementById('regionTabs');
+  tabsEl.innerHTML = '';
+  REGIONS.forEach((reg, idx) => {
+    const tab = document.createElement('button');
+    tab.className = 'region-tab' + (idx === selectedRegionIdx ? ' active' : '');
+    tab.textContent = reg.name;
+    tab.onclick = () => {
+      selectedRegionIdx = idx;
+      buildRegionUI();         // タブ再描画
     };
-    container.appendChild(btn);
+    tabsEl.appendChild(tab);
+  });
+
+  const prefEl = document.getElementById('prefGrid');
+  prefEl.innerHTML = '';
+  const currentPrefs = REGIONS[selectedRegionIdx].prefs;
+  currentPrefs.forEach(pref => {
+    // CSVにないデータはグレーアウト
+    const hasData = !!csvData[pref];
+    const btn = document.createElement('button');
+    btn.className = 'pref-btn' + (pref === selectedRegion ? ' selected' : '');
+    btn.textContent = pref;
+    btn.disabled = !hasData;
+    btn.style.opacity = hasData ? '1' : '0.35';
+    btn.onclick = () => selectPref(pref);
+    prefEl.appendChild(btn);
   });
 }
 
-function renderConditionChoices() {
-  renderChoiceGroup('materialChoices', materialOptions, selectedMaterial, value => selectedMaterial = value);
-  renderChoiceGroup('thicknessChoices', thicknessOptions, selectedThickness, value => selectedThickness = value);
-  renderChoiceGroup('placeChoices', placeOptions, selectedDryingPlace, value => selectedDryingPlace = value);
+function selectPref(pref) {
+  selectedRegion = pref;
+  document.getElementById('toStep2Btn').disabled = false;
+  // バナー更新
+  document.getElementById('bannerPrefName').textContent = pref;
+  document.getElementById('selectedPrefBanner').classList.add('visible');
+  // グリッド再描画（選択状態を反映）
+  buildRegionUI();
 }
 
-// ─── ドラムロール ─────────────────────────────────────────────
+// ─── 洗濯物条件 UI ────────────────────────────────────────────
+function renderChoiceGroup(containerId, options, current, onSelect) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn' + (opt === current ? ' selected' : '');
+    btn.textContent = opt;
+    btn.onclick = () => { onSelect(opt); renderConditionChoices(); };
+    el.appendChild(btn);
+  });
+}
+function renderConditionChoices() {
+  renderChoiceGroup('materialChoices',  materialOptions,  selectedMaterial,  v => selectedMaterial  = v);
+  renderChoiceGroup('thicknessChoices', thicknessOptions, selectedThickness, v => selectedThickness = v);
+}
+
+// ─── 時刻ドラム ────────────────────────────────────────────────
 function updateCurrentTime() {
   const now = new Date();
-  const h   = String(now.getHours()).padStart(2, '0');
-  const m   = String(now.getMinutes()).padStart(2, '0');
-  document.getElementById('currentTimeDisplay').textContent = `現在 ${h}:${m}`;
-
-  startHour = now.getHours();
-  startMin  = now.getMinutes();
+  document.getElementById('currentTimeDisplay').textContent =
+    `現在 ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  startHour = now.getHours(); startMin = now.getMinutes();
   updateDrumDisplay();
 }
-
-function adjustHour(d) {
-  startHour = (startHour + d + 24) % 24;
-  updateDrumDisplay();
-}
-function adjustMin(d) {
-  startMin = (startMin + d + 60) % 60;
-  updateDrumDisplay();
-}
+function adjustHour(d) { startHour = (startHour + d + 24) % 24; updateDrumDisplay(); }
+function adjustMin(d)  { startMin  = (startMin  + d + 60) % 60; updateDrumDisplay(); }
 function updateDrumDisplay() {
-  document.getElementById('hourDisplay').textContent = String(startHour).padStart(2, '0');
-  document.getElementById('minDisplay').textContent  = String(startMin).padStart(2, '0');
+  document.getElementById('hourDisplay').textContent = String(startHour).padStart(2,'0');
+  document.getElementById('minDisplay').textContent  = String(startMin ).padStart(2,'0');
 }
 
-// ─── 天気データ読み込み（CSV行をランダム選択） ────────────────
+// ─── 天気読み込み ──────────────────────────────────────────────
 function loadWeather() {
   const row = pickRandomRow(selectedRegion);
   if (!row) { alert('データが見つかりませんでした'); return; }
   currentWeather = row;
   const icon = guessIcon(row.humid, row.solar);
-  document.getElementById('weatherTitle').textContent =
-    `${selectedRegion}の今日の天気 ${icon}`;
+  document.getElementById('weatherTitle').textContent = `${selectedRegion}の今日の天気 ${icon}`;
   document.getElementById('wTemp').textContent  = row.temp.toFixed(1);
   document.getElementById('wHumid').textContent = row.humid.toFixed(0);
   document.getElementById('wWind').textContent  = row.wind.toFixed(1);
   document.getElementById('wSolar').textContent = row.solar.toFixed(2);
 }
 
-// ─── 計算（線形回帰モデルで乾燥時間を予測） ─────────────────
+// ─── 計算 ─────────────────────────────────────────────────────
 function calculate() {
   const w = currentWeather;
+  const predicted = predictWithConditions(w.temp, w.humid, w.wind, w.solar);
+  calculatedDryMin = predicted ?? Math.round(w.dryMin + getLaundryAdj());
 
-  // 線形回帰モデル + 衣類条件の補正で予測（失敗時はCSV値にフォールバック）
-  const predicted = predictWithLaundryConditions(w.temp, w.humid, w.wind, w.solar);
-  calculatedDryMin = predicted ?? Math.round(w.dryMin + getLaundryConditionAdjustment());
-
-  // 終了時刻
   const totalMin = startHour * 60 + startMin + calculatedDryMin;
-  const finishH  = Math.floor(totalMin / 60) % 24;
-  const finishM  = totalMin % 60;
+  const fH = Math.floor(totalMin / 60) % 24;
+  const fM = totalMin % 60;
   document.getElementById('finishTime').textContent =
-    `${String(finishH).padStart(2,'0')}:${String(finishM).padStart(2,'0')}`;
-
+    `${String(fH).padStart(2,'0')}:${String(fM).padStart(2,'0')}`;
   const hrs  = Math.floor(calculatedDryMin / 60);
   const mins = calculatedDryMin % 60;
   document.getElementById('countdownText').textContent =
     `${String(startHour).padStart(2,'0')}:${String(startMin).padStart(2,'0')} から干して約 ` +
     `${hrs}時間${mins > 0 ? mins + '分' : ''}`;
 
-  // おすすめ干し場所の判定
+  // 干し場所バッジ（気象条件で判定）
   let recText, recClass, icon;
   if (w.humid >= 75 || w.wind < 1.0) {
-    recText  = '🏠 室内干しがおすすめ';
-    recClass = 'badge-inside';
-    icon     = '🌧️';
+    recText = '🏠 室内干しがおすすめ'; recClass = 'badge-inside'; icon = '🌧️';
   } else if (w.humid < 65 && w.wind >= 2.0) {
-    recText  = '☀️ 外干しがおすすめ';
-    recClass = 'badge-outside';
-    icon     = '☀️';
+    recText = '☀️ 外干しがおすすめ'; recClass = 'badge-outside'; icon = '☀️';
   } else {
-    recText  = '⛅ どちらでもOK';
-    recClass = 'badge-either';
-    icon     = '⛅';
+    recText = '⛅ どちらでもOK'; recClass = 'badge-either'; icon = '⛅';
   }
-  const badge = document.getElementById('resultBadge');
-  badge.textContent = recText;
-  badge.className   = `recommendation-badge ${recClass}`;
+  document.getElementById('resultBadge').textContent = recText;
+  document.getElementById('resultBadge').className = `recommendation-badge ${recClass}`;
   document.getElementById('resultIcon').textContent = icon;
 
-  // 内訳テーブル（気象値 + 回帰係数の寄与）
+  // 内訳テーブル
   const [w0, w1, w2, w3, w4] = lrWeights ?? [0,0,0,0,0];
   const weatherContribs = [
-    { name: '気温',   val: `${w.temp.toFixed(1)} °C`,    coef: w1, input: w.temp  },
-    { name: '湿度',   val: `${w.humid.toFixed(0)} %`,    coef: w2, input: w.humid },
-    { name: '風速',   val: `${w.wind.toFixed(1)} m/s`,   coef: w3, input: w.wind  },
-    { name: '日射量', val: `${w.solar.toFixed(2)} kW/m²`,coef: w4, input: w.solar },
+    { name: '気温',   val: `${w.temp.toFixed(1)} °C`,     coef: w1, input: w.temp  },
+    { name: '湿度',   val: `${w.humid.toFixed(0)} %`,     coef: w2, input: w.humid },
+    { name: '風速',   val: `${w.wind.toFixed(1)} m/s`,    coef: w3, input: w.wind  },
+    { name: '日射量', val: `${w.solar.toFixed(2)} kW/m²`, coef: w4, input: w.solar },
   ];
   const conditionContribs = [
-    { name: '素材', val: selectedMaterial, adjust: materialAdjustments[selectedMaterial] ?? 0 },
+    { name: '素材', val: selectedMaterial,  adjust: materialAdjustments[selectedMaterial]   ?? 0 },
     { name: '厚さ', val: selectedThickness, adjust: thicknessAdjustments[selectedThickness] ?? 0 },
-    { name: '干す場所', val: selectedDryingPlace, adjust: placeAdjustments[selectedDryingPlace] ?? 0 },
   ];
 
   const list = document.getElementById('factorList');
   list.innerHTML = '';
 
-  // ヘッダー行
   const hdr = document.createElement('div');
-  hdr.className = 'factor-row';
-  hdr.style.fontSize = '11px';
+  hdr.className = 'factor-row'; hdr.style.fontSize = '11px';
   hdr.innerHTML = `<span style="color:#888">項目（係数）</span><span style="color:#888">値 / 寄与(分)</span>`;
   list.appendChild(hdr);
 
   weatherContribs.forEach(f => {
     const contrib = Math.round(f.coef * f.input);
-    const sign    = contrib >= 0 ? '+' : '';
-    const cls     = contrib <= -5 ? 'effect-minus' : contrib >= 5 ? 'effect-plus' : 'effect-zero';
+    const sign = contrib >= 0 ? '+' : '';
+    const cls  = contrib <= -5 ? 'effect-minus' : contrib >= 5 ? 'effect-plus' : 'effect-zero';
     const row = document.createElement('div');
     row.className = 'factor-row';
     row.innerHTML = `
@@ -720,14 +599,13 @@ function calculate() {
     list.appendChild(row);
   });
 
-  const group = document.createElement('div');
-  group.className = 'factor-group-label';
-  group.textContent = '衣類条件の補正';
-  list.appendChild(group);
+  const grp = document.createElement('div');
+  grp.className = 'factor-group-label'; grp.textContent = '衣類条件の補正';
+  list.appendChild(grp);
 
   conditionContribs.forEach(f => {
     const sign = f.adjust >= 0 ? '+' : '';
-    const cls = f.adjust <= -5 ? 'effect-minus' : f.adjust >= 5 ? 'effect-plus' : 'effect-zero';
+    const cls  = f.adjust <= -5 ? 'effect-minus' : f.adjust >= 5 ? 'effect-plus' : 'effect-zero';
     const row = document.createElement('div');
     row.className = 'factor-row';
     row.innerHTML = `
@@ -736,7 +614,6 @@ function calculate() {
     list.appendChild(row);
   });
 
-  // 合計行
   const total = document.createElement('div');
   total.className = 'factor-row';
   total.innerHTML = `
@@ -744,7 +621,6 @@ function calculate() {
     <span class="factor-effect" style="font-size:15px;font-weight:500">${hrs}時間${mins > 0 ? mins + '分' : ''}</span>`;
   list.appendChild(total);
 
-  // 「乾いた」ボタンをリセット
   const driedBtn = document.getElementById('driedBtn');
   driedBtn.innerHTML = '<i class="ti ti-checks"></i> 乾いた！（実際の乾燥時間を記録）';
   driedBtn.style.color = '';
@@ -754,41 +630,31 @@ function calculate() {
   goToStep(3);
 }
 
-// ─── 「乾いた」記録 ───────────────────────────────────────────
+// ─── 記録・過去 ───────────────────────────────────────────────
 function markDried() {
   if (!startedAt) return;
   const actualMin = Math.round((Date.now() - startedAt) / 60000);
   const record = {
-    region:    selectedRegion,
-    date:      new Date().toLocaleDateString('ja-JP'),
-    predicted: calculatedDryMin,
-    actual:    actualMin > 0 ? actualMin : calculatedDryMin,
-    temp:      currentWeather.temp,
-    humid:     currentWeather.humid,
-    material:  selectedMaterial,
-    thickness: selectedThickness,
-    place:     selectedDryingPlace,
+    region: selectedRegion, date: new Date().toLocaleDateString('ja-JP'),
+    predicted: calculatedDryMin, actual: actualMin > 0 ? actualMin : calculatedDryMin,
+    material: selectedMaterial, thickness: selectedThickness,
   };
   const records = JSON.parse(localStorage.getItem('laundry_records') || '[]');
   records.unshift(record);
   if (records.length > 5) records.pop();
   localStorage.setItem('laundry_records', JSON.stringify(records));
-
-  const driedBtn = document.getElementById('driedBtn');
-  driedBtn.innerHTML = '<i class="ti ti-check"></i> 記録しました！';
-  driedBtn.style.color = '#0F6E56';
+  const btn = document.getElementById('driedBtn');
+  btn.innerHTML = '<i class="ti ti-check"></i> 記録しました！';
+  btn.style.color = '#0F6E56';
   loadMemory();
 }
-
-// ─── 過去の記録表示 ───────────────────────────────────────────
 function loadMemory() {
   try {
     const records = JSON.parse(localStorage.getItem('laundry_records') || '[]');
-    if (records.length === 0) return;
+    if (!records.length) return;
     const mc = document.getElementById('memoryCard');
     const ml = document.getElementById('memoryList');
-    mc.style.display = 'block';
-    ml.innerHTML = '';
+    mc.style.display = 'block'; ml.innerHTML = '';
     records.forEach(r => {
       const row = document.createElement('div');
       row.className = 'memory-row';
@@ -798,45 +664,38 @@ function loadMemory() {
   } catch(e) {}
 }
 
-// ─── ステップ遷移 ─────────────────────────────────────────────
+// ─── ステップ遷移 ──────────────────────────────────────────────
 function goToStep(n) {
-  document.querySelectorAll('.step').forEach((s, i) =>
-    s.classList.toggle('active', i === n - 1)
-  );
-  document.querySelectorAll('.dot').forEach((d, i) =>
-    d.classList.toggle('active', i < n)
-  );
-  if (n === 2) { loadWeather(); updateCurrentTime(); }
+  document.querySelectorAll('.step').forEach((s, i) => s.classList.toggle('active', i === n - 1));
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i < n));
+  if (n === 2) { loadWeather(); updateCurrentTime(); renderConditionChoices(); }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ─── 起動 ─────────────────────────────────────────────────────
-document.getElementById('toStep2Btn').addEventListener('click', () => goToStep(2));
-
-// ドラムボタンに長押し早送りを設定
+// ─── ドラムボタン ─────────────────────────────────────────────
 function setupDrumBtn(id, fn) {
   const el = document.getElementById(id);
-  let timer = null;
-  let speed = 300;
+  let timer = null, speed = 300;
   const fire = () => { fn(); timer = setTimeout(fire, speed = Math.max(50, speed - 20)); };
   el.addEventListener('click', fn);
   el.addEventListener('mousedown',  () => { speed = 300; timer = setTimeout(fire, 400); });
   el.addEventListener('touchstart', () => { speed = 300; timer = setTimeout(fire, 400); }, { passive: true });
   const stop = () => clearTimeout(timer);
-  el.addEventListener('mouseup',   stop);
-  el.addEventListener('mouseleave',stop);
-  el.addEventListener('touchend',  stop);
+  el.addEventListener('mouseup',    stop);
+  el.addEventListener('mouseleave', stop);
+  el.addEventListener('touchend',   stop);
 }
-setupDrumBtn('hUp', () => adjustHour(1));
+setupDrumBtn('hUp', () => adjustHour( 1));
 setupDrumBtn('hDn', () => adjustHour(-1));
-setupDrumBtn('mUp', () => adjustMin(1));
-setupDrumBtn('mDn', () => adjustMin(-1));
+setupDrumBtn('mUp', () => adjustMin ( 1));
+setupDrumBtn('mDn', () => adjustMin (-1));
 
+document.getElementById('toStep2Btn').addEventListener('click', () => goToStep(2));
 
-// CSV読み込み完了後にグリッドを構築
+// ─── 起動 ─────────────────────────────────────────────────────
 (async () => {
   await loadCSV();
-  buildRegionGrid();
-  renderConditionChoices();
+  buildRegionUI();
   updateCurrentTime();
 })();
 </script>
