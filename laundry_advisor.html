@@ -26,7 +26,7 @@
   /* Progress dots */
   .progress-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 1.5rem; }
   .dot { width: 6px; height: 6px; border-radius: 50%; background: #ccc; transition: background 0.2s; }
-  .dot.active { background: #1D9E75; }
+  .dot.active { background: #75b8a3; }
 
   /* Section label */
   .section-label {
@@ -46,7 +46,7 @@
   }
   .region-tab:hover { background: #f0f0ea; color: #1a1a1a; }
   .region-tab.active {
-    background: #1D9E75; border-color: #1D9E75; color: #fff; font-weight: 500;
+    background: #75b8a3; border-color: #75b8a3; color: #fff; font-weight: 500;
   }
 
   /* ── 都道府県グリッド ── */
@@ -64,14 +64,14 @@
   }
   .pref-btn:hover { background: #f0f0ea; color: #1a1a1a; }
   .pref-btn.selected {
-    background: #E1F5EE; border: 1.5px solid #1D9E75; color: #0F6E56; font-weight: 500;
+    background: #E1F5EE; border: 1.5px solid #75b8a3; color: #316a5c; font-weight: 500;
   }
 
   /* ── 選択状態バナー ── */
   .selected-pref-banner {
     display: none; align-items: center; gap: 8px;
-    background: #E1F5EE; border: 1px solid #1D9E75; border-radius: 8px;
-    padding: 8px 12px; margin-bottom: 12px; font-size: 13px; color: #0F6E56;
+    background: #E1F5EE; border: 1px solid #75b8a3; border-radius: 8px;
+    padding: 8px 12px; margin-bottom: 12px; font-size: 13px; color: #316a5c;
   }
   .selected-pref-banner.visible { display: flex; }
   .selected-pref-banner strong { font-weight: 600; }
@@ -106,7 +106,7 @@
   }
   .choice-btn:hover { background: #f0f0ea; color: #1a1a1a; }
   .choice-btn.selected {
-    background: #E1F5EE; border: 1.5px solid #1D9E75; color: #0F6E56; font-weight: 500;
+    background: #E1F5EE; border: 1.5px solid #75b8a3; color: #316a5c; font-weight: 500;
   }
   .condition-hint { font-size: 12px; color: #888; margin-top: 10px; line-height: 1.5; }
 
@@ -129,11 +129,11 @@
 
   /* Buttons */
   .primary-btn {
-    display: block; width: 100%; background: #1D9E75; color: #fff;
+    display: block; width: 100%; background: #75b8a3; color: #fff;
     border: none; border-radius: 8px; padding: 14px; font-size: 15px; font-weight: 500;
     cursor: pointer; margin-top: 1rem; transition: background 0.15s, transform 0.1s;
   }
-  .primary-btn:hover { background: #0F6E56; }
+  .primary-btn:hover { background: #316a5c; }
   .primary-btn:active { transform: scale(0.98); }
   .primary-btn:disabled { background: #e0e0d8; color: #aaa; cursor: not-allowed; }
   .back-btn {
@@ -150,7 +150,7 @@
     display: inline-flex; align-items: center; gap: 6px;
     padding: 8px 18px; border-radius: 999px; font-size: 15px; font-weight: 500; margin-bottom: 1rem;
   }
-  .badge-outside { background: #E1F5EE; color: #0F6E56; }
+  .badge-outside { background: #E1F5EE; color: #316a5c; }
   .badge-inside  { background: #FAECE7; color: #993C1D; }
   .badge-either  { background: #FAEEDA; color: #854F0B; }
   .dry-time-card {
@@ -171,7 +171,7 @@
   .factor-row:last-child { border-bottom: none; }
   .factor-name   { color: #888; }
   .factor-effect { font-weight: 500; }
-  .effect-minus  { color: #0F6E56; }
+  .effect-minus  { color: #316a5c; }
   .effect-plus   { color: #993C1D; }
   .effect-zero   { color: #888; }
 
@@ -197,7 +197,7 @@
 <body>
 <div class="app">
   <div class="header">
-    <div style="font-size:36px; margin-bottom:6px">🫧</div>
+    <div style="font-size:36px; margin-bottom:6px">🧺</div>
     <h1>Smart Laundry Advisor</h1>
     <p>気象データから最適な干し方を提案します</p>
   </div>
