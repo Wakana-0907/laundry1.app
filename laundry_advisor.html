@@ -5,37 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>洗濯ものナビ</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:        #F7F3EC;
-  --bg2:       #F0EBE1;
-  --surface:   #FDFAF5;
-  --border:    #C8BFA8;
-  --border2:   #A89880;
-  --text:      #2C2416;
-  --muted:     #7A6E5C;
-  --green:     #4A7C59;
-  --green-lt:  #6A9E76;
-  --green-bg:  #E8F0E8;
-  --terra:     #B85C38;
-  --terra-bg:  #F5E8E2;
-  --amber:     #8A6428;
-  --amber-bg:  #F5EDD8;
-  --klee:      'Klee One', cursive;
-  --cav:       'Caveat', cursive;
+  --bg:       #F7F3EC;
+  --bg2:      #EFE9DF;
+  --surface:  #FDFAF5;
+  --border:   #C8BFA8;
+  --border2:  #A89880;
+  --text:     #2C2416;
+  --muted:    #7A6E5C;
+  --green:    #4A7C59;
+  --green-dk: #3a6247;
+  --green-bg: #E8F0E8;
+  --terra:    #B85C38;
+  --terra-bg: #F5E8E2;
+  --amber:    #8A6428;
+  --amber-bg: #F5EDD8;
+  --round:    'M PLUS Rounded 1c', sans-serif;
+  --hand:     'Patrick Hand', cursive;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: var(--klee);
+  font-family: var(--round);
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  padding: 2rem 1rem 4rem;
-  /* ザラつき感 */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  padding: 1.5rem 1rem 4rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
 }
 
 .app { max-width: 500px; margin: 0 auto; }
@@ -45,23 +44,18 @@ body {
 @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
 
 /* ── HEADER ── */
-.header { text-align: center; margin-bottom: 2.2rem; }
-.header-emoji {
-  font-size: 44px; margin-bottom: 10px; display: block;
-  filter: drop-shadow(2px 3px 0px #C8BFA8);
-}
+.header { text-align: center; margin-bottom: 2rem; }
+
+/* 水彩風泡イラスト SVG */
+.bubble-svg { width: 160px; height: 90px; margin: 0 auto 4px; display: block; overflow: visible; }
+
 h1 {
-  font-family: var(--cav);
-  font-size: 32px; font-weight: 700; letter-spacing: .02em;
+  font-family: var(--hand);
+  font-size: 30px; font-weight: 400; letter-spacing: .04em;
   color: var(--text); margin-bottom: 4px;
-  /* わずかに傾ける */
-  transform: rotate(-0.8deg);
-  display: inline-block;
+  display: inline-block; transform: rotate(-0.6deg);
 }
-.subtitle {
-  font-size: 13px; color: var(--muted); margin-top: 2px;
-  font-family: var(--klee);
-}
+.subtitle { font-size: 13px; color: var(--muted); margin-top: 2px; }
 
 /* ── PROGRESS ── */
 .progress-wrap {
@@ -69,23 +63,17 @@ h1 {
   gap: 0; margin-bottom: 2rem;
 }
 .prog-dot {
-  width: 32px; height: 32px; border-radius: 50%;
+  width: 30px; height: 30px; border-radius: 50%;
   border: 2.5px solid var(--border); background: var(--surface);
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--cav); font-size: 15px; font-weight: 600;
-  color: var(--muted); transition: all .25s; position: relative;
+  font-family: var(--hand); font-size: 15px;
+  color: var(--muted); transition: all .25s;
 }
-.prog-dot.active {
-  border-color: var(--green); background: var(--green); color: #fff;
-  box-shadow: 3px 3px 0 var(--border2);
-}
-.prog-dot.done {
-  border-color: var(--green); background: var(--green-bg); color: var(--green);
-}
+.prog-dot.active { border-color: var(--green); background: var(--green); color: #fff; box-shadow: 3px 3px 0 var(--green-dk); }
+.prog-dot.done   { border-color: var(--green); background: var(--green-bg); color: var(--green); }
 .prog-line {
   width: 40px; height: 2px;
   background: repeating-linear-gradient(90deg, var(--border) 0, var(--border) 4px, transparent 4px, transparent 8px);
-  transition: background .25s;
 }
 .prog-line.done {
   background: repeating-linear-gradient(90deg, var(--green) 0, var(--green) 4px, transparent 4px, transparent 8px);
@@ -93,30 +81,29 @@ h1 {
 
 /* ── SECTION LABEL ── */
 .section-label {
-  font-family: var(--cav); font-size: 14px; font-weight: 600;
-  color: var(--muted); letter-spacing: .05em; margin-bottom: 10px;
+  font-family: var(--hand); font-size: 14px;
+  color: var(--muted); margin-bottom: 10px;
   display: flex; align-items: center; gap: 6px;
 }
 .section-label::before {
   content: ''; display: inline-block;
-  width: 18px; height: 2px; background: var(--border2);
-  border-radius: 1px;
+  width: 18px; height: 2px; background: var(--border2); border-radius: 1px;
 }
 
 /* ── REGION TABS ── */
 .region-tabs { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
 .region-tab {
   background: var(--surface); border: 2px solid var(--border);
-  border-radius: 20px 18px 22px 16px; /* 不均一な角丸 */
-  padding: 5px 13px; font-size: 13px; font-family: var(--klee);
+  border-radius: 20px 17px 22px 16px;
+  padding: 5px 13px; font-size: 13px; font-family: var(--round);
   color: var(--muted); cursor: pointer; transition: all .15s;
   box-shadow: 2px 2px 0 var(--border);
 }
 .region-tab:hover { background: var(--bg2); border-color: var(--border2); transform: translateY(-1px); }
 .region-tab.active {
-  background: var(--green); border-color: var(--green);
-  color: #fff; font-weight: 600;
-  box-shadow: 3px 3px 0 #3a6247;
+  background: var(--green); border-color: var(--green-dk);
+  color: #fff; font-weight: 500;
+  box-shadow: 3px 3px 0 var(--green-dk);
 }
 
 /* ── PREF GRID ── */
@@ -127,97 +114,88 @@ h1 {
 }
 .pref-grid::-webkit-scrollbar { width: 3px; }
 .pref-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
 .pref-btn {
   background: var(--surface); border: 2px solid var(--border);
-  border-radius: 10px 6px 10px 6px; /* 手作り感 */
-  padding: 9px 4px; font-size: 12px; font-family: var(--klee);
+  border-radius: 10px 5px 10px 5px;
+  padding: 9px 4px; font-size: 12px; font-family: var(--round);
   color: var(--muted); cursor: pointer; text-align: center;
-  transition: all .15s; box-shadow: 2px 2px 0 var(--border);
+  transition: all .14s; box-shadow: 2px 2px 0 var(--border);
 }
 .pref-btn:hover { background: var(--bg2); border-color: var(--border2); transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--border); }
 .pref-btn.selected {
   background: var(--green-bg); border-color: var(--green); color: var(--green);
-  font-weight: 600; box-shadow: 3px 3px 0 #3a6247;
-  transform: translate(-1px,-1px);
+  font-weight: 700; box-shadow: 3px 3px 0 var(--green-dk); transform: translate(-1px,-1px);
 }
 
 /* ── SELECTED BANNER ── */
 .selected-pref-banner {
   display: none; align-items: center; gap: 8px;
   background: var(--green-bg); border: 2px solid var(--green);
-  border-radius: 10px 6px 10px 4px;
+  border-radius: 10px 5px 10px 4px;
   padding: 8px 12px; margin-bottom: 12px;
   font-size: 13px; color: var(--green);
-  box-shadow: 3px 3px 0 #3a6247;
+  box-shadow: 3px 3px 0 var(--green-dk);
 }
 .selected-pref-banner.visible { display: flex; }
-.selected-pref-banner strong { font-weight: 600; }
 
-/* ── CARDS ── */
+/* ── CARD ── */
 .card {
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: 14px 8px 14px 8px; /* 不均一 */
-  padding: 1.25rem; margin-bottom: 1.25rem;
-  box-shadow: 4px 4px 0 var(--border);
-  position: relative;
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: 14px 7px 14px 7px;
+  padding: 1.2rem; margin-bottom: 1.2rem;
+  box-shadow: 4px 4px 0 var(--border); position: relative;
 }
-/* 折れ線風デコ */
 .card::before {
-  content: '';
-  position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px;
+  content: ''; position: absolute; inset: 7px;
   border: 1px dashed var(--border);
   border-radius: 10px 4px 10px 4px;
-  pointer-events: none; opacity: .4;
+  pointer-events: none; opacity: .35;
 }
 .card-title {
-  font-family: var(--cav); font-size: 17px; font-weight: 600;
-  margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;
+  font-family: var(--hand); font-size: 17px;
+  margin-bottom: .9rem; display: flex; align-items: center; gap: 7px;
 }
 .card-title i { color: var(--green); font-size: 18px; }
 
 /* ── WEATHER GRID ── */
-.weather-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.weather-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
 .weather-metric {
   background: var(--bg2); border: 1.5px solid var(--border);
-  border-radius: 10px 4px 10px 4px;
-  padding: 11px 13px;
+  border-radius: 9px 4px 9px 4px; padding: 10px 12px;
 }
-.weather-metric .label {
-  font-size: 11px; color: var(--muted); margin-bottom: 4px;
-  font-family: var(--cav); letter-spacing: .04em;
-}
-.weather-metric .value { font-family: var(--cav); font-size: 26px; font-weight: 600; line-height: 1; }
-.weather-metric .unit { font-size: 11px; color: var(--muted); margin-left: 2px; }
+.weather-metric .label { font-size: 10px; color: var(--muted); margin-bottom: 3px; font-family: var(--hand); letter-spacing: .04em; }
+.weather-metric .value { font-family: var(--hand); font-size: 26px; line-height: 1; }
+.weather-metric .unit  { font-size: 11px; color: var(--muted); margin-left: 2px; }
 
 /* ── CHOICE BUTTONS ── */
 .condition-section + .condition-section { margin-top: 1rem; }
-.condition-label { font-family: var(--cav); font-size: 15px; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
-.choice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 8px; }
+.condition-label { font-family: var(--hand); font-size: 15px; color: var(--muted); margin-bottom: 8px; }
+.choice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 7px; }
 .choice-btn {
   background: var(--surface); border: 2px solid var(--border);
   border-radius: 10px 4px 10px 4px;
-  padding: 10px 6px; font-size: 13px; font-family: var(--klee);
-  color: var(--muted); cursor: pointer; transition: all .15s;
+  padding: 10px 6px; font-size: 13px; font-family: var(--round);
+  color: var(--muted); cursor: pointer; transition: all .14s;
   box-shadow: 2px 2px 0 var(--border); text-align: center;
 }
 .choice-btn:hover { background: var(--bg2); transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--border); }
 .choice-btn.selected {
   background: var(--green-bg); border-color: var(--green); color: var(--green);
-  font-weight: 600; box-shadow: 3px 3px 0 #3a6247; transform: translate(-1px,-1px);
+  font-weight: 700; box-shadow: 3px 3px 0 var(--green-dk); transform: translate(-1px,-1px);
 }
 .condition-hint { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.6; }
 
 /* ── TIME DRUM ── */
 .time-section { margin-bottom: 1.5rem; }
-.time-display { display: flex; align-items: center; gap: 7px; margin-bottom: 14px; font-size: 13px; color: var(--muted); font-family: var(--cav); }
+.time-display { display: flex; align-items: center; gap: 7px; margin-bottom: 14px; font-size: 13px; color: var(--muted); font-family: var(--hand); }
 .drum-roll-container { display: flex; align-items: center; gap: 10px; justify-content: center; }
 .drum-col { display: flex; flex-direction: column; align-items: center; gap: 5px; }
 .drum-display {
   background: var(--surface); border: 2px solid var(--border);
   border-radius: 10px 4px 10px 4px;
   width: 68px; height: 56px; display: flex; align-items: center; justify-content: center;
-  font-family: var(--cav); font-size: 30px; font-weight: 700;
+  font-family: var(--hand); font-size: 30px;
   user-select: none; box-shadow: 3px 3px 0 var(--border);
 }
 .drum-btn {
@@ -229,37 +207,37 @@ h1 {
 }
 .drum-btn:hover { background: var(--bg2); transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--border); }
 .drum-btn:active { transform: translate(1px,1px); box-shadow: 1px 1px 0 var(--border); }
-.drum-sep { font-family: var(--cav); font-size: 30px; font-weight: 700; color: var(--muted); }
+.drum-sep { font-family: var(--hand); font-size: 30px; color: var(--muted); }
 
 /* ── PRIMARY BUTTON ── */
 .primary-btn {
   display: block; width: 100%;
   background: var(--green); color: #fff;
-  border: 2.5px solid #3a6247;
-  border-radius: 14px 6px 14px 6px;
-  padding: 14px; font-size: 16px; font-weight: 600; font-family: var(--cav);
+  border: 2.5px solid var(--green-dk);
+  border-radius: 14px 5px 14px 5px;
+  padding: 14px; font-size: 16px; font-family: var(--hand);
   cursor: pointer; margin-top: 1rem;
-  box-shadow: 4px 4px 0 #3a6247;
-  transition: all .15s; letter-spacing: .02em;
+  box-shadow: 4px 4px 0 var(--green-dk);
+  transition: all .14s; letter-spacing: .03em;
 }
-.primary-btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #3a6247; }
-.primary-btn:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 #3a6247; }
+.primary-btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--green-dk); }
+.primary-btn:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--green-dk); }
 .primary-btn:disabled {
   background: var(--bg2); color: var(--border2); border-color: var(--border);
   box-shadow: 3px 3px 0 var(--border); cursor: not-allowed; transform: none;
 }
 
 .back-btn {
-  background: none; border: none; font-size: 13px; font-family: var(--klee);
+  background: none; border: none; font-size: 13px; font-family: var(--round);
   color: var(--muted); cursor: pointer; padding: 4px 0; margin-bottom: 1rem;
   display: flex; align-items: center; gap: 5px; transition: color .15s;
 }
 .back-btn:hover { color: var(--text); }
 
 /* ── RESULT ── */
-.result-hero { text-align: center; padding: 1.2rem 0 .8rem; }
+.result-hero { text-align: center; padding: 1rem 0 .7rem; }
 .weather-icon-big {
-  font-size: 64px; margin-bottom: 10px; display: block;
+  font-size: 60px; margin-bottom: 10px; display: block;
   filter: drop-shadow(3px 3px 0 #C8BFA8);
   animation: pop .4s cubic-bezier(.34,1.56,.64,1) both;
 }
@@ -267,8 +245,8 @@ h1 {
 
 .recommendation-badge {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 20px; font-family: var(--cav); font-size: 16px; font-weight: 600;
-  border: 2.5px solid; border-radius: 20px 8px 20px 8px; margin-bottom: 1rem;
+  padding: 8px 20px; font-family: var(--hand); font-size: 16px;
+  border: 2.5px solid; border-radius: 20px 7px 20px 7px; margin-bottom: 1rem;
 }
 .badge-outside { background: var(--green-bg); color: var(--green); border-color: var(--green); }
 .badge-inside  { background: var(--terra-bg); color: var(--terra); border-color: var(--terra); }
@@ -277,45 +255,45 @@ h1 {
 /* ── DRY TIME CARD ── */
 .dry-time-card {
   background: var(--surface); border: 2.5px solid var(--border);
-  border-radius: 14px 6px 14px 6px;
-  padding: 1.5rem; text-align: center; margin-bottom: 1.25rem;
+  border-radius: 14px 5px 14px 5px;
+  padding: 1.4rem; text-align: center; margin-bottom: 1.2rem;
   box-shadow: 5px 5px 0 var(--border); position: relative;
 }
 .dry-time-card::before {
   content: ''; position: absolute; inset: 7px;
   border: 1px dashed var(--border); border-radius: 10px 3px 10px 3px;
-  pointer-events: none; opacity: .5;
+  pointer-events: none; opacity: .4;
 }
-.dry-time-label { font-family: var(--cav); font-size: 13px; color: var(--muted); margin-bottom: 4px; }
-.dry-time-finish { font-family: var(--cav); font-size: 52px; font-weight: 700; line-height: 1; margin-bottom: 4px; color: var(--text); }
-.dry-time-countdown { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.dry-time-label    { font-family: var(--hand); font-size: 13px; color: var(--muted); margin-bottom: 5px; }
+.dry-time-finish   { font-family: var(--hand); font-size: 50px; line-height: 1; margin-bottom: 4px; }
+.dry-time-countdown{ font-size: 13px; color: var(--muted); margin-top: 6px; }
 
 /* ── FACTOR LIST ── */
-.factor-list { margin-bottom: 1.25rem; }
+.factor-list { margin-bottom: 1.2rem; }
 .factor-group-label {
-  font-family: var(--cav); font-size: 13px; font-weight: 600;
-  color: var(--muted); margin: 10px 0 4px; letter-spacing: .04em;
+  font-family: var(--hand); font-size: 13px;
+  color: var(--muted); margin: 10px 0 4px;
   display: flex; align-items: center; gap: 6px;
 }
-.factor-group-label::after { content: ''; flex:1; height:1px; background: var(--border); }
+.factor-group-label::after { content:''; flex:1; height:1px; background:var(--border); }
 .factor-row {
   display: flex; align-items: center; justify-content: space-between;
   padding: 9px 2px; border-bottom: 1.5px dashed var(--border); font-size: 13px;
 }
 .factor-row:last-child { border-bottom: none; }
-.factor-name { color: var(--muted); }
-.factor-effect { font-family: var(--cav); font-weight: 600; font-size: 14px; }
-.effect-minus { color: var(--green); }
-.effect-plus  { color: var(--terra); }
-.effect-zero  { color: var(--muted); }
+.factor-name   { color: var(--muted); }
+.factor-effect { font-family: var(--hand); font-size: 14px; }
+.effect-minus  { color: var(--green); }
+.effect-plus   { color: var(--terra); }
+.effect-zero   { color: var(--muted); }
 
 /* ── DRY BUTTON ── */
 .dry-btn {
   background: var(--surface); border: 2.5px solid var(--border);
   border-radius: 12px 5px 12px 5px;
-  padding: 13px; width: 100%; font-size: 14px; font-family: var(--klee);
-  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-  transition: all .15s; margin-bottom: 8px; color: var(--text);
+  padding: 13px; width: 100%; font-size: 14px; font-family: var(--round);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  gap: 8px; transition: all .14s; margin-bottom: 8px; color: var(--text);
   box-shadow: 3px 3px 0 var(--border);
 }
 .dry-btn:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--border); background: var(--bg2); }
@@ -324,11 +302,11 @@ h1 {
 .memory-card {
   background: var(--bg2); border: 2px solid var(--border);
   border-radius: 12px 5px 12px 5px;
-  padding: 1rem; margin-top: 1rem; font-size: 13px;
+  padding: 1rem; margin-top: 1rem;
   box-shadow: 3px 3px 0 var(--border);
 }
 .memory-title {
-  font-family: var(--cav); font-weight: 600; color: var(--text);
+  font-family: var(--hand); color: var(--text);
   margin-bottom: 8px; display: flex; align-items: center; gap: 6px; font-size: 15px;
 }
 .memory-row {
@@ -342,7 +320,55 @@ h1 {
 <div class="app">
 
   <div class="header">
-    <span class="header-emoji">🫧</span>
+    <!-- 手描き水彩風 泡イラスト -->
+    <svg class="bubble-svg" viewBox="0 0 160 90" role="img" aria-label="水彩風の泡のイラスト">
+      <!-- にじみ感を重ねた楕円で表現 -->
+      <ellipse cx="80" cy="48" rx="30" ry="29" fill="#7ec8c8" fill-opacity="0.10"/>
+      <ellipse cx="78" cy="46" rx="27" ry="26" fill="#7ec8c8" fill-opacity="0.08"/>
+
+      <!-- 中央の大きな泡 (パス手描き風) -->
+      <path d="M54,34 Q60,16 82,22 Q104,28 103,48 Q103,68 82,74 Q60,78 50,60 Q42,44 54,34Z"
+            fill="#7ec8c8" fill-opacity="0.20" stroke="#5aabab" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- 光の反射 -->
+      <ellipse cx="64" cy="30" rx="8" ry="4.5" fill="white" fill-opacity="0.60" transform="rotate(-20,64,30)"/>
+      <ellipse cx="70" cy="36" rx="3" ry="2" fill="white" fill-opacity="0.45" transform="rotate(-20,70,36)"/>
+
+      <!-- 左小さい泡 -->
+      <path d="M18,35 Q23,20 36,26 Q49,32 47,46 Q45,58 34,60 Q20,62 16,48 Q12,38 18,35Z"
+            fill="#a8d8b0" fill-opacity="0.20" stroke="#6aaa78" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round"/>
+      <ellipse cx="23" cy="32" rx="6" ry="3.5" fill="white" fill-opacity="0.55" transform="rotate(-18,23,32)"/>
+
+      <!-- 右小さい泡 -->
+      <path d="M118,28 Q126,14 140,20 Q154,27 152,42 Q150,56 138,58 Q122,60 116,46 Q110,34 118,28Z"
+            fill="#c8a8d8" fill-opacity="0.20" stroke="#9a78b8" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round"/>
+      <ellipse cx="123" cy="26" rx="7" ry="4" fill="white" fill-opacity="0.55" transform="rotate(-18,123,26)"/>
+
+      <!-- 浮かぶ豆粒みたいな泡 -->
+      <circle cx="14" cy="72" r="7" fill="#b8d8c8" fill-opacity="0.22"
+              stroke="#7aaa98" stroke-width="1.4" stroke-linecap="round"/>
+      <ellipse cx="16" cy="68" rx="3" ry="1.8" fill="white" fill-opacity="0.55"/>
+
+      <circle cx="108" cy="72" r="5.5" fill="#f0c8a8" fill-opacity="0.24"
+              stroke="#c8906a" stroke-width="1.3" stroke-linecap="round"/>
+      <ellipse cx="110" cy="69" rx="2.5" ry="1.4" fill="white" fill-opacity="0.55"/>
+
+      <circle cx="148" cy="70" r="6" fill="#a8c8e8" fill-opacity="0.22"
+              stroke="#78a0c8" stroke-width="1.3" stroke-linecap="round"/>
+      <ellipse cx="150" cy="66" rx="2.5" ry="1.5" fill="white" fill-opacity="0.55"/>
+
+      <circle cx="42" cy="80" r="4.5" fill="#d8c8a8" fill-opacity="0.24"
+              stroke="#a89878" stroke-width="1.2" stroke-linecap="round"/>
+      <ellipse cx="43" cy="77" rx="2" ry="1.2" fill="white" fill-opacity="0.5"/>
+
+      <!-- にじみ水彩ぼかし -->
+      <ellipse cx="80" cy="48" rx="34" ry="32" fill="#7ec8c8" fill-opacity="0.05"/>
+      <ellipse cx="135" cy="42" rx="22" ry="20" fill="#c8a8d8" fill-opacity="0.06"/>
+      <ellipse cx="32" cy="44" rx="18" ry="17" fill="#a8d8b0" fill-opacity="0.06"/>
+    </svg>
+
     <h1>洗濯ものナビ</h1>
     <p class="subtitle">気象データから最適な干し方を提案します</p>
   </div>
@@ -365,7 +391,7 @@ h1 {
     </div>
     <div class="region-tabs" id="regionTabs"></div>
     <div class="pref-grid" id="prefGrid"></div>
-    <button class="primary-btn" id="toStep2Btn" disabled>次へ →  天気を確認する</button>
+    <button class="primary-btn" id="toStep2Btn" disabled>次へ → 天気を確認する</button>
   </div>
 
   <!-- Step 2 -->
@@ -376,25 +402,12 @@ h1 {
     <div class="card">
       <div class="card-title"><i class="ti ti-cloud-sun"></i><span id="weatherTitle">今日の天気</span></div>
       <div class="weather-grid">
-        <div class="weather-metric">
-          <div class="label">気温</div>
-          <div><span class="value" id="wTemp">--</span><span class="unit">°C</span></div>
-        </div>
-        <div class="weather-metric">
-          <div class="label">湿度</div>
-          <div><span class="value" id="wHumid">--</span><span class="unit">%</span></div>
-        </div>
-        <div class="weather-metric">
-          <div class="label">風速</div>
-          <div><span class="value" id="wWind">--</span><span class="unit">m/s</span></div>
-        </div>
-        <div class="weather-metric">
-          <div class="label">日射量</div>
-          <div><span class="value" id="wSolar">--</span><span class="unit">kW/m²</span></div>
-        </div>
+        <div class="weather-metric"><div class="label">気温</div><div><span class="value" id="wTemp">--</span><span class="unit">°C</span></div></div>
+        <div class="weather-metric"><div class="label">湿度</div><div><span class="value" id="wHumid">--</span><span class="unit">%</span></div></div>
+        <div class="weather-metric"><div class="label">風速</div><div><span class="value" id="wWind">--</span><span class="unit">m/s</span></div></div>
+        <div class="weather-metric"><div class="label">日射量</div><div><span class="value" id="wSolar">--</span><span class="unit">kW/m²</span></div></div>
       </div>
     </div>
-
     <div class="card">
       <div class="card-title"><i class="ti ti-shirt"></i><span>洗濯物の条件</span></div>
       <div class="condition-section">
@@ -407,13 +420,9 @@ h1 {
       </div>
       <div class="condition-hint">選択した条件を乾燥時間の予測に反映します。</div>
     </div>
-
     <div class="time-section">
       <div class="section-label">干し始める時間</div>
-      <div class="time-display">
-        <i class="ti ti-clock"></i>
-        <span id="currentTimeDisplay">現在 --:--</span>
-      </div>
+      <div class="time-display"><i class="ti ti-clock"></i><span id="currentTimeDisplay">現在 --:--</span></div>
       <div class="drum-roll-container">
         <div class="drum-col">
           <button class="drum-btn" id="hUp"><i class="ti ti-chevron-up"></i></button>
@@ -433,9 +442,7 @@ h1 {
 
   <!-- Step 3 -->
   <div class="step" id="step3">
-    <button class="back-btn" onclick="goToStep(2)">
-      <i class="ti ti-arrow-left"></i> 戻る
-    </button>
+    <button class="back-btn" onclick="goToStep(2)"><i class="ti ti-arrow-left"></i> 戻る</button>
     <div class="result-hero">
       <span class="weather-icon-big" id="resultIcon">☀️</span>
       <div class="recommendation-badge" id="resultBadge"></div>
@@ -459,103 +466,88 @@ h1 {
 </div>
 
 <script>
-// ── 地方マッピング ──────────────────────────────────────────
-const REGIONS = [
-  { name: '北海道',     prefs: ['北海道'] },
-  { name: '東北',       prefs: ['青森県','岩手県','宮城県','秋田県','山形県','福島県'] },
-  { name: '関東',       prefs: ['茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県'] },
-  { name: '中部',       prefs: ['新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県'] },
-  { name: '近畿',       prefs: ['三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県'] },
-  { name: '中国',       prefs: ['鳥取県','島根県','岡山県','広島県','山口県'] },
-  { name: '四国',       prefs: ['徳島県','香川県','愛媛県','高知県'] },
-  { name: '九州・沖縄', prefs: ['福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県'] },
+const REGIONS=[
+  {name:'北海道',     prefs:['北海道']},
+  {name:'東北',       prefs:['青森県','岩手県','宮城県','秋田県','山形県','福島県']},
+  {name:'関東',       prefs:['茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県']},
+  {name:'中部',       prefs:['新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県']},
+  {name:'近畿',       prefs:['三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県']},
+  {name:'中国',       prefs:['鳥取県','島根県','岡山県','広島県','山口県']},
+  {name:'四国',       prefs:['徳島県','香川県','愛媛県','高知県']},
+  {name:'九州・沖縄', prefs:['福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県']},
 ];
 
-// ── 状態 ──────────────────────────────────────────────────
-let csvData           = {};
-let selectedRegionIdx = 0;
-let selectedRegion    = null;
-let startHour = 9, startMin = 0;
-let currentWeather    = null;
-let calculatedDryMin  = 0;
-let startedAt         = null;
-let selectedMaterial  = '綿';
-let selectedThickness = '普通';
-let lrWeights         = null;
+let csvData={}, selectedRegionIdx=0, selectedRegion=null;
+let startHour=9, startMin=0, currentWeather=null, calculatedDryMin=0, startedAt=null;
+let selectedMaterial='綿', selectedThickness='普通', lrWeights=null;
 
-const materialOptions      = ['綿', 'ポリエステル', '混紡', 'ウール'];
-const thicknessOptions     = ['薄手', '普通', '厚手'];
-const materialAdjustments  = { '綿': 0, 'ポリエステル': -10, '混紡': -5, 'ウール': 15 };
-const thicknessAdjustments = { '薄手': -12, '普通': 0, '厚手': 18 };
+const materialOptions=['綿','ポリエステル','混紡','ウール'];
+const thicknessOptions=['薄手','普通','厚手'];
+const materialAdj ={'綿':0,'ポリエステル':-10,'混紡':-5,'ウール':15};
+const thicknessAdj={'薄手':-12,'普通':0,'厚手':18};
 
-// ── 線形回帰 ──────────────────────────────────────────────
-function matMul(A,B){ return Array.from({length:A.length},(_,i)=>Array.from({length:B[0].length},(_,j)=>A[i].reduce((s,_,k)=>s+A[i][k]*B[k][j],0))); }
-function matTrans(A){ return A[0].map((_,j)=>A.map(r=>r[j])); }
+function matMul(A,B){return Array.from({length:A.length},(_,i)=>Array.from({length:B[0].length},(_,j)=>A[i].reduce((s,_,k)=>s+A[i][k]*B[k][j],0)));}
+function matTrans(A){return A[0].map((_,j)=>A.map(r=>r[j]));}
 function matInv(M){
-  const n=M.length, A=M.map((r,i)=>[...r,...Array.from({length:n},(_,j)=>i===j?1:0)]);
+  const n=M.length,A=M.map((r,i)=>[...r,...Array.from({length:n},(_,j)=>i===j?1:0)]);
   for(let c=0;c<n;c++){
-    let p=c; for(let r=c+1;r<n;r++) if(Math.abs(A[r][c])>Math.abs(A[p][c])) p=r;
+    let p=c;for(let r=c+1;r<n;r++)if(Math.abs(A[r][c])>Math.abs(A[p][c]))p=r;
     [A[c],A[p]]=[A[p],A[c]];
-    const d=A[c][c]; if(Math.abs(d)<1e-12) return null;
-    for(let j=0;j<2*n;j++) A[c][j]/=d;
-    for(let r=0;r<n;r++){ if(r===c) continue; const f=A[r][c]; for(let j=0;j<2*n;j++) A[r][j]-=f*A[c][j]; }
+    const d=A[c][c];if(Math.abs(d)<1e-12)return null;
+    for(let j=0;j<2*n;j++)A[c][j]/=d;
+    for(let r=0;r<n;r++){if(r===c)continue;const f=A[r][c];for(let j=0;j<2*n;j++)A[r][j]-=f*A[c][j];}
   }
   return A.map(r=>r.slice(n));
 }
 function trainModel(){
-  const all=Object.values(csvData).flat(); if(all.length<5) return;
-  const X=all.map(r=>[1,r.temp,r.humid,r.wind,r.solar]), y=all.map(r=>[r.dryMin]);
-  const Xt=matTrans(X), inv=matInv(matMul(Xt,X)); if(!inv) return;
+  const all=Object.values(csvData).flat();if(all.length<5)return;
+  const X=all.map(r=>[1,r.temp,r.humid,r.wind,r.solar]),y=all.map(r=>[r.dryMin]);
+  const Xt=matTrans(X),inv=matInv(matMul(Xt,X));if(!inv)return;
   lrWeights=matMul(matMul(inv,Xt),y).map(r=>r[0]);
 }
-function predict(temp,humid,wind,solar){
-  if(!lrWeights) return null;
+function predict(t,h,w,s){
+  if(!lrWeights)return null;
   const [w0,w1,w2,w3,w4]=lrWeights;
-  return Math.max(10,Math.round(w0+w1*temp+w2*humid+w3*wind+w4*solar));
+  return Math.max(10,Math.round(w0+w1*t+w2*h+w3*w+w4*s));
 }
-function getAdj(){ return (materialAdjustments[selectedMaterial]??0)+(thicknessAdjustments[selectedThickness]??0); }
+function getAdj(){return (materialAdj[selectedMaterial]??0)+(thicknessAdj[selectedThickness]??0);}
 
-// ── CSV読み込み ────────────────────────────────────────────
 async function loadCSV(){
-  const fnames=['laundry_data_47_prefectures.csv','laundry_data_extended.csv','weather_data.csv'];
-  for(const fn of fnames){
+  for(const fn of ['laundry_data_47_prefectures.csv','laundry_data_extended.csv','weather_data.csv']){
     try{
-      const res=await fetch(fn); if(!res.ok) continue;
-      const lines=(await res.text()).trim().split('\n');
-      lines.slice(1).forEach(line=>{
-        const c=line.split(','); if(c.length<6) return;
-        const pref=c[0].trim(), temp=parseFloat(c[1]), humid=parseFloat(c[2]),
-              wind=parseFloat(c[3]), solar=parseFloat(c[4]), dryMin=parseFloat(c[5]);
-        if(isNaN(dryMin)) return;
-        if(!csvData[pref]) csvData[pref]=[];
+      const res=await fetch(fn);if(!res.ok)continue;
+      (await res.text()).trim().split('\n').slice(1).forEach(line=>{
+        const c=line.split(',');if(c.length<6)return;
+        const pref=c[0].trim(),temp=parseFloat(c[1]),humid=parseFloat(c[2]),
+              wind=parseFloat(c[3]),solar=parseFloat(c[4]),dryMin=parseFloat(c[5]);
+        if(isNaN(dryMin))return;
+        if(!csvData[pref])csvData[pref]=[];
         csvData[pref].push({temp,humid,wind,solar,dryMin});
       });
-      trainModel(); return;
-    } catch(e){}
+      trainModel();return;
+    }catch(e){}
   }
-  alert('CSVが見つかりませんでした。laundry_data_47_prefectures.csv を同じフォルダに置いてください。');
+  alert('CSVファイルが見つかりませんでした。\nlaundry_data_47_prefectures.csv を同じフォルダに置いてください。');
 }
-function pickRandom(pref){ const r=csvData[pref]; if(!r||!r.length) return null; return r[Math.floor(Math.random()*r.length)]; }
-function guessIcon(h,s){ if(h>=80) return '🌧️'; if(h>=70) return '🌥️'; if(s>=0.7) return '☀️'; if(s>=0.5) return '🌤️'; if(h<=55&&s>=0.4) return '☀️'; return '⛅'; }
 
-// ── 地方・都道府県 UI ──────────────────────────────────────
+function pickRandom(p){const r=csvData[p];if(!r||!r.length)return null;return r[Math.floor(Math.random()*r.length)];}
+function guessIcon(h,s){if(h>=80)return'🌧️';if(h>=70)return'🌥️';if(s>=0.7)return'☀️';if(s>=0.5)return'🌤️';if(h<=55&&s>=0.4)return'☀️';return'⛅';}
+
 function buildRegionUI(){
-  const tabs=document.getElementById('regionTabs'); tabs.innerHTML='';
+  const tabs=document.getElementById('regionTabs');tabs.innerHTML='';
   REGIONS.forEach((reg,idx)=>{
     const t=document.createElement('button');
     t.className='region-tab'+(idx===selectedRegionIdx?' active':'');
-    t.textContent=reg.name;
-    t.onclick=()=>{ selectedRegionIdx=idx; buildRegionUI(); };
+    t.textContent=reg.name;t.onclick=()=>{selectedRegionIdx=idx;buildRegionUI();};
     tabs.appendChild(t);
   });
-  const grid=document.getElementById('prefGrid'); grid.innerHTML='';
+  const grid=document.getElementById('prefGrid');grid.innerHTML='';
   REGIONS[selectedRegionIdx].prefs.forEach(pref=>{
     const has=!!csvData[pref];
     const b=document.createElement('button');
     b.className='pref-btn'+(pref===selectedRegion?' selected':'');
-    b.textContent=pref; b.disabled=!has; b.style.opacity=has?'1':'0.35';
-    b.onclick=()=>selectPref(pref);
-    grid.appendChild(b);
+    b.textContent=pref;b.disabled=!has;b.style.opacity=has?'1':'0.35';
+    b.onclick=()=>selectPref(pref);grid.appendChild(b);
   });
 }
 function selectPref(pref){
@@ -566,37 +558,34 @@ function selectPref(pref){
   buildRegionUI();
 }
 
-// ── 条件 UI ───────────────────────────────────────────────
 function renderChoices(id,opts,cur,fn){
-  const el=document.getElementById(id); el.innerHTML='';
+  const el=document.getElementById(id);el.innerHTML='';
   opts.forEach(o=>{
     const b=document.createElement('button');
     b.className='choice-btn'+(o===cur?' selected':'');
-    b.textContent=o; b.onclick=()=>{ fn(o); renderConditionChoices(); };
+    b.textContent=o;b.onclick=()=>{fn(o);renderConditionChoices();};
     el.appendChild(b);
   });
 }
 function renderConditionChoices(){
-  renderChoices('materialChoices', materialOptions, selectedMaterial, v=>selectedMaterial=v);
-  renderChoices('thicknessChoices', thicknessOptions, selectedThickness, v=>selectedThickness=v);
+  renderChoices('materialChoices',materialOptions,selectedMaterial,v=>selectedMaterial=v);
+  renderChoices('thicknessChoices',thicknessOptions,selectedThickness,v=>selectedThickness=v);
 }
 
-// ── 時刻 ──────────────────────────────────────────────────
 function updateCurrentTime(){
-  const n=new Date(), h=String(n.getHours()).padStart(2,'0'), m=String(n.getMinutes()).padStart(2,'0');
+  const n=new Date(),h=String(n.getHours()).padStart(2,'0'),m=String(n.getMinutes()).padStart(2,'0');
   document.getElementById('currentTimeDisplay').textContent=`現在 ${h}:${m}`;
-  startHour=n.getHours(); startMin=n.getMinutes(); updateDrum();
+  startHour=n.getHours();startMin=n.getMinutes();updateDrum();
 }
-function adjustHour(d){ startHour=(startHour+d+24)%24; updateDrum(); }
-function adjustMin(d){  startMin =(startMin +d+60)%60; updateDrum(); }
+function adjustHour(d){startHour=(startHour+d+24)%24;updateDrum();}
+function adjustMin(d) {startMin =(startMin +d+60)%60;updateDrum();}
 function updateDrum(){
   document.getElementById('hourDisplay').textContent=String(startHour).padStart(2,'0');
   document.getElementById('minDisplay').textContent =String(startMin ).padStart(2,'0');
 }
 
-// ── 天気 ──────────────────────────────────────────────────
 function loadWeather(){
-  const row=pickRandom(selectedRegion); if(!row){ alert('データが見つかりませんでした'); return; }
+  const row=pickRandom(selectedRegion);if(!row){alert('データが見つかりませんでした');return;}
   currentWeather=row;
   document.getElementById('weatherTitle').textContent=`${selectedRegion}の今日の天気 ${guessIcon(row.humid,row.solar)}`;
   document.getElementById('wTemp').textContent =row.temp.toFixed(1);
@@ -605,133 +594,126 @@ function loadWeather(){
   document.getElementById('wSolar').textContent=row.solar.toFixed(2);
 }
 
-// ── 計算 ──────────────────────────────────────────────────
 function calculate(){
   const w=currentWeather;
   const base=predict(w.temp,w.humid,w.wind,w.solar);
-  calculatedDryMin=base!=null ? Math.max(10,Math.round(base+getAdj())) : Math.round(w.dryMin+getAdj());
-
+  calculatedDryMin=base!=null?Math.max(10,Math.round(base+getAdj())):Math.round(w.dryMin+getAdj());
   const tot=startHour*60+startMin+calculatedDryMin;
-  const fH=Math.floor(tot/60)%24, fM=tot%60;
+  const fH=Math.floor(tot/60)%24,fM=tot%60;
   document.getElementById('finishTime').textContent=`${String(fH).padStart(2,'0')}:${String(fM).padStart(2,'0')}`;
-  const hrs=Math.floor(calculatedDryMin/60), mins=calculatedDryMin%60;
+  const hrs=Math.floor(calculatedDryMin/60),mins=calculatedDryMin%60;
   document.getElementById('countdownText').textContent=
     `${String(startHour).padStart(2,'0')}:${String(startMin).padStart(2,'0')} から干して約 ${hrs>0?hrs+'時間':''}${mins>0?mins+'分':''}`;
 
   let recText,recClass,icon;
-  if(w.humid>=75||w.wind<1.0){ recText='🏠 室内干しがおすすめ'; recClass='badge-inside'; icon='🌧️'; }
-  else if(w.humid<65&&w.wind>=2.0){ recText='☀️ 外干しがおすすめ'; recClass='badge-outside'; icon='☀️'; }
-  else { recText='⛅ どちらでもOK'; recClass='badge-either'; icon='⛅'; }
+  if(w.humid>=75||w.wind<1.0){recText='🏠 室内干しがおすすめ';recClass='badge-inside';icon='🌧️';}
+  else if(w.humid<65&&w.wind>=2.0){recText='☀️ 外干しがおすすめ';recClass='badge-outside';icon='☀️';}
+  else{recText='⛅ どちらでもOK';recClass='badge-either';icon='⛅';}
   const badge=document.getElementById('resultBadge');
-  badge.textContent=recText; badge.className=`recommendation-badge ${recClass}`;
+  badge.textContent=recText;badge.className=`recommendation-badge ${recClass}`;
   document.getElementById('resultIcon').textContent=icon;
 
-  // 内訳
   const [w0,w1,w2,w3,w4]=lrWeights??[0,0,0,0,0];
-  const weatherC=[
-    {name:'気温',   val:`${w.temp.toFixed(1)} °C`,     coef:w1, input:w.temp},
-    {name:'湿度',   val:`${w.humid.toFixed(0)} %`,     coef:w2, input:w.humid},
-    {name:'風速',   val:`${w.wind.toFixed(1)} m/s`,    coef:w3, input:w.wind},
-    {name:'日射量', val:`${w.solar.toFixed(2)} kW/m²`, coef:w4, input:w.solar},
+  const wC=[
+    {name:'気温',   val:`${w.temp.toFixed(1)} °C`,     coef:w1,input:w.temp},
+    {name:'湿度',   val:`${w.humid.toFixed(0)} %`,     coef:w2,input:w.humid},
+    {name:'風速',   val:`${w.wind.toFixed(1)} m/s`,    coef:w3,input:w.wind},
+    {name:'日射量', val:`${w.solar.toFixed(2)} kW/m²`, coef:w4,input:w.solar},
   ];
-  const condC=[
-    {name:'素材', val:selectedMaterial,  adj:materialAdjustments[selectedMaterial]??0},
-    {name:'厚さ', val:selectedThickness, adj:thicknessAdjustments[selectedThickness]??0},
+  const cC=[
+    {name:'素材',val:selectedMaterial, adj:materialAdj[selectedMaterial]??0},
+    {name:'厚さ',val:selectedThickness,adj:thicknessAdj[selectedThickness]??0},
   ];
-  const list=document.getElementById('factorList'); list.innerHTML='';
+  const list=document.getElementById('factorList');list.innerHTML='';
 
-  const hdr=document.createElement('div'); hdr.className='factor-row'; hdr.style.fontSize='11px';
+  const hdr=document.createElement('div');hdr.className='factor-row';hdr.style.fontSize='11px';
   hdr.innerHTML=`<span style="color:var(--muted)">項目（係数）</span><span style="color:var(--muted)">値 / 寄与(分)</span>`;
   list.appendChild(hdr);
 
-  weatherC.forEach(f=>{
-    const c=Math.round(f.coef*f.input), sign=c>=0?'+':'';
+  wC.forEach(f=>{
+    const c=Math.round(f.coef*f.input),sign=c>=0?'+':'';
     const cls=c<=-5?'effect-minus':c>=5?'effect-plus':'effect-zero';
-    const r=document.createElement('div'); r.className='factor-row';
+    const r=document.createElement('div');r.className='factor-row';
     r.innerHTML=`<span class="factor-name">${f.name} <span style="font-size:10px;color:#bbb">(${f.coef>=0?'+':''}${f.coef.toFixed(2)})</span></span>
                  <span class="factor-effect ${cls}">${f.val} → ${sign}${c}分</span>`;
     list.appendChild(r);
   });
 
-  const grp=document.createElement('div'); grp.className='factor-group-label'; grp.textContent='衣類条件の補正'; list.appendChild(grp);
+  const grp=document.createElement('div');grp.className='factor-group-label';grp.textContent='衣類条件の補正';list.appendChild(grp);
 
-  condC.forEach(f=>{
-    const sign=f.adj>=0?'+':'';
-    const cls=f.adj<=-5?'effect-minus':f.adj>=5?'effect-plus':'effect-zero';
-    const r=document.createElement('div'); r.className='factor-row';
+  cC.forEach(f=>{
+    const sign=f.adj>=0?'+':'';const cls=f.adj<=-5?'effect-minus':f.adj>=5?'effect-plus':'effect-zero';
+    const r=document.createElement('div');r.className='factor-row';
     r.innerHTML=`<span class="factor-name">${f.name}</span><span class="factor-effect ${cls}">${f.val} → ${sign}${f.adj}分</span>`;
     list.appendChild(r);
   });
 
-  const tot2=document.createElement('div'); tot2.className='factor-row';
-  tot2.innerHTML=`<span style="font-weight:600;color:var(--text)">予測乾燥時間</span>
+  const tot2=document.createElement('div');tot2.className='factor-row';
+  tot2.innerHTML=`<span style="font-weight:700;color:var(--text)">予測乾燥時間</span>
                   <span class="factor-effect" style="font-size:16px">${hrs>0?hrs+'時間':''}${mins>0?mins+'分':''}</span>`;
   list.appendChild(tot2);
 
   const btn=document.getElementById('driedBtn');
-  btn.innerHTML='<i class="ti ti-checks"></i> 乾いた！（実際の時間を記録）'; btn.style.color='';
-  startedAt=Date.now(); loadMemory(); goToStep(3);
+  btn.innerHTML='<i class="ti ti-checks"></i> 乾いた！（実際の時間を記録）';btn.style.color='';
+  startedAt=Date.now();loadMemory();goToStep(3);
 }
 
-// ── 記録 ──────────────────────────────────────────────────
 function markDried(){
-  if(!startedAt) return;
+  if(!startedAt)return;
   const actual=Math.round((Date.now()-startedAt)/60000);
-  const rec={region:selectedRegion, date:new Date().toLocaleDateString('ja-JP'),
-    predicted:calculatedDryMin, actual:actual>0?actual:calculatedDryMin,
-    material:selectedMaterial, thickness:selectedThickness};
+  const rec={region:selectedRegion,date:new Date().toLocaleDateString('ja-JP'),
+    predicted:calculatedDryMin,actual:actual>0?actual:calculatedDryMin,
+    material:selectedMaterial,thickness:selectedThickness};
   const recs=JSON.parse(localStorage.getItem('laundry_records')||'[]');
-  recs.unshift(rec); if(recs.length>5) recs.pop();
+  recs.unshift(rec);if(recs.length>5)recs.pop();
   localStorage.setItem('laundry_records',JSON.stringify(recs));
   const btn=document.getElementById('driedBtn');
-  btn.innerHTML='<i class="ti ti-check"></i> 記録しました！'; btn.style.color='var(--green)';
+  btn.innerHTML='<i class="ti ti-check"></i> 記録しました！';btn.style.color='var(--green)';
   loadMemory();
 }
 function loadMemory(){
   try{
-    const recs=JSON.parse(localStorage.getItem('laundry_records')||'[]'); if(!recs.length) return;
-    const mc=document.getElementById('memoryCard'), ml=document.getElementById('memoryList');
-    mc.style.display='block'; ml.innerHTML='';
+    const recs=JSON.parse(localStorage.getItem('laundry_records')||'[]');if(!recs.length)return;
+    const mc=document.getElementById('memoryCard'),ml=document.getElementById('memoryList');
+    mc.style.display='block';ml.innerHTML='';
     recs.forEach(r=>{
-      const row=document.createElement('div'); row.className='memory-row';
+      const row=document.createElement('div');row.className='memory-row';
       row.innerHTML=`<span>${r.date} ${r.region}</span><span>予測 ${r.predicted}分 → 実際 ${r.actual}分</span>`;
       ml.appendChild(row);
     });
-  } catch(e){}
+  }catch(e){}
 }
 
-// ── プログレス ─────────────────────────────────────────────
 function updateProgress(n){
   [1,2,3].forEach(i=>{
-    const dot=document.getElementById(`pd${i}`), line=document.getElementById(`pl${i}`);
-    if(i<n){ dot.className='prog-dot done'; dot.innerHTML='<i class="ti ti-check" style="font-size:11px"></i>'; }
-    else if(i===n){ dot.className='prog-dot active'; dot.textContent=i; }
-    else{ dot.className='prog-dot'; dot.textContent=i; }
-    if(line) line.className=i<n?'prog-line done':'prog-line';
+    const dot=document.getElementById(`pd${i}`),line=document.getElementById(`pl${i}`);
+    if(i<n){dot.className='prog-dot done';dot.innerHTML='<i class="ti ti-check" style="font-size:11px"></i>';}
+    else if(i===n){dot.className='prog-dot active';dot.textContent=i;}
+    else{dot.className='prog-dot';dot.textContent=i;}
+    if(line)line.className=i<n?'prog-line done':'prog-line';
   });
 }
 function goToStep(n){
   document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('active',i===n-1));
   updateProgress(n);
-  if(n===2){ loadWeather(); updateCurrentTime(); renderConditionChoices(); }
+  if(n===2){loadWeather();updateCurrentTime();renderConditionChoices();}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ── ドラムボタン ───────────────────────────────────────────
 function setupDrum(id,fn){
-  const el=document.getElementById(id); let timer=null, speed=300;
-  const fire=()=>{ fn(); timer=setTimeout(fire, speed=Math.max(50,speed-20)); };
+  const el=document.getElementById(id);let timer=null,speed=300;
+  const fire=()=>{fn();timer=setTimeout(fire,speed=Math.max(50,speed-20));};
   el.addEventListener('click',fn);
-  el.addEventListener('mousedown', ()=>{ speed=300; timer=setTimeout(fire,400); });
-  el.addEventListener('touchstart',()=>{ speed=300; timer=setTimeout(fire,400); },{passive:true});
+  el.addEventListener('mousedown',()=>{speed=300;timer=setTimeout(fire,400);});
+  el.addEventListener('touchstart',()=>{speed=300;timer=setTimeout(fire,400);},{passive:true});
   const stop=()=>clearTimeout(timer);
-  el.addEventListener('mouseup',stop); el.addEventListener('mouseleave',stop); el.addEventListener('touchend',stop);
+  el.addEventListener('mouseup',stop);el.addEventListener('mouseleave',stop);el.addEventListener('touchend',stop);
 }
-setupDrum('hUp',()=>adjustHour(1)); setupDrum('hDn',()=>adjustHour(-1));
-setupDrum('mUp',()=>adjustMin(1));  setupDrum('mDn',()=>adjustMin(-1));
+setupDrum('hUp',()=>adjustHour(1));setupDrum('hDn',()=>adjustHour(-1));
+setupDrum('mUp',()=>adjustMin(1)); setupDrum('mDn',()=>adjustMin(-1));
 document.getElementById('toStep2Btn').addEventListener('click',()=>goToStep(2));
 
-(async()=>{ await loadCSV(); buildRegionUI(); updateCurrentTime(); })();
+(async()=>{await loadCSV();buildRegionUI();updateCurrentTime();})();
 </script>
 </body>
 </html>
