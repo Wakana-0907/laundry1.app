@@ -3,266 +3,426 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Laundry Advisor</title>
+<title>洗濯ものナビ</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Hiragino Sans', sans-serif;
-    background: #f5f5f0;
-    color: #1a1a1a;
-    min-height: 100vh;
-    padding: 2rem 1rem;
-  }
-  .app { max-width: 520px; margin: 0 auto; }
-  .step { display: none; }
-  .step.active { display: block; }
+:root {
+  --bg:       #F7F3EC;
+  --bg2:      #EFE9DF;
+  --surface:  #FDFAF5;
+  --border:   #C8BFA8;
+  --border2:  #A89880;
+  --text:     #2C2416;
+  --muted:    #7A6E5C;
+  --green:    #4A7C59;
+  --green-dk: #3a6247;
+  --green-bg: #E8F0E8;
+  --terra:    #B85C38;
+  --terra-bg: #F5E8E2;
+  --amber:    #8A6428;
+  --amber-bg: #F5EDD8;
+  --round:    'M PLUS Rounded 1c', sans-serif;
+  --hand:     'Patrick Hand', cursive;
+}
 
-  /* Header */
-  .header { text-align: center; margin-bottom: 2rem; }
-  .header h1 { font-size: 28px; font-weight: 500; margin-bottom: 6px; }
-  .header p { font-size: 14px; color: #666; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* Progress dots */
-  .progress-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 1.5rem; }
-  .dot { width: 6px; height: 6px; border-radius: 50%; background: #ccc; transition: background 0.2s; }
-  .dot.active { background: #1D9E75; }
+body {
+  font-family: var(--round);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 1.5rem 1rem 4rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+}
 
-  /* Section label */
-  .section-label {
-    font-size: 11px; font-weight: 500; color: #888;
-    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px;
-  }
+.app { max-width: 500px; margin: 0 auto; }
 
-  /* ── 地方タブ ── */
-  .region-tabs {
-    display: flex; flex-wrap: wrap; gap: 6px;
-    margin-bottom: 12px;
-  }
-  .region-tab {
-    background: #fff; border: 0.5px solid #ccc; border-radius: 20px;
-    padding: 5px 13px; font-size: 12px; color: #666; cursor: pointer;
-    transition: all 0.15s; white-space: nowrap;
-  }
-  .region-tab:hover { background: #f0f0ea; color: #1a1a1a; }
-  .region-tab.active {
-    background: #1D9E75; border-color: #1D9E75; color: #fff; font-weight: 500;
-  }
+.step { display: none; }
+.step.active { display: block; animation: fadeIn .3s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
 
-  /* ── 都道府県グリッド ── */
-  .pref-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-    gap: 6px; margin-bottom: 1.5rem;
-    max-height: 200px; overflow-y: auto;
-  }
-  .pref-grid::-webkit-scrollbar { width: 3px; }
-  .pref-grid::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
-  .pref-btn {
-    background: #fff; border: 0.5px solid #ccc; border-radius: 8px;
-    padding: 10px 4px; font-size: 12px; color: #666; cursor: pointer;
-    text-align: center; transition: all 0.15s;
-  }
-  .pref-btn:hover { background: #f0f0ea; color: #1a1a1a; }
-  .pref-btn.selected {
-    background: #E1F5EE; border: 1.5px solid #1D9E75; color: #0F6E56; font-weight: 500;
-  }
+/* ── HEADER ── */
+.header { text-align: center; margin-bottom: 2rem; }
 
-  /* ── 選択状態バナー ── */
-  .selected-pref-banner {
-    display: none; align-items: center; gap: 8px;
-    background: #E1F5EE; border: 1px solid #1D9E75; border-radius: 8px;
-    padding: 8px 12px; margin-bottom: 12px; font-size: 13px; color: #0F6E56;
-  }
-  .selected-pref-banner.visible { display: flex; }
-  .selected-pref-banner strong { font-weight: 600; }
+/* 水彩風泡イラスト SVG */
+.bubble-svg { width: 160px; height: 90px; margin: 0 auto 4px; display: block; overflow: visible; }
 
-  /* Cards */
-  .card {
-    background: #fff; border: 0.5px solid #e0e0d8;
-    border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem;
-  }
-  .card-title {
-    font-size: 15px; font-weight: 500; margin-bottom: 1rem;
-    display: flex; align-items: center; gap: 8px;
-  }
+h1 {
+  font-family: var(--hand);
+  font-size: 30px; font-weight: 400; letter-spacing: .04em;
+  color: var(--text); margin-bottom: 4px;
+  display: inline-block; transform: rotate(-0.6deg);
+}
+.subtitle { font-size: 13px; color: var(--muted); margin-top: 2px; }
 
-  /* Weather grid */
-  .weather-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .weather-metric { background: #f5f5f0; border-radius: 8px; padding: 12px; }
-  .weather-metric .label { font-size: 11px; color: #888; margin-bottom: 4px; }
-  .weather-metric .value { font-size: 22px; font-weight: 500; }
-  .weather-metric .unit { font-size: 12px; color: #888; margin-left: 2px; }
+/* ── PROGRESS ── */
+.progress-wrap {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; margin-bottom: 2rem;
+}
+.prog-dot {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 2.5px solid var(--border); background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--hand); font-size: 15px;
+  color: var(--muted); transition: all .25s;
+}
+.prog-dot.active { border-color: var(--green); background: var(--green); color: #fff; box-shadow: 3px 3px 0 var(--green-dk); }
+.prog-dot.done   { border-color: var(--green); background: var(--green-bg); color: var(--green); }
+.prog-line {
+  width: 40px; height: 2px;
+  background: repeating-linear-gradient(90deg, var(--border) 0, var(--border) 4px, transparent 4px, transparent 8px);
+}
+.prog-line.done {
+  background: repeating-linear-gradient(90deg, var(--green) 0, var(--green) 4px, transparent 4px, transparent 8px);
+}
 
-  /* Condition choices */
-  .condition-card { margin-top: -0.25rem; }
-  .condition-section + .condition-section { margin-top: 1rem; }
-  .condition-label { font-size: 12px; font-weight: 500; color: #666; margin-bottom: 8px; }
-  .choice-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: 8px;
-  }
-  .choice-btn {
-    background: #fff; border: 0.5px solid #ccc; border-radius: 8px;
-    padding: 10px 8px; font-size: 13px; color: #666; cursor: pointer; transition: all 0.15s;
-  }
-  .choice-btn:hover { background: #f0f0ea; color: #1a1a1a; }
-  .choice-btn.selected {
-    background: #E1F5EE; border: 1.5px solid #1D9E75; color: #0F6E56; font-weight: 500;
-  }
-  .condition-hint { font-size: 12px; color: #888; margin-top: 10px; line-height: 1.5; }
+/* ── SECTION LABEL ── */
+.section-label {
+  font-family: var(--hand); font-size: 14px;
+  color: var(--muted); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.section-label::before {
+  content: ''; display: inline-block;
+  width: 18px; height: 2px; background: var(--border2); border-radius: 1px;
+}
 
-  /* Time section */
-  .time-section { margin-bottom: 1.5rem; }
-  .time-display { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 13px; color: #888; }
-  .drum-roll-container { display: flex; align-items: center; gap: 10px; justify-content: center; }
-  .drum-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-  .drum-display {
-    background: #fff; border: 0.5px solid #ccc; border-radius: 8px;
-    width: 64px; height: 52px; display: flex; align-items: center; justify-content: center;
-    font-size: 26px; font-weight: 500; user-select: none;
-  }
-  .drum-btn {
-    background: none; border: 0.5px solid #e0e0d8; border-radius: 4px;
-    width: 64px; padding: 3px 0; cursor: pointer; font-size: 14px; color: #888; transition: background 0.1s;
-  }
-  .drum-btn:hover { background: #f0f0ea; }
-  .drum-sep { font-size: 26px; font-weight: 500; color: #888; }
+/* ── REGION TABS ── */
+.region-tabs { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
+.region-tab {
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: 20px 17px 22px 16px;
+  padding: 5px 13px; font-size: 13px; font-family: var(--round);
+  color: var(--muted); cursor: pointer; transition: all .15s;
+  box-shadow: 2px 2px 0 var(--border);
+}
+.region-tab:hover { background: var(--bg2); border-color: var(--border2); transform: translateY(-1px); }
+.region-tab.active {
+  background: var(--green); border-color: var(--green-dk);
+  color: #fff; font-weight: 500;
+  box-shadow: 3px 3px 0 var(--green-dk);
+}
 
-  /* Buttons */
-  .primary-btn {
-    display: block; width: 100%; background: #1D9E75; color: #fff;
-    border: none; border-radius: 8px; padding: 14px; font-size: 15px; font-weight: 500;
-    cursor: pointer; margin-top: 1rem; transition: background 0.15s, transform 0.1s;
-  }
-  .primary-btn:hover { background: #0F6E56; }
-  .primary-btn:active { transform: scale(0.98); }
-  .primary-btn:disabled { background: #e0e0d8; color: #aaa; cursor: not-allowed; }
-  .back-btn {
-    background: none; border: none; font-size: 13px; color: #888;
-    cursor: pointer; padding: 4px 0; margin-bottom: 1rem;
-    display: flex; align-items: center; gap: 4px;
-  }
-  .back-btn:hover { color: #1a1a1a; }
+/* ── PREF GRID ── */
+.pref-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 7px; margin-bottom: 1.5rem;
+  max-height: 200px; overflow-y: auto; padding-right: 3px;
+}
+.pref-grid::-webkit-scrollbar { width: 3px; }
+.pref-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-  /* Result */
-  .result-hero { text-align: center; padding: 1.5rem 0 1rem; }
-  .weather-icon-big { font-size: 64px; margin-bottom: 8px; }
-  .recommendation-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 18px; border-radius: 999px; font-size: 15px; font-weight: 500; margin-bottom: 1rem;
-  }
-  .badge-outside { background: #E1F5EE; color: #0F6E56; }
-  .badge-inside  { background: #FAECE7; color: #993C1D; }
-  .badge-either  { background: #FAEEDA; color: #854F0B; }
-  .dry-time-card {
-    background: #fff; border: 0.5px solid #e0e0d8; border-radius: 12px;
-    padding: 1.5rem; text-align: center; margin-bottom: 1.25rem;
-  }
-  .dry-time-label    { font-size: 13px; color: #888; margin-bottom: 4px; }
-  .dry-time-finish   { font-size: 36px; font-weight: 500; margin-bottom: 4px; }
-  .dry-time-countdown{ font-size: 14px; color: #888; }
+.pref-btn {
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: 10px 5px 10px 5px;
+  padding: 9px 4px; font-size: 12px; font-family: var(--round);
+  color: var(--muted); cursor: pointer; text-align: center;
+  transition: all .14s; box-shadow: 2px 2px 0 var(--border);
+}
+.pref-btn:hover { background: var(--bg2); border-color: var(--border2); transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--border); }
+.pref-btn.selected {
+  background: var(--green-bg); border-color: var(--green); color: var(--green);
+  font-weight: 700; box-shadow: 3px 3px 0 var(--green-dk); transform: translate(-1px,-1px);
+}
 
-  /* Factor list */
-  .factor-list { margin-bottom: 1.25rem; }
-  .factor-group-label { font-size: 11px; font-weight: 500; color: #888; margin: 8px 0 4px; letter-spacing: 0.04em; }
-  .factor-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 8px 0; border-bottom: 0.5px solid #e0e0d8; font-size: 13px;
-  }
-  .factor-row:last-child { border-bottom: none; }
-  .factor-name   { color: #888; }
-  .factor-effect { font-weight: 500; }
-  .effect-minus  { color: #0F6E56; }
-  .effect-plus   { color: #993C1D; }
-  .effect-zero   { color: #888; }
+/* ── SELECTED BANNER ── */
+.selected-pref-banner {
+  display: none; align-items: center; gap: 8px;
+  background: var(--green-bg); border: 2px solid var(--green);
+  border-radius: 10px 5px 10px 4px;
+  padding: 8px 12px; margin-bottom: 12px;
+  font-size: 13px; color: var(--green);
+  box-shadow: 3px 3px 0 var(--green-dk);
+}
+.selected-pref-banner.visible { display: flex; }
 
-  .dry-btn {
-    background: #fff; border: 0.5px solid #ccc; border-radius: 8px; padding: 12px; width: 100%;
-    font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    gap: 8px; transition: background 0.15s; margin-bottom: 8px;
-  }
-  .dry-btn:hover { background: #f5f5f0; }
+/* ── CARD ── */
+.card {
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: 14px 7px 14px 7px;
+  padding: 1.2rem; margin-bottom: 1.2rem;
+  box-shadow: 4px 4px 0 var(--border); position: relative;
+}
+.card::before {
+  content: ''; position: absolute; inset: 7px;
+  border: 1px dashed var(--border);
+  border-radius: 10px 4px 10px 4px;
+  pointer-events: none; opacity: .35;
+}
+.card-title {
+  font-family: var(--hand); font-size: 17px;
+  margin-bottom: .9rem; display: flex; align-items: center; gap: 7px;
+}
+.card-title i { color: var(--green); font-size: 18px; }
 
-  /* Memory */
-  .memory-card {
-    background: #f5f5f0; border-radius: 8px; padding: 1rem;
-    margin-top: 1rem; font-size: 13px; color: #888;
-  }
-  .memory-title { font-weight: 500; color: #1a1a1a; margin-bottom: 8px; }
-  .memory-row {
-    display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 0.5px solid #e0e0d8;
-  }
-  .memory-row:last-child { border-bottom: none; }
+/* ── WEATHER GRID ── */
+.weather-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.weather-metric {
+  background: var(--bg2); border: 1.5px solid var(--border);
+  border-radius: 9px 4px 9px 4px; padding: 10px 12px;
+}
+.weather-metric .label { font-size: 10px; color: var(--muted); margin-bottom: 3px; font-family: var(--hand); letter-spacing: .04em; }
+.weather-metric .value { font-family: var(--hand); font-size: 26px; line-height: 1; }
+.weather-metric .unit  { font-size: 11px; color: var(--muted); margin-left: 2px; }
+
+/* ── CHOICE BUTTONS ── */
+.condition-section + .condition-section { margin-top: 1rem; }
+.condition-label { font-family: var(--hand); font-size: 15px; color: var(--muted); margin-bottom: 8px; }
+.choice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 7px; }
+.choice-btn {
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: 10px 4px 10px 4px;
+  padding: 10px 6px; font-size: 13px; font-family: var(--round);
+  color: var(--muted); cursor: pointer; transition: all .14s;
+  box-shadow: 2px 2px 0 var(--border); text-align: center;
+}
+.choice-btn:hover { background: var(--bg2); transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--border); }
+.choice-btn.selected {
+  background: var(--green-bg); border-color: var(--green); color: var(--green);
+  font-weight: 700; box-shadow: 3px 3px 0 var(--green-dk); transform: translate(-1px,-1px);
+}
+.weather-note { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.6; }
+.weather-note.warn { color: var(--terra); }
+.weather-note .retry-btn {
+  margin-left: 6px; background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 8px 3px 8px 3px; padding: 2px 10px; font-family: var(--round);
+  font-size: 12px; color: var(--text); cursor: pointer;
+}
+.weather-source { font-size: 10px; color: var(--border2); margin-top: 6px; }
+.weather-source a { color: inherit; }
+.dry-time-warn { font-size: 12px; color: var(--terra); margin-top: 8px; line-height: 1.6; }
+.dry-time-warn:empty { display: none; }
+.condition-hint { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.6; }
+
+/* ── TIME DRUM ── */
+.time-section { margin-bottom: 1.5rem; }
+.time-display { display: flex; align-items: center; gap: 7px; margin-bottom: 14px; font-size: 13px; color: var(--muted); font-family: var(--hand); }
+.drum-roll-container { display: flex; align-items: center; gap: 10px; justify-content: center; }
+.drum-col { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.drum-display {
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: 10px 4px 10px 4px;
+  width: 68px; height: 56px; display: flex; align-items: center; justify-content: center;
+  font-family: var(--hand); font-size: 30px;
+  user-select: none; box-shadow: 3px 3px 0 var(--border);
+}
+.drum-btn {
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: 8px 3px 8px 3px;
+  width: 68px; padding: 4px 0; cursor: pointer;
+  font-size: 14px; color: var(--muted); transition: all .12s;
+  box-shadow: 2px 2px 0 var(--border);
+}
+.drum-btn:hover { background: var(--bg2); transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--border); }
+.drum-btn:active { transform: translate(1px,1px); box-shadow: 1px 1px 0 var(--border); }
+.drum-sep { font-family: var(--hand); font-size: 30px; color: var(--muted); }
+
+/* ── PRIMARY BUTTON ── */
+.primary-btn {
+  display: block; width: 100%;
+  background: var(--green); color: #fff;
+  border: 2.5px solid var(--green-dk);
+  border-radius: 14px 5px 14px 5px;
+  padding: 14px; font-size: 16px; font-family: var(--hand);
+  cursor: pointer; margin-top: 1rem;
+  box-shadow: 4px 4px 0 var(--green-dk);
+  transition: all .14s; letter-spacing: .03em;
+}
+.primary-btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--green-dk); }
+.primary-btn:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--green-dk); }
+.primary-btn:disabled {
+  background: var(--bg2); color: var(--border2); border-color: var(--border);
+  box-shadow: 3px 3px 0 var(--border); cursor: not-allowed; transform: none;
+}
+
+.back-btn {
+  background: none; border: none; font-size: 13px; font-family: var(--round);
+  color: var(--muted); cursor: pointer; padding: 4px 0; margin-bottom: 1rem;
+  display: flex; align-items: center; gap: 5px; transition: color .15s;
+}
+.back-btn:hover { color: var(--text); }
+
+/* ── RESULT ── */
+.result-hero { text-align: center; padding: 1rem 0 .7rem; }
+.weather-icon-big {
+  font-size: 60px; margin-bottom: 10px; display: block;
+  filter: drop-shadow(3px 3px 0 #C8BFA8);
+  animation: pop .4s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes pop { from { transform:scale(.5) rotate(-8deg); opacity:0; } to { transform:scale(1) rotate(0); opacity:1; } }
+
+.recommendation-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 20px; font-family: var(--hand); font-size: 16px;
+  border: 2.5px solid; border-radius: 20px 7px 20px 7px; margin-bottom: 1rem;
+}
+.badge-outside { background: var(--green-bg); color: var(--green); border-color: var(--green); }
+.badge-inside  { background: var(--terra-bg); color: var(--terra); border-color: var(--terra); }
+.badge-either  { background: var(--amber-bg); color: var(--amber); border-color: var(--amber); }
+
+/* ── DRY TIME CARD ── */
+.dry-time-card {
+  background: var(--surface); border: 2.5px solid var(--border);
+  border-radius: 14px 5px 14px 5px;
+  padding: 1.4rem; text-align: center; margin-bottom: 1.2rem;
+  box-shadow: 5px 5px 0 var(--border); position: relative;
+}
+.dry-time-card::before {
+  content: ''; position: absolute; inset: 7px;
+  border: 1px dashed var(--border); border-radius: 10px 3px 10px 3px;
+  pointer-events: none; opacity: .4;
+}
+.dry-time-label    { font-family: var(--hand); font-size: 13px; color: var(--muted); margin-bottom: 5px; }
+.dry-time-finish   { font-family: var(--hand); font-size: 50px; line-height: 1; margin-bottom: 4px; }
+.dry-time-countdown{ font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+/* ── FACTOR LIST ── */
+.factor-list { margin-bottom: 1.2rem; }
+.factor-group-label {
+  font-family: var(--hand); font-size: 13px;
+  color: var(--muted); margin: 10px 0 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.factor-group-label::after { content:''; flex:1; height:1px; background:var(--border); }
+.factor-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 2px; border-bottom: 1.5px dashed var(--border); font-size: 13px;
+}
+.factor-row:last-child { border-bottom: none; }
+.factor-name   { color: var(--muted); }
+.factor-effect { font-family: var(--hand); font-size: 14px; }
+.effect-minus  { color: var(--green); }
+.effect-plus   { color: var(--terra); }
+.effect-zero   { color: var(--muted); }
+
+/* ── DRY BUTTON ── */
+.dry-btn {
+  background: var(--surface); border: 2.5px solid var(--border);
+  border-radius: 12px 5px 12px 5px;
+  padding: 13px; width: 100%; font-size: 14px; font-family: var(--round);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  gap: 8px; transition: all .14s; margin-bottom: 8px; color: var(--text);
+  box-shadow: 3px 3px 0 var(--border);
+}
+.dry-btn:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--border); background: var(--bg2); }
+
+/* ── MEMORY ── */
+.memory-card {
+  background: var(--bg2); border: 2px solid var(--border);
+  border-radius: 12px 5px 12px 5px;
+  padding: 1rem; margin-top: 1rem;
+  box-shadow: 3px 3px 0 var(--border);
+}
+.memory-title {
+  font-family: var(--hand); color: var(--text);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 6px; font-size: 15px;
+}
+.memory-row {
+  display: flex; justify-content: space-between; padding: 5px 0;
+  border-bottom: 1.5px dashed var(--border); font-size: 12px; color: var(--muted);
+}
+.memory-row:last-child { border-bottom: none; }
 </style>
 </head>
 <body>
 <div class="app">
+
   <div class="header">
-    <div style="font-size:36px; margin-bottom:6px">🫧</div>
-    <h1>Smart Laundry Advisor</h1>
-    <p>気象データから最適な干し方を提案します</p>
+    <!-- 手描き水彩風 泡イラスト -->
+    <svg class="bubble-svg" viewBox="0 0 160 90" role="img" aria-label="水彩風の泡のイラスト">
+      <!-- にじみ感を重ねた楕円で表現 -->
+      <ellipse cx="80" cy="48" rx="30" ry="29" fill="#7ec8c8" fill-opacity="0.10"/>
+      <ellipse cx="78" cy="46" rx="27" ry="26" fill="#7ec8c8" fill-opacity="0.08"/>
+
+      <!-- 中央の大きな泡 (パス手描き風) -->
+      <path d="M54,34 Q60,16 82,22 Q104,28 103,48 Q103,68 82,74 Q60,78 50,60 Q42,44 54,34Z"
+            fill="#7ec8c8" fill-opacity="0.20" stroke="#5aabab" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- 光の反射 -->
+      <ellipse cx="64" cy="30" rx="8" ry="4.5" fill="white" fill-opacity="0.60" transform="rotate(-20,64,30)"/>
+      <ellipse cx="70" cy="36" rx="3" ry="2" fill="white" fill-opacity="0.45" transform="rotate(-20,70,36)"/>
+
+      <!-- 左小さい泡 -->
+      <path d="M18,35 Q23,20 36,26 Q49,32 47,46 Q45,58 34,60 Q20,62 16,48 Q12,38 18,35Z"
+            fill="#a8d8b0" fill-opacity="0.20" stroke="#6aaa78" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round"/>
+      <ellipse cx="23" cy="32" rx="6" ry="3.5" fill="white" fill-opacity="0.55" transform="rotate(-18,23,32)"/>
+
+      <!-- 右小さい泡 -->
+      <path d="M118,28 Q126,14 140,20 Q154,27 152,42 Q150,56 138,58 Q122,60 116,46 Q110,34 118,28Z"
+            fill="#c8a8d8" fill-opacity="0.20" stroke="#9a78b8" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round"/>
+      <ellipse cx="123" cy="26" rx="7" ry="4" fill="white" fill-opacity="0.55" transform="rotate(-18,123,26)"/>
+
+      <!-- 浮かぶ豆粒みたいな泡 -->
+      <circle cx="14" cy="72" r="7" fill="#b8d8c8" fill-opacity="0.22"
+              stroke="#7aaa98" stroke-width="1.4" stroke-linecap="round"/>
+      <ellipse cx="16" cy="68" rx="3" ry="1.8" fill="white" fill-opacity="0.55"/>
+
+      <circle cx="108" cy="72" r="5.5" fill="#f0c8a8" fill-opacity="0.24"
+              stroke="#c8906a" stroke-width="1.3" stroke-linecap="round"/>
+      <ellipse cx="110" cy="69" rx="2.5" ry="1.4" fill="white" fill-opacity="0.55"/>
+
+      <circle cx="148" cy="70" r="6" fill="#a8c8e8" fill-opacity="0.22"
+              stroke="#78a0c8" stroke-width="1.3" stroke-linecap="round"/>
+      <ellipse cx="150" cy="66" rx="2.5" ry="1.5" fill="white" fill-opacity="0.55"/>
+
+      <circle cx="42" cy="80" r="4.5" fill="#d8c8a8" fill-opacity="0.24"
+              stroke="#a89878" stroke-width="1.2" stroke-linecap="round"/>
+      <ellipse cx="43" cy="77" rx="2" ry="1.2" fill="white" fill-opacity="0.5"/>
+
+      <!-- にじみ水彩ぼかし -->
+      <ellipse cx="80" cy="48" rx="34" ry="32" fill="#7ec8c8" fill-opacity="0.05"/>
+      <ellipse cx="135" cy="42" rx="22" ry="20" fill="#c8a8d8" fill-opacity="0.06"/>
+      <ellipse cx="32" cy="44" rx="18" ry="17" fill="#a8d8b0" fill-opacity="0.06"/>
+    </svg>
+
+    <h1>洗濯ものナビ</h1>
+    <p class="subtitle">気象データから最適な干し方を提案します</p>
   </div>
 
-  <div class="progress-dots">
-    <div class="dot active" id="dot1"></div>
-    <div class="dot" id="dot2"></div>
-    <div class="dot" id="dot3"></div>
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <div class="prog-dot active" id="pd1">1</div>
+    <div class="prog-line" id="pl1"></div>
+    <div class="prog-dot" id="pd2">2</div>
+    <div class="prog-line" id="pl2"></div>
+    <div class="prog-dot" id="pd3">3</div>
   </div>
 
-  <!-- Step 1: 地方 → 都道府県 -->
+  <!-- Step 1 -->
   <div class="step active" id="step1">
-    <div class="section-label">Step 1 — 地域・都道府県を選択</div>
-
-    <!-- 選択済みバナー -->
+    <div class="section-label">地域・都道府県を選択</div>
     <div class="selected-pref-banner" id="selectedPrefBanner">
       <i class="ti ti-map-pin"></i>
       <span><strong id="bannerPrefName"></strong> を選択中</span>
     </div>
-
-    <!-- 地方タブ -->
     <div class="region-tabs" id="regionTabs"></div>
-
-    <!-- 都道府県グリッド -->
     <div class="pref-grid" id="prefGrid"></div>
-
     <button class="primary-btn" id="toStep2Btn" disabled>次へ → 天気を確認する</button>
   </div>
 
-  <!-- Step 2: Weather + Conditions + Time -->
+  <!-- Step 2 -->
   <div class="step" id="step2">
     <button class="back-btn" onclick="goToStep(1)">
       <i class="ti ti-arrow-left"></i> 地域を選び直す
     </button>
     <div class="card">
-      <div class="card-title">
-        <i class="ti ti-cloud-sun"></i>
-        <span id="weatherTitle">今日の天気</span>
-      </div>
+      <div class="card-title"><i class="ti ti-cloud-sun"></i><span id="weatherTitle">今日の天気</span></div>
       <div class="weather-grid">
-        <div class="weather-metric">
-          <div class="label">気温</div>
-          <div><span class="value" id="wTemp">--</span><span class="unit">°C</span></div>
-        </div>
-        <div class="weather-metric">
-          <div class="label">湿度</div>
-          <div><span class="value" id="wHumid">--</span><span class="unit">%</span></div>
-        </div>
-        <div class="weather-metric">
-          <div class="label">風速</div>
-          <div><span class="value" id="wWind">--</span><span class="unit">m/s</span></div>
-        </div>
-        <div class="weather-metric">
-          <div class="label">日射量</div>
-          <div><span class="value" id="wSolar">--</span><span class="unit">kW/m²</span></div>
-        </div>
+        <div class="weather-metric"><div class="label">気温</div><div><span class="value" id="wTemp">--</span><span class="unit">°C</span></div></div>
+        <div class="weather-metric"><div class="label">湿度</div><div><span class="value" id="wHumid">--</span><span class="unit">%</span></div></div>
+        <div class="weather-metric"><div class="label">風速</div><div><span class="value" id="wWind">--</span><span class="unit">m/s</span></div></div>
+        <div class="weather-metric"><div class="label">日射量</div><div><span class="value" id="wSolar">--</span><span class="unit">kW/m²</span></div></div>
       </div>
+      <div class="weather-note" id="weatherNote">予報を取得しています…</div>
+      <div class="weather-source" id="weatherSource"></div>
     </div>
-
-    <!-- 洗濯物の条件（室内・室外なし） -->
-    <div class="card condition-card">
-      <div class="card-title">
-        <i class="ti ti-shirt"></i>
-        <span>洗濯物の条件</span>
-      </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-shirt"></i><span>洗濯物の条件</span></div>
       <div class="condition-section">
         <div class="condition-label">素材</div>
         <div class="choice-grid" id="materialChoices"></div>
@@ -273,13 +433,9 @@
       </div>
       <div class="condition-hint">選択した条件を乾燥時間の予測に反映します。</div>
     </div>
-
     <div class="time-section">
-      <div class="section-label">干し始める時間を選ぶ</div>
-      <div class="time-display">
-        <i class="ti ti-clock"></i>
-        <span id="currentTimeDisplay">現在 --:--</span>
-      </div>
+      <div class="section-label">干し始める時間</div>
+      <div class="time-display"><i class="ti ti-clock"></i><span id="currentTimeDisplay">現在 --:--</span></div>
       <div class="drum-roll-container">
         <div class="drum-col">
           <button class="drum-btn" id="hUp"><i class="ti ti-chevron-up"></i></button>
@@ -294,410 +450,452 @@
         </div>
       </div>
     </div>
-    <button class="primary-btn" onclick="calculate()">計算する →</button>
+    <button class="primary-btn" id="calcBtn" onclick="calculate()" disabled>計算する →</button>
   </div>
 
-  <!-- Step 3: Result -->
+  <!-- Step 3 -->
   <div class="step" id="step3">
-    <button class="back-btn" onclick="goToStep(2)">
-      <i class="ti ti-arrow-left"></i> 戻る
-    </button>
+    <button class="back-btn" onclick="goToStep(2)"><i class="ti ti-arrow-left"></i> 戻る</button>
     <div class="result-hero">
-      <div class="weather-icon-big" id="resultIcon">☀️</div>
+      <span class="weather-icon-big" id="resultIcon">☀️</span>
       <div class="recommendation-badge" id="resultBadge"></div>
     </div>
     <div class="dry-time-card">
       <div class="dry-time-label">乾き上がる予想時刻</div>
       <div class="dry-time-finish" id="finishTime">--:--</div>
-      <div class="dry-time-countdown" id="countdownText">干し始めから約 --</div>
+      <div class="dry-time-countdown" id="countdownText"></div>
+      <div class="dry-time-warn" id="dryWarn"></div>
     </div>
     <div class="section-label">乾燥時間の内訳</div>
     <div class="factor-list" id="factorList"></div>
     <button class="dry-btn" id="driedBtn" onclick="markDried()">
-      <i class="ti ti-checks"></i> 乾いた！（実際の乾燥時間を記録）
+      <i class="ti ti-checks"></i> 乾いた！（実際の時間を記録）
     </button>
     <div class="memory-card" id="memoryCard" style="display:none">
-      <div class="memory-title"><i class="ti ti-history" style="margin-right:4px"></i>過去の記録</div>
+      <div class="memory-title"><i class="ti ti-history"></i> 過去の記録</div>
       <div id="memoryList"></div>
     </div>
   </div>
+
 </div>
 
 <script>
-// ─── 地方 → 都道府県 マッピング ───────────────────────────────
-const REGIONS = [
-  { name: '北海道',   prefs: ['北海道'] },
-  { name: '東北',     prefs: ['青森県','岩手県','宮城県','秋田県','山形県','福島県'] },
-  { name: '関東',     prefs: ['茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県'] },
-  { name: '中部',     prefs: ['新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県'] },
-  { name: '近畿',     prefs: ['三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県'] },
-  { name: '中国',     prefs: ['鳥取県','島根県','岡山県','広島県','山口県'] },
-  { name: '四国',     prefs: ['徳島県','香川県','愛媛県','高知県'] },
-  { name: '九州・沖縄', prefs: ['福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県'] },
+/* =========================================================
+   洗濯ものナビ
+   ・天気   : Open-Meteo 経由で気象庁の数値予報モデル（jma_seamless）を取得
+   ・乾燥時間: ペンマン式ベースの蒸発量を1時間ごとに積算して計算
+   ・補正   : 「乾いた！」の記録から補正係数 K を学習
+   ========================================================= */
+
+const REGIONS=[
+  {name:'北海道',     prefs:['北海道']},
+  {name:'東北',       prefs:['青森県','岩手県','宮城県','秋田県','山形県','福島県']},
+  {name:'関東',       prefs:['茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県']},
+  {name:'中部',       prefs:['新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県']},
+  {name:'近畿',       prefs:['三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県']},
+  {name:'中国',       prefs:['鳥取県','島根県','岡山県','広島県','山口県']},
+  {name:'四国',       prefs:['徳島県','香川県','愛媛県','高知県']},
+  {name:'九州・沖縄', prefs:['福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県']},
 ];
 
-// ─── 状態変数 ──────────────────────────────────────────────────
-let csvData           = {};
-let csvLoaded         = false;
-let selectedRegionIdx = 0;       // 地方インデックス
-let selectedRegion    = null;    // 都道府県名
-let startHour         = 9;
-let startMin          = 0;
-let currentWeather    = null;
-let calculatedDryMin  = 0;
-let startedAt         = null;
-let selectedMaterial  = '綿';
-let selectedThickness = '普通';
+// 都道府県庁所在地の緯度・経度
+const PREF_COORDS={
+  '北海道':[43.064,141.347],'青森県':[40.824,140.740],'岩手県':[39.704,141.153],'宮城県':[38.269,140.872],
+  '秋田県':[39.719,140.102],'山形県':[38.240,140.363],'福島県':[37.750,140.468],'茨城県':[36.342,140.447],
+  '栃木県':[36.566,139.884],'群馬県':[36.391,139.061],'埼玉県':[35.857,139.649],'千葉県':[35.605,140.123],
+  '東京都':[35.690,139.692],'神奈川県':[35.448,139.643],'新潟県':[37.902,139.023],'富山県':[36.695,137.211],
+  '石川県':[36.594,136.626],'福井県':[36.065,136.222],'山梨県':[35.664,138.568],'長野県':[36.651,138.181],
+  '岐阜県':[35.391,136.722],'静岡県':[34.977,138.383],'愛知県':[35.180,136.907],'三重県':[34.730,136.509],
+  '滋賀県':[35.004,135.868],'京都府':[35.021,135.756],'大阪府':[34.686,135.520],'兵庫県':[34.691,135.183],
+  '奈良県':[34.685,135.833],'和歌山県':[34.226,135.168],'鳥取県':[35.504,134.238],'島根県':[35.472,133.051],
+  '岡山県':[34.662,133.935],'広島県':[34.397,132.460],'山口県':[34.186,131.471],'徳島県':[34.066,134.559],
+  '香川県':[34.340,134.043],'愛媛県':[33.842,132.766],'高知県':[33.560,133.531],'福岡県':[33.607,130.418],
+  '佐賀県':[33.249,130.299],'長崎県':[32.745,129.874],'熊本県':[32.790,130.742],'大分県':[33.238,131.613],
+  '宮崎県':[31.911,131.424],'鹿児島県':[31.560,130.558],'沖縄県':[26.212,127.681],
+};
 
-const materialOptions   = ['綿', 'ポリエステル', '混紡', 'ウール'];
-const thicknessOptions  = ['薄手', '普通', '厚手'];
-const materialAdjustments  = { '綿': 0, 'ポリエステル': -10, '混紡': -5, 'ウール': 15 };
-const thicknessAdjustments = { '薄手': -12, '普通': 0, '厚手': 18 };
+let selectedRegionIdx=0, selectedRegion=null;
+let startHour=9, startMin=0, calculatedDryMin=0;
+let selectedMaterial='綿', selectedThickness='普通';
+let forecast=null;        // {hours:[{t,temp,humid,wind,solar,precip}], model, fetchedAt}
+let lastCalc=null;        // 直近の計算（記録・学習に使う）
+let weatherReqId=0;
 
-// ─── 線形回帰モデル ────────────────────────────────────────────
-let lrWeights = null;
+/* ---------- 衣類条件：含んでいる水分量 ---------- */
+// 脱水後に 1m² あたり含んでいる水 [g/m²]（綿換算）
+const WATER_BASE={'薄手':100,'普通':180,'厚手':350};
+// 素材ごとの水の含みやすさ（綿=1）
+const MATERIAL_WATER={'綿':1.0,'ポリエステル':0.45,'混紡':0.7,'ウール':1.15};
+const materialOptions=Object.keys(MATERIAL_WATER);
+const thicknessOptions=Object.keys(WATER_BASE);
+function waterAmount(){return WATER_BASE[selectedThickness]*MATERIAL_WATER[selectedMaterial];}
 
-function matMul(A, B) {
-  return Array.from({length: A.length}, (_, i) =>
-    Array.from({length: B[0].length}, (_, j) =>
-      A[i].reduce((s, _, k) => s + A[i][k] * B[k][j], 0)));
+/* ---------- 蒸発の物理モデル（ペンマン式ベース） ---------- */
+const GAMMA=0.0665;          // 乾湿計定数 [kPa/K]
+const LAMBDA=2.45e6;         // 蒸発潜熱 [J/kg]
+const WIND_HEIGHT=0.6;       // 高さ10mの風速 → 物干しの高さ(約1.5m)への換算
+const ABSORB=0.6;            // 布の日射吸収率
+const VERTICAL=0.5;          // 水平面の日射量 → 吊るした布が受ける割合
+
+function svp(T){return 0.6108*Math.exp(17.27*T/(T+237.3));}   // 飽和水蒸気圧 [kPa]
+
+// 1時間あたりの蒸発しやすさ [g/m²/h]（K をかける前の値）
+function evapParts(w){
+  const es=svp(w.temp), ea=es*w.humid/100, vpd=Math.max(0,es-ea);
+  const delta=4098*es/Math.pow(w.temp+237.3,2);               // 飽和水蒸気圧曲線の傾き
+  const hc=5.7+3.8*(w.wind*WIND_HEIGHT);                        // 対流熱伝達率 [W/m²K]
+  const rabs=ABSORB*VERTICAL*w.solar*1000;                      // 布が吸収する日射 [W/m²]
+  const toG=3600*1000/LAMBDA/(delta+GAMMA);                     // W/m² → g/m²/h
+  return {aero:2*hc*vpd*toG, rad:delta*rabs*toG, vpd};          // aero は布の両面
 }
-function matTrans(A) { return A[0].map((_, j) => A.map(r => r[j])); }
-function matInv(M) {
-  const n = M.length;
-  const A = M.map((row, i) => [...row, ...Array.from({length: n}, (_, j) => i === j ? 1 : 0)]);
-  for (let col = 0; col < n; col++) {
-    let pivot = col;
-    for (let row = col + 1; row < n; row++)
-      if (Math.abs(A[row][col]) > Math.abs(A[pivot][col])) pivot = row;
-    [A[col], A[pivot]] = [A[pivot], A[col]];
-    const d = A[col][col];
-    if (Math.abs(d) < 1e-12) return null;
-    for (let j = 0; j < 2 * n; j++) A[col][j] /= d;
-    for (let row = 0; row < n; row++) {
-      if (row === col) continue;
-      const f = A[row][col];
-      for (let j = 0; j < 2 * n; j++) A[row][j] -= f * A[col][j];
-    }
+
+// 基準：25℃・湿度50%・風2.5m/s・日射0.6kW/m² で、綿の普通の厚さが約2.5時間で乾く
+const REF_WEATHER={temp:25,humid:50,wind:2.5,solar:0.6}, REF_HOURS=2.5;
+const K0=(()=>{const p=evapParts(REF_WEATHER);return WATER_BASE['普通']/((p.aero+p.rad)*REF_HOURS);})();
+
+/* ---------- 記録からの補正係数 K ---------- */
+const PRIOR_N=3;   // 初期値を「3件ぶんの記録」として扱う（記録が少ないうちは大きく動かない）
+function loadRecords(){try{return JSON.parse(localStorage.getItem('laundry_records')||'[]');}catch(e){return [];}}
+function saveRecords(r){try{localStorage.setItem('laundry_records',JSON.stringify(r));}catch(e){}}
+function currentK(){
+  const ks=loadRecords().map(r=>r.k).filter(k=>k>0&&isFinite(k));
+  const logSum=PRIOR_N*Math.log(K0)+ks.reduce((s,k)=>s+Math.log(k),0);
+  return {K:Math.exp(logSum/(PRIOR_N+ks.length)), n:ks.length};
+}
+
+/* ---------- 天気の取得 ---------- */
+const HOURLY_VARS='temperature_2m,relative_humidity_2m,wind_speed_10m,shortwave_radiation,precipitation';
+
+async function fetchOpenMeteo(pref,model){
+  const [lat,lon]=PREF_COORDS[pref];
+  const p=new URLSearchParams({latitude:lat,longitude:lon,hourly:HOURLY_VARS,
+    wind_speed_unit:'ms',timezone:'Asia/Tokyo',timeformat:'unixtime',forecast_days:3});
+  if(model)p.set('models',model);
+  const res=await fetch('https://api.open-meteo.com/v1/forecast?'+p);
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  const j=await res.json(), H=j.hourly;
+  const col=name=>H[name]??H[Object.keys(H).find(k=>k.startsWith(name))];
+  const T=col('temperature_2m'),RH=col('relative_humidity_2m'),WS=col('wind_speed_10m'),
+        SW=col('shortwave_radiation'),PR=col('precipitation');
+  const hours=[];
+  H.time.forEach((t,i)=>{
+    if([T[i],RH[i],WS[i],SW[i]].some(v=>v==null))return;
+    hours.push({t:t*1000,temp:T[i],humid:RH[i],wind:WS[i],solar:SW[i]/1000,precip:PR?.[i]??0});
+  });
+  return hours;
+}
+
+async function loadWeather(){
+  const pref=selectedRegion, id=++weatherReqId;
+  forecast=null;
+  document.getElementById('calcBtn').disabled=true;
+  document.getElementById('weatherTitle').textContent=`${pref}の天気`;
+  ['wTemp','wHumid','wWind','wSolar'].forEach(k=>document.getElementById(k).textContent='--');
+  setNote('予報を取得しています…');
+  document.getElementById('weatherSource').textContent='';
+  try{
+    let hours=[], model='気象庁 数値予報モデル';
+    try{hours=await fetchOpenMeteo(pref,'jma_seamless');}catch(e){}
+    if(hours.length<24){hours=await fetchOpenMeteo(pref,null);model='Open-Meteo 標準モデル';}
+    if(id!==weatherReqId)return;          // 途中で別の県を選んだ
+    if(!hours.length)throw new Error('empty');
+    forecast={hours,model,fetchedAt:new Date()};
+    document.getElementById('weatherSource').innerHTML=
+      `出典：${model}（<a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> 経由）・${fmtTime(forecast.fetchedAt)} 取得`;
+    document.getElementById('calcBtn').disabled=false;
+    updateWeatherCard();
+  }catch(e){
+    if(id!==weatherReqId)return;
+    setNote('天気予報を取得できませんでした。通信状況を確認してください。',true,true);
   }
-  return A.map(row => row.slice(n));
-}
-function trainModel() {
-  const allRows = Object.values(csvData).flat();
-  if (allRows.length < 5) return;
-  const X  = allRows.map(r => [1, r.temp, r.humid, r.wind, r.solar]);
-  const y  = allRows.map(r => [r.dryMin]);
-  const Xt = matTrans(X);
-  const inv = matInv(matMul(Xt, X));
-  if (!inv) return;
-  lrWeights = matMul(matMul(inv, Xt), y).map(r => r[0]);
-}
-function predict(temp, humid, wind, solar) {
-  if (!lrWeights) return null;
-  const [w0, w1, w2, w3, w4] = lrWeights;
-  return Math.max(10, Math.round(w0 + w1*temp + w2*humid + w3*wind + w4*solar));
-}
-function getLaundryAdj() {
-  return (materialAdjustments[selectedMaterial] ?? 0)
-       + (thicknessAdjustments[selectedThickness] ?? 0);
-}
-function predictWithConditions(temp, humid, wind, solar) {
-  const base = predict(temp, humid, wind, solar);
-  if (base == null) return null;
-  return Math.max(10, Math.round(base + getLaundryAdj()));
 }
 
-// ─── CSV 読み込み ──────────────────────────────────────────────
-async function loadCSV() {
-  const fnames = ['laundry_data_47_prefectures.csv', 'laundry_data_extended.csv', 'weather_data.csv'];
-  for (const fn of fnames) {
-    try {
-      const res = await fetch(fn);
-      if (!res.ok) continue;
-      const text = await res.text();
-      const lines = text.trim().split('\n');
-      lines.slice(1).forEach(line => {
-        const cols = line.split(',');
-        if (cols.length < 6) return;
-        const pref   = cols[0].trim();
-        const temp   = parseFloat(cols[1]);
-        const humid  = parseFloat(cols[2]);
-        const wind   = parseFloat(cols[3]);
-        const solar  = parseFloat(cols[4]);
-        const dryMin = parseFloat(cols[5]);
-        if (isNaN(dryMin)) return;
-        if (!csvData[pref]) csvData[pref] = [];
-        csvData[pref].push({ temp, humid, wind, solar, dryMin });
-      });
-      csvLoaded = true;
-      trainModel();
-      return;
-    } catch(e) {}
+function setNote(text,warn=false,retry=false){
+  const el=document.getElementById('weatherNote');
+  el.className='weather-note'+(warn?' warn':'');
+  el.textContent=text;
+  if(retry){
+    const b=document.createElement('button');b.className='retry-btn';b.textContent='もう一度';
+    b.onclick=loadWeather;el.appendChild(b);
   }
-  alert('CSVファイルが読み込めませんでした。\nlaundry_data_47_prefectures.csv をHTMLと同じフォルダに置いてください。');
-}
-function pickRandomRow(pref) {
-  const rows = csvData[pref];
-  if (!rows || !rows.length) return null;
-  return rows[Math.floor(Math.random() * rows.length)];
-}
-function guessIcon(humid, solar) {
-  if (humid >= 80)                 return '🌧️';
-  if (humid >= 70)                 return '🌥️';
-  if (solar >= 0.7)                return '☀️';
-  if (solar >= 0.5)                return '🌤️';
-  if (humid <= 55 && solar >= 0.4) return '☀️';
-  return '⛅';
 }
 
-// ─── 地方タブ ・ 都道府県グリッド ──────────────────────────────
-function buildRegionUI() {
-  const tabsEl = document.getElementById('regionTabs');
-  tabsEl.innerHTML = '';
-  REGIONS.forEach((reg, idx) => {
-    const tab = document.createElement('button');
-    tab.className = 'region-tab' + (idx === selectedRegionIdx ? ' active' : '');
-    tab.textContent = reg.name;
-    tab.onclick = () => {
-      selectedRegionIdx = idx;
-      buildRegionUI();         // タブ再描画
-    };
-    tabsEl.appendChild(tab);
-  });
+/* ---------- 時刻まわり ---------- */
+function pad(n){return String(n).padStart(2,'0');}
+function fmtTime(d){return `${pad(d.getHours())}:${pad(d.getMinutes())}`;}
+function fmtDuration(min){const h=Math.floor(min/60),m=min%60;return `${h>0?h+'時間':''}${m>0||h===0?m+'分':''}`;}
 
-  const prefEl = document.getElementById('prefGrid');
-  prefEl.innerHTML = '';
-  const currentPrefs = REGIONS[selectedRegionIdx].prefs;
-  currentPrefs.forEach(pref => {
-    // CSVにないデータはグレーアウト
-    const hasData = !!csvData[pref];
-    const btn = document.createElement('button');
-    btn.className = 'pref-btn' + (pref === selectedRegion ? ' selected' : '');
-    btn.textContent = pref;
-    btn.disabled = !hasData;
-    btn.style.opacity = hasData ? '1' : '0.35';
-    btn.onclick = () => selectPref(pref);
-    prefEl.appendChild(btn);
-  });
+// 干し始める日時（6時間以上前の時刻を選んだら「明日」とみなす）
+function startDate(){
+  const now=new Date(), d=new Date(now);
+  d.setHours(startHour,startMin,0,0);
+  if(now-d>6*3600e3)d.setDate(d.getDate()+1);
+  return d;
+}
+function dayLabel(d){const t=new Date();t.setHours(0,0,0,0);const x=new Date(d);x.setHours(0,0,0,0);
+  const diff=Math.round((x-t)/864e5);return diff===0?'今日':diff===1?'明日':diff===2?'あさって':`${x.getMonth()+1}/${x.getDate()}`;}
+function hourAt(ms){return forecast?.hours.find(h=>ms>=h.t&&ms<h.t+3600e3)??null;}
+
+function updateWeatherCard(){
+  if(!forecast)return;
+  const sd=startDate(), h=hourAt(sd.getTime());
+  if(!h){setNote('この時刻の予報がありません。時刻を変えてください。',true);document.getElementById('calcBtn').disabled=true;return;}
+  document.getElementById('calcBtn').disabled=false;
+  document.getElementById('weatherTitle').textContent=
+    `${selectedRegion}　${dayLabel(sd)} ${pad(sd.getHours())}時の予報 ${guessIcon(h)}`;
+  document.getElementById('wTemp').textContent =h.temp.toFixed(1);
+  document.getElementById('wHumid').textContent=h.humid.toFixed(0);
+  document.getElementById('wWind').textContent =h.wind.toFixed(1);
+  document.getElementById('wSolar').textContent=h.solar.toFixed(2);
+  // 干し始めから12時間以内の雨
+  const rain=forecast.hours.find(x=>x.t+3600e3>sd.getTime()&&x.t<sd.getTime()+12*3600e3&&x.precip>=0.1);
+  if(rain){const rd=new Date(rain.t);setNote(`☂ ${dayLabel(rd)} ${pad(rd.getHours())}時ごろから雨の予報があります（${rain.precip.toFixed(1)}mm/h）`,true);}
+  else setNote('干し始めから12時間は雨の予報なし');
 }
 
-function selectPref(pref) {
-  selectedRegion = pref;
-  document.getElementById('toStep2Btn').disabled = false;
-  // バナー更新
-  document.getElementById('bannerPrefName').textContent = pref;
-  document.getElementById('selectedPrefBanner').classList.add('visible');
-  // グリッド再描画（選択状態を反映）
-  buildRegionUI();
+function guessIcon(h){
+  if(h.precip>=0.1)return'🌧️';
+  if(h.solar>=0.5)return'☀️';
+  if(h.solar>=0.25)return'🌤️';
+  if(h.solar>0)return'⛅';
+  return h.humid>=85?'🌥️':'🌙';
 }
 
-// ─── 洗濯物条件 UI ────────────────────────────────────────────
-function renderChoiceGroup(containerId, options, current, onSelect) {
-  const el = document.getElementById(containerId);
-  el.innerHTML = '';
-  options.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'choice-btn' + (opt === current ? ' selected' : '');
-    btn.textContent = opt;
-    btn.onclick = () => { onSelect(opt); renderConditionChoices(); };
-    el.appendChild(btn);
-  });
-}
-function renderConditionChoices() {
-  renderChoiceGroup('materialChoices',  materialOptions,  selectedMaterial,  v => selectedMaterial  = v);
-  renderChoiceGroup('thicknessChoices', thicknessOptions, selectedThickness, v => selectedThickness = v);
-}
-
-// ─── 時刻ドラム ────────────────────────────────────────────────
-function updateCurrentTime() {
-  const now = new Date();
-  document.getElementById('currentTimeDisplay').textContent =
-    `現在 ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-  startHour = now.getHours(); startMin = now.getMinutes();
-  updateDrumDisplay();
-}
-function adjustHour(d) { startHour = (startHour + d + 24) % 24; updateDrumDisplay(); }
-function adjustMin(d)  { startMin  = (startMin  + d + 60) % 60; updateDrumDisplay(); }
-function updateDrumDisplay() {
-  document.getElementById('hourDisplay').textContent = String(startHour).padStart(2,'0');
-  document.getElementById('minDisplay').textContent  = String(startMin ).padStart(2,'0');
-}
-
-// ─── 天気読み込み ──────────────────────────────────────────────
-function loadWeather() {
-  const row = pickRandomRow(selectedRegion);
-  if (!row) { alert('データが見つかりませんでした'); return; }
-  currentWeather = row;
-  const icon = guessIcon(row.humid, row.solar);
-  document.getElementById('weatherTitle').textContent = `${selectedRegion}の今日の天気 ${icon}`;
-  document.getElementById('wTemp').textContent  = row.temp.toFixed(1);
-  document.getElementById('wHumid').textContent = row.humid.toFixed(0);
-  document.getElementById('wWind').textContent  = row.wind.toFixed(1);
-  document.getElementById('wSolar').textContent = row.solar.toFixed(2);
-}
-
-// ─── 計算 ─────────────────────────────────────────────────────
-function calculate() {
-  const w = currentWeather;
-  const predicted = predictWithConditions(w.temp, w.humid, w.wind, w.solar);
-  calculatedDryMin = predicted ?? Math.round(w.dryMin + getLaundryAdj());
-
-  const totalMin = startHour * 60 + startMin + calculatedDryMin;
-  const fH = Math.floor(totalMin / 60) % 24;
-  const fM = totalMin % 60;
-  document.getElementById('finishTime').textContent =
-    `${String(fH).padStart(2,'0')}:${String(fM).padStart(2,'0')}`;
-  const hrs  = Math.floor(calculatedDryMin / 60);
-  const mins = calculatedDryMin % 60;
-  document.getElementById('countdownText').textContent =
-    `${String(startHour).padStart(2,'0')}:${String(startMin).padStart(2,'0')} から干して約 ` +
-    `${hrs}時間${mins > 0 ? mins + '分' : ''}`;
-
-  // 干し場所バッジ（気象条件で判定）
-  let recText, recClass, icon;
-  if (w.humid >= 75 || w.wind < 1.0) {
-    recText = '🏠 室内干しがおすすめ'; recClass = 'badge-inside'; icon = '🌧️';
-  } else if (w.humid < 65 && w.wind >= 2.0) {
-    recText = '☀️ 外干しがおすすめ'; recClass = 'badge-outside'; icon = '☀️';
-  } else {
-    recText = '⛅ どちらでもOK'; recClass = 'badge-either'; icon = '⛅';
+/* ---------- 乾燥シミュレーション ---------- */
+// 干し始めから1時間ごとに「K × 蒸発しやすさ」を積算し、含んだ水がなくなる時刻を求める
+// 雨の時間（降水量0.1mm/h以上）は外干しでは乾かないものとして 0 にする
+function simulate(start,W,K){
+  let rem=W, t=start.getTime(), finish=null, rainHit=false;
+  const used=[];
+  while(true){
+    const h=hourAt(t); if(!h)break;
+    const hourEnd=h.t+3600e3, dtH=(hourEnd-t)/3600e3;
+    const rain=h.precip>=0.1; if(rain)rainHit=true;
+    const p=evapParts(h), rate=rain?0:K*(p.aero+p.rad);
+    if(rate*dtH>=rem){const need=rem/rate;used.push({h,p,dur:need,rain});finish=new Date(t+need*3600e3);break;}
+    used.push({h,p,dur:dtH,rain});
+    rem-=rate*dtH; t=hourEnd;
   }
-  document.getElementById('resultBadge').textContent = recText;
-  document.getElementById('resultBadge').className = `recommendation-badge ${recClass}`;
-  document.getElementById('resultIcon').textContent = icon;
-
-  // 内訳テーブル
-  const [w0, w1, w2, w3, w4] = lrWeights ?? [0,0,0,0,0];
-  const weatherContribs = [
-    { name: '気温',   val: `${w.temp.toFixed(1)} °C`,     coef: w1, input: w.temp  },
-    { name: '湿度',   val: `${w.humid.toFixed(0)} %`,     coef: w2, input: w.humid },
-    { name: '風速',   val: `${w.wind.toFixed(1)} m/s`,    coef: w3, input: w.wind  },
-    { name: '日射量', val: `${w.solar.toFixed(2)} kW/m²`, coef: w4, input: w.solar },
-  ];
-  const conditionContribs = [
-    { name: '素材', val: selectedMaterial,  adjust: materialAdjustments[selectedMaterial]   ?? 0 },
-    { name: '厚さ', val: selectedThickness, adjust: thicknessAdjustments[selectedThickness] ?? 0 },
-  ];
-
-  const list = document.getElementById('factorList');
-  list.innerHTML = '';
-
-  const hdr = document.createElement('div');
-  hdr.className = 'factor-row'; hdr.style.fontSize = '11px';
-  hdr.innerHTML = `<span style="color:#888">項目（係数）</span><span style="color:#888">値 / 寄与(分)</span>`;
-  list.appendChild(hdr);
-
-  weatherContribs.forEach(f => {
-    const contrib = Math.round(f.coef * f.input);
-    const sign = contrib >= 0 ? '+' : '';
-    const cls  = contrib <= -5 ? 'effect-minus' : contrib >= 5 ? 'effect-plus' : 'effect-zero';
-    const row = document.createElement('div');
-    row.className = 'factor-row';
-    row.innerHTML = `
-      <span class="factor-name">${f.name} <span style="font-size:10px;color:#bbb">(${f.coef >= 0 ? '+' : ''}${f.coef.toFixed(2)})</span></span>
-      <span class="factor-effect ${cls}">${f.val} → ${sign}${contrib}分</span>`;
-    list.appendChild(row);
-  });
-
-  const grp = document.createElement('div');
-  grp.className = 'factor-group-label'; grp.textContent = '衣類条件の補正';
-  list.appendChild(grp);
-
-  conditionContribs.forEach(f => {
-    const sign = f.adjust >= 0 ? '+' : '';
-    const cls  = f.adjust <= -5 ? 'effect-minus' : f.adjust >= 5 ? 'effect-plus' : 'effect-zero';
-    const row = document.createElement('div');
-    row.className = 'factor-row';
-    row.innerHTML = `
-      <span class="factor-name">${f.name}</span>
-      <span class="factor-effect ${cls}">${f.val} → ${sign}${f.adjust}分</span>`;
-    list.appendChild(row);
-  });
-
-  const total = document.createElement('div');
-  total.className = 'factor-row';
-  total.innerHTML = `
-    <span class="factor-name" style="font-weight:500;color:#1a1a1a">予測乾燥時間</span>
-    <span class="factor-effect" style="font-size:15px;font-weight:500">${hrs}時間${mins > 0 ? mins + '分' : ''}</span>`;
-  list.appendChild(total);
-
-  const driedBtn = document.getElementById('driedBtn');
-  driedBtn.innerHTML = '<i class="ti ti-checks"></i> 乾いた！（実際の乾燥時間を記録）';
-  driedBtn.style.color = '';
-
-  startedAt = Date.now();
-  loadMemory();
-  goToStep(3);
+  return {finish,used,rainHit,remaining:rem};
 }
 
-// ─── 記録・過去 ───────────────────────────────────────────────
-function markDried() {
-  if (!startedAt) return;
-  const actualMin = Math.round((Date.now() - startedAt) / 60000);
-  const record = {
-    region: selectedRegion, date: new Date().toLocaleDateString('ja-JP'),
-    predicted: calculatedDryMin, actual: actualMin > 0 ? actualMin : calculatedDryMin,
-    material: selectedMaterial, thickness: selectedThickness,
+// start〜end の「蒸発しやすさ」の積算 [g/m²]（K をかける前）
+function potentialBetween(start,end){
+  let t=start, sum=0;
+  while(t<end){
+    const h=hourAt(t); if(!h)break;
+    const segEnd=Math.min(end,h.t+3600e3);
+    if(h.precip<0.1){const p=evapParts(h);sum+=(p.aero+p.rad)*(segEnd-t)/3600e3;}
+    t=segEnd;
+  }
+  return sum;
+}
+
+/* ---------- 計算 ---------- */
+function calculate(){
+  if(!forecast)return;
+  const sd=startDate(), W=waterAmount(), {K,n}=currentK();
+  const sim=simulate(sd,W,K);
+  const warn=document.getElementById('dryWarn');
+
+  if(sim.finish){
+    calculatedDryMin=Math.max(1,Math.round((sim.finish-sd)/60000));
+    document.getElementById('finishTime').textContent=fmtTime(sim.finish);
+    document.getElementById('countdownText').textContent=
+      `${dayLabel(sd)} ${fmtTime(sd)} から干して約 ${fmtDuration(calculatedDryMin)}`+
+      (dayLabel(sim.finish)!==dayLabel(sd)?`（${dayLabel(sim.finish)}）`:'');
+  }else{
+    calculatedDryMin=0;
+    document.getElementById('finishTime').textContent='--:--';
+    document.getElementById('countdownText').textContent='予報の期間内（約3日）には乾ききらない見込みです';
+  }
+  warn.textContent=sim.rainHit?'☂ 途中で雨の予報があります。雨の時間は外では乾かない計算にしています。':'';
+  if(!sim.rainHit&&sim.finish){
+    const f=sim.finish.getTime();
+    const later=forecast.hours.find(x=>x.t+3600e3>f&&x.t<f+3*3600e3&&x.precip>=0.1);
+    if(later)warn.textContent=`☂ ${pad(new Date(later.t).getHours())}時ごろから雨の予報。乾いたら早めに取り込みましょう。`;
+  }
+
+  // おすすめ判定
+  let recText,recClass,icon;
+  if(sim.rainHit||!sim.finish){recText='🏠 室内干しがおすすめ';recClass='badge-inside';icon='🌧️';}
+  else if(calculatedDryMin>480){recText='🏠 乾くまで長いので室内干しも検討';recClass='badge-inside';icon='🌥️';}
+  else if(calculatedDryMin<=240){recText='☀️ 外干しがおすすめ';recClass='badge-outside';icon='☀️';}
+  else{recText='⛅ 外干しOK（乾くのはゆっくり）';recClass='badge-either';icon='⛅';}
+  const badge=document.getElementById('resultBadge');
+  badge.textContent=recText;badge.className=`recommendation-badge ${recClass}`;
+  document.getElementById('resultIcon').textContent=icon;
+
+  renderFactors(sim,W,K,n);
+  lastCalc={start:sd.getTime(),W,region:selectedRegion,predicted:calculatedDryMin,
+            material:selectedMaterial,thickness:selectedThickness};
+
+  const btn=document.getElementById('driedBtn');
+  btn.innerHTML='<i class="ti ti-checks"></i> 乾いた！（実際の時間を記録）';btn.style.color='';
+  loadMemory();goToStep(3);
+}
+
+function renderFactors(sim,W,K,n){
+  const list=document.getElementById('factorList');list.innerHTML='';
+  const row=(name,val,cls='')=>{
+    const r=document.createElement('div');r.className='factor-row';
+    r.innerHTML=`<span class="factor-name">${name}</span><span class="factor-effect ${cls}">${val}</span>`;
+    list.appendChild(r);
   };
-  const records = JSON.parse(localStorage.getItem('laundry_records') || '[]');
-  records.unshift(record);
-  if (records.length > 5) records.pop();
-  localStorage.setItem('laundry_records', JSON.stringify(records));
-  const btn = document.getElementById('driedBtn');
-  btn.innerHTML = '<i class="ti ti-check"></i> 記録しました！';
-  btn.style.color = '#0F6E56';
+  const group=t=>{const g=document.createElement('div');g.className='factor-group-label';g.textContent=t;list.appendChild(g);};
+
+  // 干している間の平均（時間で重みづけ）
+  const dry=sim.used.filter(u=>!u.rain), tot=dry.reduce((s,u)=>s+u.dur,0)||1;
+  const avg=f=>dry.reduce((s,u)=>s+f(u)*u.dur,0)/tot;
+  group('干している間の平均（予報）');
+  row('気温',  `${avg(u=>u.h.temp).toFixed(1)} °C`);
+  row('湿度',  `${avg(u=>u.h.humid).toFixed(0)} %`);
+  row('風速',  `${avg(u=>u.h.wind).toFixed(1)} m/s`);
+  row('日射量',`${avg(u=>u.h.solar).toFixed(2)} kW/m²`);
+
+  // 蒸発の内訳
+  const aero=dry.reduce((s,u)=>s+u.p.aero*u.dur,0), rad=dry.reduce((s,u)=>s+u.p.rad*u.dur,0);
+  const aeroPct=Math.round(100*aero/((aero+rad)||1));
+  group('何のおかげで乾くか');
+  row(`風と空気の乾き <span style="font-size:10px;color:#bbb">(飽差 ${(avg(u=>u.p.vpd)*10).toFixed(1)} hPa)</span>`,`${aeroPct} %`,'effect-minus');
+  row('日ざし',`${100-aeroPct} %`,'effect-minus');
+
+  group('衣類条件');
+  row('厚さ',`${selectedThickness} → ${WATER_BASE[selectedThickness]} g/m²`);
+  const mf=MATERIAL_WATER[selectedMaterial];
+  row('素材',`${selectedMaterial} → ×${mf.toFixed(2)}`,mf<1?'effect-minus':mf>1?'effect-plus':'effect-zero');
+  row('乾かす水分量',`${Math.round(W)} g/m²`);
+
+  group('あなたの記録による補正');
+  row('補正係数',`×${(K/K0).toFixed(2)}`+(n?`（記録 ${n} 件から学習）`:'（まだ記録なし）'),
+      K/K0>1.05?'effect-minus':K/K0<0.95?'effect-plus':'effect-zero');
+
+  const r=document.createElement('div');r.className='factor-row';
+  r.innerHTML=`<span style="font-weight:700;color:var(--text)">予測乾燥時間</span>
+               <span class="factor-effect" style="font-size:16px">${sim.finish?fmtDuration(calculatedDryMin):'乾かない見込み'}</span>`;
+  list.appendChild(r);
+}
+
+/* ---------- 記録と学習 ---------- */
+function markDried(){
+  if(!lastCalc||!forecast)return;
+  const now=Date.now();
+  // 干し始めの時刻から今まで。まだ干し始めの時刻前なら記録しない
+  const actual=Math.round((now-lastCalc.start)/60000);
+  const btn=document.getElementById('driedBtn');
+  if(actual<10){
+    btn.innerHTML='<i class="ti ti-alert-circle"></i> 干し始めから10分以上たってから押してください';btn.style.color='var(--terra)';return;
+  }
+  // この実測時間で乾いたなら K はいくつだったか → K_i = 水分量 ÷ 蒸発しやすさの積算
+  const pot=potentialBetween(lastCalc.start,now);
+  const k=pot>0?Math.min(K0*5,Math.max(K0/5,lastCalc.W/pot)):null;
+
+  const rec={region:lastCalc.region,date:new Date().toLocaleDateString('ja-JP'),
+    predicted:lastCalc.predicted,actual,material:lastCalc.material,thickness:lastCalc.thickness,k};
+  const recs=loadRecords();recs.unshift(rec);if(recs.length>30)recs.length=30;
+  saveRecords(recs);
+  lastCalc=null;
+  btn.innerHTML='<i class="ti ti-check"></i> 記録しました！次の予測に反映されます';btn.style.color='var(--green)';
   loadMemory();
 }
-function loadMemory() {
-  try {
-    const records = JSON.parse(localStorage.getItem('laundry_records') || '[]');
-    if (!records.length) return;
-    const mc = document.getElementById('memoryCard');
-    const ml = document.getElementById('memoryList');
-    mc.style.display = 'block'; ml.innerHTML = '';
-    records.forEach(r => {
-      const row = document.createElement('div');
-      row.className = 'memory-row';
-      row.innerHTML = `<span>${r.date} ${r.region}</span><span>予測 ${r.predicted}分 → 実際 ${r.actual}分</span>`;
-      ml.appendChild(row);
-    });
-  } catch(e) {}
+function loadMemory(){
+  const recs=loadRecords();if(!recs.length)return;
+  const mc=document.getElementById('memoryCard'),ml=document.getElementById('memoryList');
+  mc.style.display='block';ml.innerHTML='';
+  recs.slice(0,5).forEach(r=>{
+    const row=document.createElement('div');row.className='memory-row';
+    row.innerHTML=`<span>${r.date} ${r.region}</span><span>予測 ${r.predicted?fmtDuration(r.predicted):'--'} → 実際 ${fmtDuration(r.actual)}</span>`;
+    ml.appendChild(row);
+  });
 }
 
-// ─── ステップ遷移 ──────────────────────────────────────────────
-function goToStep(n) {
-  document.querySelectorAll('.step').forEach((s, i) => s.classList.toggle('active', i === n - 1));
-  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i < n));
-  if (n === 2) { loadWeather(); updateCurrentTime(); renderConditionChoices(); }
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+/* ---------- UI ---------- */
+function buildRegionUI(){
+  const tabs=document.getElementById('regionTabs');tabs.innerHTML='';
+  REGIONS.forEach((reg,idx)=>{
+    const t=document.createElement('button');
+    t.className='region-tab'+(idx===selectedRegionIdx?' active':'');
+    t.textContent=reg.name;t.onclick=()=>{selectedRegionIdx=idx;buildRegionUI();};
+    tabs.appendChild(t);
+  });
+  const grid=document.getElementById('prefGrid');grid.innerHTML='';
+  REGIONS[selectedRegionIdx].prefs.forEach(pref=>{
+    const b=document.createElement('button');
+    b.className='pref-btn'+(pref===selectedRegion?' selected':'');
+    b.textContent=pref;b.onclick=()=>selectPref(pref);grid.appendChild(b);
+  });
 }
-
-// ─── ドラムボタン ─────────────────────────────────────────────
-function setupDrumBtn(id, fn) {
-  const el = document.getElementById(id);
-  let timer = null, speed = 300;
-  const fire = () => { fn(); timer = setTimeout(fire, speed = Math.max(50, speed - 20)); };
-  el.addEventListener('click', fn);
-  el.addEventListener('mousedown',  () => { speed = 300; timer = setTimeout(fire, 400); });
-  el.addEventListener('touchstart', () => { speed = 300; timer = setTimeout(fire, 400); }, { passive: true });
-  const stop = () => clearTimeout(timer);
-  el.addEventListener('mouseup',    stop);
-  el.addEventListener('mouseleave', stop);
-  el.addEventListener('touchend',   stop);
-}
-setupDrumBtn('hUp', () => adjustHour( 1));
-setupDrumBtn('hDn', () => adjustHour(-1));
-setupDrumBtn('mUp', () => adjustMin ( 1));
-setupDrumBtn('mDn', () => adjustMin (-1));
-
-document.getElementById('toStep2Btn').addEventListener('click', () => goToStep(2));
-
-// ─── 起動 ─────────────────────────────────────────────────────
-(async () => {
-  await loadCSV();
+function selectPref(pref){
+  selectedRegion=pref;
+  document.getElementById('toStep2Btn').disabled=false;
+  document.getElementById('bannerPrefName').textContent=pref;
+  document.getElementById('selectedPrefBanner').classList.add('visible');
   buildRegionUI();
-  updateCurrentTime();
-})();
+}
+
+function renderChoices(id,opts,cur,fn){
+  const el=document.getElementById(id);el.innerHTML='';
+  opts.forEach(o=>{
+    const b=document.createElement('button');
+    b.className='choice-btn'+(o===cur?' selected':'');
+    b.textContent=o;b.onclick=()=>{fn(o);renderConditionChoices();};
+    el.appendChild(b);
+  });
+}
+function renderConditionChoices(){
+  renderChoices('materialChoices',materialOptions,selectedMaterial,v=>selectedMaterial=v);
+  renderChoices('thicknessChoices',thicknessOptions,selectedThickness,v=>selectedThickness=v);
+}
+
+function updateCurrentTime(){
+  const n=new Date();
+  document.getElementById('currentTimeDisplay').textContent=`現在 ${fmtTime(n)}`;
+  startHour=n.getHours();startMin=n.getMinutes();updateDrum();
+}
+function adjustHour(d){startHour=(startHour+d+24)%24;updateDrum();}
+function adjustMin(d) {startMin =(startMin +d+60)%60;updateDrum();}
+function updateDrum(){
+  document.getElementById('hourDisplay').textContent=pad(startHour);
+  document.getElementById('minDisplay').textContent =pad(startMin);
+  const sd=startDate();
+  document.getElementById('currentTimeDisplay').textContent=`現在 ${fmtTime(new Date())}　→　${dayLabel(sd)} ${fmtTime(sd)} に干す`;
+  updateWeatherCard();
+}
+
+function updateProgress(n){
+  [1,2,3].forEach(i=>{
+    const dot=document.getElementById(`pd${i}`),line=document.getElementById(`pl${i}`);
+    if(i<n){dot.className='prog-dot done';dot.innerHTML='<i class="ti ti-check" style="font-size:11px"></i>';}
+    else if(i===n){dot.className='prog-dot active';dot.textContent=i;}
+    else{dot.className='prog-dot';dot.textContent=i;}
+    if(line)line.className=i<n?'prog-line done':'prog-line';
+  });
+}
+let loadedPref=null;
+function goToStep(n){
+  document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('active',i===n-1));
+  updateProgress(n);
+  if(n===2){
+    if(loadedPref!==selectedRegion){loadedPref=selectedRegion;updateCurrentTime();loadWeather();}
+    renderConditionChoices();
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function setupDrum(id,fn){
+  const el=document.getElementById(id);let timer=null,speed=300;
+  const fire=()=>{fn();timer=setTimeout(fire,speed=Math.max(50,speed-20));};
+  el.addEventListener('click',fn);
+  el.addEventListener('mousedown',()=>{speed=300;timer=setTimeout(fire,400);});
+  el.addEventListener('touchstart',()=>{speed=300;timer=setTimeout(fire,400);},{passive:true});
+  const stop=()=>clearTimeout(timer);
+  el.addEventListener('mouseup',stop);el.addEventListener('mouseleave',stop);el.addEventListener('touchend',stop);
+}
+setupDrum('hUp',()=>adjustHour(1));setupDrum('hDn',()=>adjustHour(-1));
+setupDrum('mUp',()=>adjustMin(1)); setupDrum('mDn',()=>adjustMin(-1));
+document.getElementById('toStep2Btn').addEventListener('click',()=>goToStep(2));
+
+buildRegionUI();
 </script>
 </body>
 </html>
