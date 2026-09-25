@@ -128,6 +128,35 @@ h1 {
   font-weight: 700; box-shadow: 3px 3px 0 var(--green-dk); transform: translate(-1px,-1px);
 }
 
+/* ── LOCATE / CITY ── */
+.locate-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--surface); border: 2px dashed var(--border2);
+  border-radius: 18px 8px 16px 9px;
+  padding: 6px 14px; margin-bottom: 12px;
+  font-size: 13px; font-family: var(--round); color: var(--text);
+  cursor: pointer; transition: all .15s;
+}
+.locate-btn:hover { background: var(--bg2); border-style: solid; }
+.locate-btn:disabled { opacity: .6; cursor: wait; }
+.locate-msg { font-size: 12px; color: var(--terra); margin: -4px 0 10px; }
+.locate-msg:empty { display: none; }
+
+.city-section { display: none; margin-top: -.3rem; }
+.city-section.visible { display: block; animation: fadeIn .25s ease; }
+.city-search {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: 12px 5px 12px 6px;
+  padding: 7px 12px; margin-bottom: 10px; color: var(--muted);
+}
+.city-search input {
+  border: none; outline: none; background: transparent; width: 100%;
+  font-family: var(--round); font-size: 13px; color: var(--text);
+}
+.city-grid { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); max-height: 220px; padding: 2px 6px 6px 2px; }
+.city-empty { grid-column: 1 / -1; font-size: 12px; color: var(--muted); padding: 6px 2px; }
+
 /* ── SELECTED BANNER ── */
 .selected-pref-banner {
   display: none; align-items: center; gap: 8px;
@@ -193,12 +222,147 @@ h1 {
 }
 .weather-source { font-size: 10px; color: var(--border2); margin-top: 6px; }
 .weather-source a { color: inherit; }
-.dry-time-warn { font-size: 12px; color: var(--terra); margin-top: 8px; line-height: 1.6; }
-.dry-time-warn:empty { display: none; }
+.rain-alert {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: var(--terra-bg); border: 2px solid var(--terra);
+  border-radius: 14px 5px 13px 6px; padding: 11px 14px;
+  box-shadow: 3px 3px 0 #d9b3a2; color: var(--terra);
+}
+.rain-alert:empty { display: none; }
+.rain-alert-icon { font-size: 26px; line-height: 1; margin-top: 1px; }
+.rain-alert-title { font-size: 17px; font-weight: 700; line-height: 1.35; }
+.rain-alert-sub { font-size: 12px; color: #8f4a2e; margin-top: 2px; line-height: 1.5; }
+#dryWarn { margin-bottom: 1.2rem; }
+.weather-note .rain-alert { margin-top: 2px; }
+/* ── LAUNDRY ITEMS ── */
+.item-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.item-chip {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 14px 6px 13px 7px;
+  padding: 5px 11px; font-size: 12px; font-family: var(--round);
+  color: var(--muted); cursor: pointer; transition: all .14s;
+  box-shadow: 2px 2px 0 var(--border);
+}
+.item-chip:hover { background: var(--bg2); color: var(--text); transform: translate(-1px,-1px); }
+.item-chip:active { transform: translate(1px,1px); box-shadow: 1px 1px 0 var(--border); }
+.item-chip::before { content: '+ '; color: var(--green); }
+
+.laundry-list { display: flex; flex-direction: column; gap: 8px; }
+.laundry-empty {
+  font-size: 12px; color: var(--muted); text-align: center;
+  padding: 14px; border: 1.5px dashed var(--border); border-radius: 10px 4px 10px 4px;
+}
+.laundry-item {
+  background: var(--bg2); border: 1.5px solid var(--border);
+  border-radius: 10px 4px 11px 5px; padding: 8px 10px;
+}
+.li-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.li-name { font-size: 14px; font-weight: 500; flex: 1; }
+.li-count { display: flex; align-items: center; gap: 4px; font-family: var(--hand); font-size: 15px; color: var(--muted); }
+.li-count button, .li-remove {
+  width: 24px; height: 24px; border-radius: 8px 3px 8px 3px;
+  border: 1.5px solid var(--border); background: var(--surface);
+  color: var(--muted); cursor: pointer; font-size: 13px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+}
+.li-count button:hover, .li-remove:hover { color: var(--text); border-color: var(--border2); }
+.li-remove:hover { color: var(--terra); }
+.li-count span { min-width: 22px; text-align: center; }
+.li-selects { display: flex; gap: 6px; }
+.li-selects label { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.li-selects label > span { font-size: 10px; color: var(--muted); padding-left: 3px; }
+.li-selects label select { width: 100%; }
+.li-dry { display: flex; align-items: center; gap: 6px; margin-top: 7px; font-size: 10px; color: var(--muted); }
+.li-dots { display: flex; gap: 3px; }
+.li-dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--surface); border: 1.3px solid var(--border2); }
+.li-dots i.on { background: #9cc3d6; border-color: #6f9fb6; }
+.li-dry.hard .li-dots i.on { background: var(--terra); border-color: var(--terra); opacity: .8; }
+.li-dry > span:first-child, .li-dry-word { white-space: nowrap; }
+.li-dry-word { margin-left: auto; }
+.laundry-summary {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-family: var(--hand); font-size: 14px; color: var(--muted);
+  border-top: 1.5px dashed var(--border); padding-top: 10px; margin: 4px 0 8px;
+}
+.laundry-summary:empty { display: none; }
+.laundry-summary b { color: var(--text); font-weight: 400; font-size: 16px; }
+.li-selects select {
+  flex: 1; min-width: 0; appearance: none; -webkit-appearance: none;
+  background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%237A6E5C' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 9px center;
+  border: 1.5px solid var(--border); border-radius: 8px 3px 8px 4px;
+  padding: 5px 24px 5px 9px; font-family: var(--round); font-size: 12px; color: var(--text);
+  cursor: pointer;
+}
+.li-selects select:focus { outline: none; border-color: var(--green); }
+
+/* ── 1枚ずつの結果（横スクロール） ── */
+.scroll-hint { font-family: var(--round); font-size: 11px; color: var(--border2); margin-left: auto; }
+.item-scroll-wrap { position: relative; margin: 0 -1rem 1.4rem; }
+.item-scroll-wrap::after {
+  content: ''; position: absolute; top: 0; right: 0; bottom: 10px; width: 28px;
+  background: linear-gradient(90deg, transparent, var(--bg)); pointer-events: none;
+  transition: opacity .2s;
+}
+.item-scroll-wrap.at-end::after { opacity: 0; }
+.item-scroller {
+  display: flex; gap: 10px; overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory; scroll-padding: 0 1rem;
+  padding: 4px 1rem 12px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.item-scroller::-webkit-scrollbar { height: 4px; }
+.item-scroller::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.item-card {
+  flex: 0 0 146px; scroll-snap-align: start;
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: 13px 5px 14px 6px; padding: 11px 12px 12px;
+  box-shadow: 3px 3px 0 var(--border);
+  display: flex; flex-direction: column;
+}
+.item-card.slowest { border-color: var(--terra); box-shadow: 3px 3px 0 #d9b3a2; }
+.item-card-name { font-size: 13px; font-weight: 500; line-height: 1.35; }
+.item-card-name small { font-weight: 400; color: var(--muted); font-size: 11px; margin-left: 2px; }
+.item-card-sub { font-size: 10px; color: var(--muted); margin-top: 2px; line-height: 1.5; min-height: 30px; }
+.item-card-time { font-family: var(--hand); font-size: 30px; line-height: 1; margin-top: 8px; }
+.item-card-dur { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.item-card-bar { height: 5px; margin-top: 9px; background: var(--bg2); border-radius: 3px 1px 3px 1px; overflow: hidden; }
+.item-card-bar span { display: block; height: 100%; background: var(--green); border-radius: inherit; opacity: .75; }
+.item-card.slowest .item-card-bar span { background: var(--terra); }
+.slow-tag {
+  display: inline-block; align-self: flex-start; font-size: 9px; color: var(--terra);
+  border: 1px solid var(--terra); border-radius: 6px 2px 6px 2px;
+  padding: 0 5px; margin-bottom: 5px;
+}
+
 .condition-hint { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.6; }
 
 /* ── TIME DRUM ── */
 .time-section { margin-bottom: 1.5rem; }
+.date-chips { display: flex; gap: 6px; overflow-x: auto; padding: 2px 4px 8px 2px; margin-bottom: 6px; scrollbar-width: none; }
+.date-chips::-webkit-scrollbar { display: none; }
+.date-chip {
+  flex: 0 0 auto; background: var(--surface); border: 2px solid var(--border);
+  border-radius: 12px 5px 12px 6px; padding: 6px 12px;
+  font-family: var(--round); color: var(--muted); cursor: pointer;
+  box-shadow: 2px 2px 0 var(--border); transition: all .14s;
+  display: flex; flex-direction: column; align-items: center; line-height: 1.25;
+}
+.date-chip b { font-size: 13px; font-weight: 500; }
+.date-chip small { font-size: 10px; }
+.date-chip:hover { background: var(--bg2); }
+.date-chip.selected {
+  background: var(--green-bg); border-color: var(--green); color: var(--green);
+  box-shadow: 3px 3px 0 var(--green-dk); transform: translate(-1px,-1px);
+}
+.date-chip.selected b { font-weight: 700; }
+.dry-time-day { font-size: 14px; color: var(--text); margin-bottom: 2px; }
+.dry-time-day.next { color: var(--terra); font-weight: 700; }
+.day-tag {
+  display: inline-block; font-family: var(--round); font-size: 10px; font-weight: 700;
+  color: var(--terra); background: var(--terra-bg); border-radius: 6px 2px 6px 2px;
+  padding: 1px 5px; vertical-align: middle; margin-right: 3px;
+}
+.item-card-time .day-tag { font-size: 11px; vertical-align: 6px; }
 .time-display { display: flex; align-items: center; gap: 7px; margin-bottom: 14px; font-size: 13px; color: var(--muted); font-family: var(--hand); }
 .drum-roll-container { display: flex; align-items: center; gap: 10px; justify-content: center; }
 .drum-col { display: flex; flex-direction: column; align-items: center; gap: 5px; }
@@ -263,6 +427,31 @@ h1 {
 .badge-inside  { background: var(--terra-bg); color: var(--terra); border-color: var(--terra); }
 .badge-either  { background: var(--amber-bg); color: var(--amber); border-color: var(--amber); }
 
+/* ── MODE TABS ── */
+.mode-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
+.mode-tabs.hidden { display: none; }
+.mode-tab {
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: 12px 5px 13px 6px; padding: 8px 6px;
+  font-family: var(--round); color: var(--muted); cursor: pointer;
+  box-shadow: 2px 2px 0 var(--border); transition: all .14s;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.mode-tab:hover { background: var(--bg2); }
+.mode-tab.active {
+  background: var(--green-bg); border-color: var(--green); color: var(--green);
+  box-shadow: 3px 3px 0 var(--green-dk); transform: translate(-1px,-1px);
+}
+.mode-name { font-size: 13px; }
+.mode-time { font-family: var(--hand); font-size: 20px; line-height: 1.1; }
+.indoor-opts {
+  display: none; background: var(--bg2); border: 1.5px dashed var(--border2);
+  border-radius: 12px 5px 12px 5px; padding: 10px 12px; margin-bottom: 1rem;
+}
+.indoor-opts.visible { display: block; }
+.indoor-opts .condition-hint { margin-top: 8px; font-size: 11px; }
+.indoor-opts .choice-btn { font-size: 12px; padding: 9px 4px; white-space: nowrap; }
+
 /* ── DRY TIME CARD ── */
 .dry-time-card {
   background: var(--surface); border: 2.5px solid var(--border);
@@ -308,6 +497,121 @@ h1 {
   box-shadow: 3px 3px 0 var(--border);
 }
 .dry-btn:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--border); background: var(--bg2); }
+
+/* ── 途中から再開 ── */
+.resume-banner {
+  display: none; align-items: center; gap: 8px;
+  background: var(--amber-bg); border: 2px solid var(--amber);
+  border-radius: 13px 5px 12px 6px; padding: 9px 12px; margin-bottom: 14px;
+  font-size: 13px; color: var(--amber); box-shadow: 3px 3px 0 #d8c49a;
+}
+.resume-banner.visible { display: flex; }
+.resume-banner span { flex: 1; line-height: 1.5; }
+.resume-banner button {
+  background: var(--surface); border: 1.5px solid var(--amber); color: var(--amber);
+  border-radius: 10px 4px 10px 4px; padding: 5px 12px; font-family: var(--round);
+  font-size: 13px; cursor: pointer; white-space: nowrap;
+}
+
+/* ── 1枚ずつの状態 ── */
+.item-card { position: relative; }
+.item-status {
+  display: inline-block; align-self: flex-start; font-size: 10px; font-weight: 700;
+  border-radius: 6px 2px 6px 2px; padding: 1px 6px; margin-top: 8px;
+  background: var(--bg2); color: var(--muted);
+}
+.item-status.drying { background: var(--amber-bg); color: var(--amber); }
+.item-status.ready  { background: var(--green-bg); color: var(--green); }
+.item-status.done   { background: var(--green); color: #fff; }
+.item-card.is-done { background: var(--green-bg); border-color: var(--green); box-shadow: 3px 3px 0 var(--green-dk); }
+.item-card.is-done .item-card-time { color: var(--green); }
+.item-card.is-wait { opacity: .75; }
+.item-card-bar span.progress { background: var(--amber); opacity: .8; }
+.item-card-actions { display: flex; gap: 5px; margin-top: 10px; }
+.card-btn {
+  flex: 1; background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 9px 3px 9px 4px; padding: 5px 4px; font-family: var(--round);
+  font-size: 11px; color: var(--text); cursor: pointer;
+}
+.card-btn:hover:not(:disabled) { border-color: var(--green); color: var(--green); }
+.card-btn:disabled { opacity: .45; cursor: default; }
+.card-btn.done-btn { border-color: var(--green); color: var(--green); font-weight: 700; }
+.card-remove {
+  position: absolute; top: 5px; right: 6px; width: 20px; height: 20px;
+  border: none; background: none; color: var(--border2); font-size: 14px; cursor: pointer; line-height: 1;
+}
+.card-remove:hover { color: var(--terra); }
+.added-tag { font-size: 10px; color: var(--amber); margin-top: 2px; }
+
+/* ── 途中で追加 ── */
+.add-panel { margin: -.4rem 0 1.4rem; }
+.add-toggle { border-style: dashed; color: var(--green); }
+.add-form {
+  display: none; background: var(--surface); border: 2px solid var(--green);
+  border-radius: 12px 5px 12px 6px; padding: 12px; box-shadow: 3px 3px 0 var(--green-dk);
+}
+.add-form.visible { display: block; }
+.add-panel.open .add-toggle { display: none; }
+.add-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+.add-cancel, .add-confirm {
+  border-radius: 10px 4px 10px 4px; padding: 7px 16px; font-family: var(--round);
+  font-size: 13px; cursor: pointer; border: 2px solid var(--border); background: var(--surface); color: var(--muted);
+}
+.add-confirm { background: var(--green); border-color: var(--green-dk); color: #fff; box-shadow: 2px 2px 0 var(--green-dk); }
+
+/* ── 乾燥時間の内訳 ── */
+.bd-card {
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: 14px 6px 14px 7px; padding: 14px 14px 12px;
+  box-shadow: 4px 4px 0 var(--border); margin-bottom: 1.2rem;
+}
+.bd-head {
+  font-family: var(--hand); font-size: 14px; color: var(--muted);
+  display: flex; align-items: baseline; gap: 6px; margin: 16px 0 8px;
+}
+.bd-head:first-child { margin-top: 0; }
+.bd-head small { font-family: var(--round); font-size: 10px; color: var(--border2); }
+.bd-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 6px; }
+.bd-tile {
+  background: var(--bg2); border: 1.5px solid var(--border);
+  border-radius: 9px 4px 9px 4px; padding: 7px 8px; text-align: center;
+}
+.bd-tile .t-label { font-size: 10px; color: var(--muted); }
+.bd-tile .t-val { font-family: var(--hand); font-size: 21px; line-height: 1.15; }
+.bd-tile .t-unit { font-size: 10px; color: var(--muted); margin-left: 1px; }
+.bd-note { font-size: 12px; color: var(--muted); margin-top: 7px; line-height: 1.6; }
+.bd-note b { color: var(--text); font-weight: 700; }
+.bd-note .warn { color: var(--terra); }
+
+.bd-split {
+  display: flex; height: 14px; border-radius: 8px 3px 8px 3px; overflow: hidden;
+  border: 1.5px solid var(--border); background: var(--bg2);
+}
+.bd-split span { display: block; height: 100%; }
+.bd-split .aero { background: #8fb89b; }
+.bd-split .rad  { background: #e2b86a; }
+.bd-legend { display: flex; justify-content: space-between; font-size: 12px; margin-top: 6px; }
+.bd-legend span { display: flex; align-items: center; gap: 5px; }
+.bd-legend i { width: 9px; height: 9px; border-radius: 3px 1px 3px 1px; display: inline-block; }
+.bd-legend b { font-family: var(--hand); font-size: 16px; font-weight: 400; }
+
+.bd-items { display: flex; flex-direction: column; gap: 7px; }
+.bd-item { display: grid; grid-template-columns: 108px 1fr 56px; align-items: center; gap: 8px; }
+.bd-item-name { font-size: 12px; line-height: 1.3; }
+.bd-item-name small { display: block; font-size: 10px; color: var(--muted); }
+.bd-item-bar { height: 8px; background: var(--bg2); border-radius: 4px 1px 4px 1px; overflow: hidden; }
+.bd-item-bar span { display: block; height: 100%; background: #9cc3d6; border-radius: inherit; }
+.bd-item.slow .bd-item-bar span { background: var(--terra); opacity: .75; }
+.bd-item.slow .bd-item-name { color: var(--terra); font-weight: 700; }
+.bd-item-val { font-family: var(--hand); font-size: 14px; text-align: right; white-space: nowrap; }
+.bd-item-val small { font-family: var(--round); font-size: 9px; color: var(--muted); }
+
+.bd-total {
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-top: 1.5px dashed var(--border); margin-top: 14px; padding-top: 10px;
+  font-size: 13px; font-weight: 700;
+}
+.bd-total b { font-family: var(--hand); font-size: 22px; font-weight: 400; }
 
 /* ── MEMORY ── */
 .memory-card {
@@ -395,13 +699,28 @@ h1 {
 
   <!-- Step 1 -->
   <div class="step active" id="step1">
+    <div class="resume-banner" id="resumeBanner">
+      <i class="ti ti-shirt"></i>
+      <span id="resumeText"></span>
+      <button id="resumeBtn">見る →</button>
+    </div>
     <div class="section-label">地域・都道府県を選択</div>
+    <button class="locate-btn" id="locateBtn"><i class="ti ti-current-location"></i> 現在地から選ぶ</button>
+    <div class="locate-msg" id="locateMsg"></div>
     <div class="selected-pref-banner" id="selectedPrefBanner">
       <i class="ti ti-map-pin"></i>
       <span><strong id="bannerPrefName"></strong> を選択中</span>
     </div>
     <div class="region-tabs" id="regionTabs"></div>
     <div class="pref-grid" id="prefGrid"></div>
+    <div class="city-section" id="citySection">
+      <div class="section-label">市区町村を選択</div>
+      <label class="city-search">
+        <i class="ti ti-search"></i>
+        <input type="text" id="cityFilter" placeholder="市区町村名でしぼりこむ" autocomplete="off">
+      </label>
+      <div class="pref-grid city-grid" id="cityGrid"></div>
+    </div>
     <button class="primary-btn" id="toStep2Btn" disabled>次へ → 天気を確認する</button>
   </div>
 
@@ -422,19 +741,16 @@ h1 {
       <div class="weather-source" id="weatherSource"></div>
     </div>
     <div class="card">
-      <div class="card-title"><i class="ti ti-shirt"></i><span>洗濯物の条件</span></div>
-      <div class="condition-section">
-        <div class="condition-label">素材</div>
-        <div class="choice-grid" id="materialChoices"></div>
-      </div>
-      <div class="condition-section">
-        <div class="condition-label">厚さ</div>
-        <div class="choice-grid" id="thicknessChoices"></div>
-      </div>
-      <div class="condition-hint">選択した条件を乾燥時間の予測に反映します。</div>
+      <div class="card-title"><i class="ti ti-shirt"></i><span>干す洗濯物</span></div>
+      <div class="condition-label">タップして追加</div>
+      <div class="item-presets" id="itemPresets"></div>
+      <div class="laundry-summary" id="laundrySummary"></div>
+      <div class="laundry-list" id="laundryList"></div>
+      <div class="condition-hint">素材と厚さは1枚ずつ変えられます。いちばん乾きにくいものに合わせて「全部乾く時刻」を出します。</div>
     </div>
     <div class="time-section">
-      <div class="section-label">干し始める時間</div>
+      <div class="section-label">干し始める日時</div>
+      <div class="date-chips" id="dateChips"></div>
       <div class="time-display"><i class="ti ti-clock"></i><span id="currentTimeDisplay">現在 --:--</span></div>
       <div class="drum-roll-container">
         <div class="drum-col">
@@ -460,16 +776,45 @@ h1 {
       <span class="weather-icon-big" id="resultIcon">☀️</span>
       <div class="recommendation-badge" id="resultBadge"></div>
     </div>
+    <div class="mode-tabs" id="modeTabs">
+      <button class="mode-tab" data-mode="out"><span class="mode-name">☀️ 外干し</span><span class="mode-time" id="modeTimeOut">--:--</span></button>
+      <button class="mode-tab" data-mode="in"><span class="mode-name">🏠 室内干し</span><span class="mode-time" id="modeTimeIn">--:--</span></button>
+    </div>
+    <div class="indoor-opts" id="indoorOpts">
+      <div class="condition-label">使うもの（いくつでも）</div>
+      <div class="choice-grid" id="indoorChoices"></div>
+      <div class="condition-hint">室内の温度・湿度は、外の予報から推定しています。</div>
+    </div>
+    <div class="rain-alert" id="dryWarn"></div>
     <div class="dry-time-card">
-      <div class="dry-time-label">乾き上がる予想時刻</div>
+      <div class="dry-time-label">全部乾く予想時刻</div>
+      <div class="dry-time-day" id="finishDay"></div>
       <div class="dry-time-finish" id="finishTime">--:--</div>
       <div class="dry-time-countdown" id="countdownText"></div>
-      <div class="dry-time-warn" id="dryWarn"></div>
+    </div>
+    <div class="section-label">1枚ずつの乾く時刻 <span class="scroll-hint" id="scrollHint"></span></div>
+    <div class="item-scroll-wrap" id="itemScrollWrap">
+      <div class="item-scroller" id="itemResults"></div>
+    </div>
+    <div class="add-panel">
+      <button class="dry-btn add-toggle" id="addToggle"><i class="ti ti-plus"></i> 洗濯物を追加する</button>
+      <div class="add-form" id="addForm">
+        <div class="condition-label" id="addStartLabel"></div>
+        <div class="li-selects">
+          <select id="addType" aria-label="服の種類"></select>
+          <select id="addMat" aria-label="素材"></select>
+          <select id="addThick" aria-label="厚さ"></select>
+        </div>
+        <div class="add-actions">
+          <button class="add-cancel" id="addCancel">やめる</button>
+          <button class="add-confirm" id="addConfirm">追加する</button>
+        </div>
+      </div>
     </div>
     <div class="section-label">乾燥時間の内訳</div>
-    <div class="factor-list" id="factorList"></div>
-    <button class="dry-btn" id="driedBtn" onclick="markDried()">
-      <i class="ti ti-checks"></i> 乾いた！（実際の時間を記録）
+    <div id="factorList"></div>
+    <button class="dry-btn" id="driedBtn" onclick="markAllDried()">
+      <i class="ti ti-checks"></i> 残りぜんぶ乾いた！（実際の時間を記録）
     </button>
     <div class="memory-card" id="memoryCard" style="display:none">
       <div class="memory-title"><i class="ti ti-history"></i> 過去の記録</div>
@@ -479,6 +824,7 @@ h1 {
 
 </div>
 
+<script src="municipalities.js"></script>
 <script>
 /* =========================================================
    洗濯ものナビ
@@ -514,21 +860,53 @@ const PREF_COORDS={
   '宮崎県':[31.911,131.424],'鹿児島県':[31.560,130.558],'沖縄県':[26.212,127.681],
 };
 
-let selectedRegionIdx=0, selectedRegion=null;
+let selectedRegionIdx=0, selectedRegion=null, selectedCity=null;
 let startHour=9, startMin=0, calculatedDryMin=0;
-let selectedMaterial='綿', selectedThickness='普通';
 let forecast=null;        // {hours:[{t,temp,humid,wind,solar,precip}], model, fetchedAt}
-let lastCalc=null;        // 直近の計算（記録・学習に使う）
 let weatherReqId=0;
 
 /* ---------- 衣類条件：含んでいる水分量 ---------- */
 // 脱水後に 1m² あたり含んでいる水 [g/m²]（綿換算）
-const WATER_BASE={'薄手':100,'普通':180,'厚手':350};
+const WATER_BASE={'薄手':100,'普通':180,'厚手':250,'極厚':300};
 // 素材ごとの水の含みやすさ（綿=1）
-const MATERIAL_WATER={'綿':1.0,'ポリエステル':0.45,'混紡':0.7,'ウール':1.15};
+// 繊維の吸水性（公定水分率など）をもとにしたおおよその値。記録による補正で全体が調整される
+const MATERIAL_WATER={
+  '綿':1.0, '麻（リネン）':0.85, 'レーヨン':1.3, 'シルク':0.8, 'ウール':1.15,
+  '混紡':0.7, 'アクリル':0.55, 'ポリエステル':0.45, 'ナイロン':0.4,
+};
 const materialOptions=Object.keys(MATERIAL_WATER);
 const thicknessOptions=Object.keys(WATER_BASE);
-function waterAmount(){return WATER_BASE[selectedThickness]*MATERIAL_WATER[selectedMaterial];}
+
+// 服の種類 → 素材・厚さの初期値（shape：フードやポケットなど形による乾きにくさ）
+const ITEM_PRESETS=[
+  {name:'Tシャツ',        material:'綿',          thickness:'薄手'},
+  {name:'シャツ・ブラウス', material:'混紡',        thickness:'薄手'},
+  {name:'肌着',           material:'綿',          thickness:'薄手'},
+  {name:'下着',           material:'ナイロン',     thickness:'薄手'},
+  {name:'靴下',           material:'混紡',        thickness:'普通'},
+  {name:'パジャマ',        material:'綿',          thickness:'普通'},
+  {name:'ズボン',          material:'綿',          thickness:'普通'},
+  {name:'ジーンズ',        material:'綿',          thickness:'厚手', shape:1.15, shapeNote:'ポケット・縫い目'},
+  {name:'パーカー',        material:'綿',          thickness:'厚手', shape:1.2,  shapeNote:'フード・袖口'},
+  {name:'セーター',        material:'ウール',       thickness:'厚手'},
+  {name:'スポーツウェア',   material:'ポリエステル', thickness:'薄手'},
+  {name:'フェイスタオル',   material:'綿',          thickness:'普通'},
+  {name:'バスタオル',       material:'綿',          thickness:'極厚'},
+  {name:'シーツ',          material:'綿',          thickness:'薄手'},
+  {name:'その他',          material:'綿',          thickness:'普通'},
+];
+function itemWater(it){return WATER_BASE[it.thickness]*MATERIAL_WATER[it.material]*(it.shape||1);}
+
+// 干す洗濯物のリスト（前回の内容を覚えておく）
+let laundryItems=(()=>{
+  try{
+    const v=JSON.parse(localStorage.getItem('laundry_items')||'null');
+    if(Array.isArray(v)&&v.length&&v.every(i=>MATERIAL_WATER[i.material]&&WATER_BASE[i.thickness]))return v;
+  }catch(e){}
+  return [{...ITEM_PRESETS[0],count:1}];
+})();
+function saveItems(){try{localStorage.setItem('laundry_items',JSON.stringify(laundryItems));}catch(e){}}
+function itemsSummary(items){return items.map(i=>i.name+(i.count>1?`×${i.count}`:'')).join('、');}
 
 /* ---------- 蒸発の物理モデル（ペンマン式ベース） ---------- */
 const GAMMA=0.0665;          // 乾湿計定数 [kPa/K]
@@ -543,8 +921,9 @@ function svp(T){return 0.6108*Math.exp(17.27*T/(T+237.3));}   // 飽和水蒸気
 function evapParts(w){
   const es=svp(w.temp), ea=es*w.humid/100, vpd=Math.max(0,es-ea);
   const delta=4098*es/Math.pow(w.temp+237.3,2);               // 飽和水蒸気圧曲線の傾き
-  const hc=5.7+3.8*(w.wind*WIND_HEIGHT);                        // 対流熱伝達率 [W/m²K]
-  const rabs=ABSORB*VERTICAL*w.solar*1000;                      // 布が吸収する日射 [W/m²]
+  const air=w.air??w.wind*WIND_HEIGHT;                           // 布のまわりの風速 [m/s]
+  const hc=5.7+3.8*air;                                          // 対流熱伝達率 [W/m²K]
+  const rabs=ABSORB*VERTICAL*(w.solar||0)*1000;                  // 布が吸収する日射 [W/m²]
   const toG=3600*1000/LAMBDA/(delta+GAMMA);                     // W/m² → g/m²/h
   return {aero:2*hc*vpd*toG, rad:delta*rabs*toG, vpd};          // aero は布の両面
 }
@@ -566,10 +945,21 @@ function currentK(){
 /* ---------- 天気の取得 ---------- */
 const HOURLY_VARS='temperature_2m,relative_humidity_2m,wind_speed_10m,shortwave_radiation,precipitation';
 
-async function fetchOpenMeteo(pref,model){
-  const [lat,lon]=PREF_COORDS[pref];
+/* ---------- 市区町村 ---------- */
+// municipalities.js（MUNICIPALITIES = {都道府県: [[市区町村, 緯度, 経度], ...]}）
+const MUNI=(typeof MUNICIPALITIES!=='undefined')?MUNICIPALITIES:{};
+// 「神埼郡吉野ヶ里町」→「吉野ヶ里町」のように郡名を省いて表示
+function cityLabel(c){return c.replace(/^.+?郡(?=.)/,'');}
+function placeName(){return selectedCity?`${selectedRegion} ${cityLabel(selectedCity)}`:selectedRegion;}
+function placeCoords(){
+  const hit=(MUNI[selectedRegion]||[]).find(m=>m[0]===selectedCity);
+  return hit?[hit[1],hit[2]]:PREF_COORDS[selectedRegion];
+}
+
+async function fetchOpenMeteo(model){
+  const [lat,lon]=placeCoords();
   const p=new URLSearchParams({latitude:lat,longitude:lon,hourly:HOURLY_VARS,
-    wind_speed_unit:'ms',timezone:'Asia/Tokyo',timeformat:'unixtime',forecast_days:3});
+    wind_speed_unit:'ms',timezone:'Asia/Tokyo',timeformat:'unixtime',forecast_days:7,past_days:2});
   if(model)p.set('models',model);
   const res=await fetch('https://api.open-meteo.com/v1/forecast?'+p);
   if(!res.ok)throw new Error('HTTP '+res.status);
@@ -586,23 +976,24 @@ async function fetchOpenMeteo(pref,model){
 }
 
 async function loadWeather(){
-  const pref=selectedRegion, id=++weatherReqId;
+  const id=++weatherReqId;
   forecast=null;
   document.getElementById('calcBtn').disabled=true;
-  document.getElementById('weatherTitle').textContent=`${pref}の天気`;
+  document.getElementById('weatherTitle').textContent=`${placeName()}の天気`;
   ['wTemp','wHumid','wWind','wSolar'].forEach(k=>document.getElementById(k).textContent='--');
   setNote('予報を取得しています…');
   document.getElementById('weatherSource').textContent='';
   try{
     let hours=[], model='気象庁 数値予報モデル';
-    try{hours=await fetchOpenMeteo(pref,'jma_seamless');}catch(e){}
-    if(hours.length<24){hours=await fetchOpenMeteo(pref,null);model='Open-Meteo 標準モデル';}
+    try{hours=await fetchOpenMeteo('jma_seamless');}catch(e){}
+    if(hours.length<24){hours=await fetchOpenMeteo(null);model='Open-Meteo 標準モデル';}
     if(id!==weatherReqId)return;          // 途中で別の県を選んだ
     if(!hours.length)throw new Error('empty');
     forecast={hours,model,fetchedAt:new Date()};
     document.getElementById('weatherSource').innerHTML=
-      `出典：${model}（<a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> 経由）・${fmtTime(forecast.fetchedAt)} 取得`;
-    document.getElementById('calcBtn').disabled=false;
+      `出典：${model}（<a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> 経由）・${fmtTime(forecast.fetchedAt)} 取得<br>`+
+      `市区町村の位置：<a href="https://github.com/geolonia/japanese-addresses" target="_blank" rel="noopener">Geolonia 住所データ</a>（CC BY 4.0）`;
+    document.getElementById('calcBtn').disabled=!laundryItems.length;
     updateWeatherCard();
   }catch(e){
     if(id!==weatherReqId)return;
@@ -610,6 +1001,11 @@ async function loadWeather(){
   }
 }
 
+// 雨の注意（大きめの表示）
+function rainAlertHTML(title,sub){
+  return `<span class="rain-alert-icon">☂</span><div><div class="rain-alert-title">${title}</div>`+
+         (sub?`<div class="rain-alert-sub">${sub}</div>`:'')+`</div>`;
+}
 function setNote(text,warn=false,retry=false){
   const el=document.getElementById('weatherNote');
   el.className='weather-note'+(warn?' warn':'');
@@ -626,30 +1022,55 @@ function fmtTime(d){return `${pad(d.getHours())}:${pad(d.getMinutes())}`;}
 function fmtDuration(min){const h=Math.floor(min/60),m=min%60;return `${h>0?h+'時間':''}${m>0||h===0?m+'分':''}`;}
 
 // 干し始める日時（6時間以上前の時刻を選んだら「明日」とみなす）
+const START_DAYS=5;          // 干し始めは今日から4日後まで選べる
+let startDayOffset=0;
+const WEEK='日月火水木金土';
 function startDate(){
-  const now=new Date(), d=new Date(now);
+  const d=new Date();
+  d.setDate(d.getDate()+startDayOffset);
   d.setHours(startHour,startMin,0,0);
-  if(now-d>6*3600e3)d.setDate(d.getDate()+1);
   return d;
 }
-function dayLabel(d){const t=new Date();t.setHours(0,0,0,0);const x=new Date(d);x.setHours(0,0,0,0);
-  const diff=Math.round((x-t)/864e5);return diff===0?'今日':diff===1?'明日':diff===2?'あさって':`${x.getMonth()+1}/${x.getDate()}`;}
+function dayDiff(d){const t=new Date();t.setHours(0,0,0,0);const x=new Date(d);x.setHours(0,0,0,0);return Math.round((x-t)/864e5);}
+function mdw(d){return `${d.getMonth()+1}/${d.getDate()}(${WEEK[d.getDay()]})`;}
+function dayLabel(d){const n=dayDiff(d);return n===0?'今日':n===1?'明日':n===2?'あさって':mdw(d);}
+function sameDay(a,b){return dayDiff(a)===dayDiff(b);}
+// 干し始めと違う日に乾くときだけ「明日」などの印をつける
+function dayTag(d,sd){return sameDay(d,sd)?'':`<span class="day-tag">${dayLabel(d)}</span>`;}
+
+function renderDateChips(){
+  const el=document.getElementById('dateChips');el.innerHTML='';
+  for(let i=0;i<START_DAYS;i++){
+    const d=new Date();d.setDate(d.getDate()+i);
+    const b=document.createElement('button');
+    b.className='date-chip'+(i===startDayOffset?' selected':'');
+    b.innerHTML=i<3?`<b>${['今日','明日','あさって'][i]}</b><small>${mdw(d)}</small>`
+                   :`<b>${d.getMonth()+1}/${d.getDate()}</b><small>${WEEK[d.getDay()]}曜</small>`;
+    b.onclick=()=>{startDayOffset=i;renderDateChips();updateDrum();};
+    el.appendChild(b);
+  }
+}
 function hourAt(ms){return forecast?.hours.find(h=>ms>=h.t&&ms<h.t+3600e3)??null;}
 
 function updateWeatherCard(){
   if(!forecast)return;
   const sd=startDate(), h=hourAt(sd.getTime());
   if(!h){setNote('この時刻の予報がありません。時刻を変えてください。',true);document.getElementById('calcBtn').disabled=true;return;}
-  document.getElementById('calcBtn').disabled=false;
+  document.getElementById('calcBtn').disabled=!laundryItems.length;
   document.getElementById('weatherTitle').textContent=
-    `${selectedRegion}　${dayLabel(sd)} ${pad(sd.getHours())}時の予報 ${guessIcon(h)}`;
+    `${placeName()}　${dayLabel(sd)} ${pad(sd.getHours())}時の予報 ${guessIcon(h)}`;
   document.getElementById('wTemp').textContent =h.temp.toFixed(1);
   document.getElementById('wHumid').textContent=h.humid.toFixed(0);
   document.getElementById('wWind').textContent =h.wind.toFixed(1);
   document.getElementById('wSolar').textContent=h.solar.toFixed(2);
   // 干し始めから12時間以内の雨
   const rain=forecast.hours.find(x=>x.t+3600e3>sd.getTime()&&x.t<sd.getTime()+12*3600e3&&x.precip>=0.1);
-  if(rain){const rd=new Date(rain.t);setNote(`☂ ${dayLabel(rd)} ${pad(rd.getHours())}時ごろから雨の予報があります（${rain.precip.toFixed(1)}mm/h）`,true);}
+  if(rain){
+    const rd=new Date(rain.t), el=document.getElementById('weatherNote');
+    el.className='weather-note';
+    el.innerHTML=`<div class="rain-alert">${rainAlertHTML(`${dayLabel(rd)} ${pad(rd.getHours())}時ごろから雨`,
+      `干し始めから12時間以内に雨の予報があります（${rain.precip.toFixed(1)}mm/h）`)}</div>`;
+  }
   else setNote('干し始めから12時間は雨の予報なし');
 }
 
@@ -661,152 +1082,443 @@ function guessIcon(h){
   return h.humid>=85?'🌥️':'🌙';
 }
 
+/* ---------- 室内干しの環境 ---------- */
+const INDOOR_OPTIONS={
+  fan:   {label:'サーキュレーター'},
+  dehum: {label:'除湿機'},
+  aircon:{label:'エアコン'},
+};
+let indoorOpts=(()=>{try{const v=JSON.parse(localStorage.getItem('laundry_indoor')||'[]');return Array.isArray(v)?v.filter(k=>INDOOR_OPTIONS[k]):[];}catch(e){return [];}})();
+function saveIndoor(){try{localStorage.setItem('laundry_indoor',JSON.stringify(indoorOpts));}catch(e){}}
+
+// 外の予報から室内の温度・湿度・風を推定する
+//  室温 ：外気温と22℃の中間くらい（家の中は外より変化がゆるやか）
+//  湿度 ：外と同じ水蒸気量が入ってくる＋洗濯物や生活の湿気。40〜70%の範囲
+//  風   ：ほぼ無風 0.2m/s、サーキュレーターで 1.0m/s
+function indoorEnv(h,opts=indoorOpts){
+  let temp=Math.min(30,Math.max(15,0.5*h.temp+11));
+  if(opts.includes('aircon'))temp=Math.min(26,Math.max(20,temp));
+  const ea=svp(h.temp)*h.humid/100;
+  let humid=Math.min(70,Math.max(40,ea/svp(temp)*100+5));
+  if(opts.includes('aircon'))humid=Math.min(humid,55);
+  if(opts.includes('dehum')) humid=Math.min(humid,45);
+  return {temp,humid,air:opts.includes('fan')?1.0:0.2,solar:0,indoor:true};
+}
+// その時間の洗濯物のまわりの環境
+//  外干し：雨の時間は取り込んで室内で乾かす
+function envAt(h,mode,opts){
+  if(mode==='in')return indoorEnv(h,opts);
+  if(h.precip>=0.1)return {...indoorEnv(h,opts),rainIn:true};
+  return h;
+}
+
 /* ---------- 乾燥シミュレーション ---------- */
 // 干し始めから1時間ごとに「K × 蒸発しやすさ」を積算し、含んだ水がなくなる時刻を求める
-// 雨の時間（降水量0.1mm/h以上）は外干しでは乾かないものとして 0 にする
-function simulate(start,W,K){
+function simulate(start,W,K,mode='out',opts=indoorOpts){
   let rem=W, t=start.getTime(), finish=null, rainHit=false;
   const used=[];
   while(true){
     const h=hourAt(t); if(!h)break;
     const hourEnd=h.t+3600e3, dtH=(hourEnd-t)/3600e3;
-    const rain=h.precip>=0.1; if(rain)rainHit=true;
-    const p=evapParts(h), rate=rain?0:K*(p.aero+p.rad);
-    if(rate*dtH>=rem){const need=rem/rate;used.push({h,p,dur:need,rain});finish=new Date(t+need*3600e3);break;}
-    used.push({h,p,dur:dtH,rain});
+    const env=envAt(h,mode,opts); if(env.rainIn)rainHit=true;
+    const p=evapParts(env), rate=K*(p.aero+p.rad);
+    if(rate*dtH>=rem){const need=rem/rate;used.push({h,env,p,dur:need});finish=new Date(t+need*3600e3);break;}
+    used.push({h,env,p,dur:dtH});
     rem-=rate*dtH; t=hourEnd;
   }
   return {finish,used,rainHit,remaining:rem};
 }
 
 // start〜end の「蒸発しやすさ」の積算 [g/m²]（K をかける前）
-function potentialBetween(start,end){
+function potentialBetween(start,end,mode='out',opts=indoorOpts){
   let t=start, sum=0;
   while(t<end){
     const h=hourAt(t); if(!h)break;
     const segEnd=Math.min(end,h.t+3600e3);
-    if(h.precip<0.1){const p=evapParts(h);sum+=(p.aero+p.rad)*(segEnd-t)/3600e3;}
+    const p=evapParts(envAt(h,mode,opts));
+    sum+=(p.aero+p.rad)*(segEnd-t)/3600e3;
     t=segEnd;
   }
   return sum;
 }
 
+/* ---------- 干している洗濯物（セッション） ---------- */
+// session = {pref, city, created, mode, entries:[{id, item, start, doneAt, recId}]}
+//  ・計算するたびに新しく作る
+//  ・途中で追加した洗濯物は、その時刻を start にして entries に足す
+//  ・ページを閉じても続きから見られるように保存しておく
+let session=null;
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+function saveSession(){try{localStorage.setItem('laundry_session',JSON.stringify(session));}catch(e){}}
+function storedSession(){try{return JSON.parse(localStorage.getItem('laundry_session')||'null');}catch(e){return null;}}
+function sessionStart(){return Math.min(...session.entries.map(e=>e.start));}
+
 /* ---------- 計算 ---------- */
+let plan=null, viewMode='out';
+
+function planMode(K,mode){
+  // 1枚ずつシミュレーションして、まだ乾いていない中でいちばん遅いものを「全部乾く時刻」にする
+  const results=session.entries.map(e=>{
+    const W=itemWater(e.item);
+    return {e,it:e.item,W,sim:simulate(new Date(e.start),W,K,mode)};
+  });
+  const ft=r=>r.sim.finish?r.sim.finish.getTime():Infinity;
+  const active=results.filter(r=>!r.e.doneAt);
+  const pool=active.length?active:results;
+  const slowest=pool.reduce((a,b)=>ft(b)>ft(a)||(ft(b)===ft(a)&&b.W>a.W)?b:a);
+  const dur=slowest.sim.finish?Math.max(1,Math.round((slowest.sim.finish-slowest.e.start)/60000)):null;
+  return {results,slowest,dur,allDone:!active.length};
+}
+
 function calculate(){
-  if(!forecast)return;
-  const sd=startDate(), W=waterAmount(), {K,n}=currentK();
-  const sim=simulate(sd,W,K);
-  const warn=document.getElementById('dryWarn');
-
-  if(sim.finish){
-    calculatedDryMin=Math.max(1,Math.round((sim.finish-sd)/60000));
-    document.getElementById('finishTime').textContent=fmtTime(sim.finish);
-    document.getElementById('countdownText').textContent=
-      `${dayLabel(sd)} ${fmtTime(sd)} から干して約 ${fmtDuration(calculatedDryMin)}`+
-      (dayLabel(sim.finish)!==dayLabel(sd)?`（${dayLabel(sim.finish)}）`:'');
-  }else{
-    calculatedDryMin=0;
-    document.getElementById('finishTime').textContent='--:--';
-    document.getElementById('countdownText').textContent='予報の期間内（約3日）には乾ききらない見込みです';
-  }
-  warn.textContent=sim.rainHit?'☂ 途中で雨の予報があります。雨の時間は外では乾かない計算にしています。':'';
-  if(!sim.rainHit&&sim.finish){
-    const f=sim.finish.getTime();
-    const later=forecast.hours.find(x=>x.t+3600e3>f&&x.t<f+3*3600e3&&x.precip>=0.1);
-    if(later)warn.textContent=`☂ ${pad(new Date(later.t).getHours())}時ごろから雨の予報。乾いたら早めに取り込みましょう。`;
-  }
-
-  // おすすめ判定
-  let recText,recClass,icon;
-  if(sim.rainHit||!sim.finish){recText='🏠 室内干しがおすすめ';recClass='badge-inside';icon='🌧️';}
-  else if(calculatedDryMin>480){recText='🏠 乾くまで長いので室内干しも検討';recClass='badge-inside';icon='🌥️';}
-  else if(calculatedDryMin<=240){recText='☀️ 外干しがおすすめ';recClass='badge-outside';icon='☀️';}
-  else{recText='⛅ 外干しOK（乾くのはゆっくり）';recClass='badge-either';icon='⛅';}
-  const badge=document.getElementById('resultBadge');
-  badge.textContent=recText;badge.className=`recommendation-badge ${recClass}`;
-  document.getElementById('resultIcon').textContent=icon;
-
-  renderFactors(sim,W,K,n);
-  lastCalc={start:sd.getTime(),W,region:selectedRegion,predicted:calculatedDryMin,
-            material:selectedMaterial,thickness:selectedThickness};
-
-  const btn=document.getElementById('driedBtn');
-  btn.innerHTML='<i class="ti ti-checks"></i> 乾いた！（実際の時間を記録）';btn.style.color='';
+  if(!forecast||!laundryItems.length)return;
+  const sd=startDate();
+  session={pref:selectedRegion,city:selectedCity,created:Date.now(),mode:null,
+    entries:laundryItems.map(it=>({id:uid(),item:{...it},start:sd.getTime(),doneAt:null}))};
+  buildPlan();
+  viewMode=plan.recommend; session.mode=viewMode; saveSession();
+  closeAddForm();
+  renderPlan();
   loadMemory();goToStep(3);
 }
 
-function renderFactors(sim,W,K,n){
-  const list=document.getElementById('factorList');list.innerHTML='';
-  const row=(name,val,cls='')=>{
-    const r=document.createElement('div');r.className='factor-row';
-    r.innerHTML=`<span class="factor-name">${name}</span><span class="factor-effect ${cls}">${val}</span>`;
-    list.appendChild(r);
-  };
-  const group=t=>{const g=document.createElement('div');g.className='factor-group-label';g.textContent=t;list.appendChild(g);};
+function buildPlan(){
+  const sd=new Date(sessionStart()), {K,n}=currentK();
+  const out=planMode(K,'out'), inn=planMode(K,'in');
+  const fin=pm=>pm.slowest.sim.finish?pm.slowest.sim.finish.getTime():Infinity;
+  const o=fin(out), i=fin(inn), oDur=out.dur??Infinity;
+  // 干している間の天気のタイプ
+  //  sunny：雨なし → 外干しだけ表示
+  //  rainy：ほとんど雨（8割以上） → 室内干しだけ表示
+  //  mixed：途中で雨が降る／やむ → 外干し・室内干しを選べるようにする
+  const used=out.slowest.sim.used, total=used.reduce((a,u)=>a+u.dur,0)||1;
+  const rainRatio=used.filter(u=>u.env.rainIn).reduce((a,u)=>a+u.dur,0)/total;
+  const weather=rainRatio===0?'sunny':rainRatio>=0.8?'rainy':'mixed';
+  // おすすめ判定
+  let rec;
+  if(weather==='sunny')      rec=oDur<=240?{mode:'out',text:'☀️ 外干しがおすすめ',cls:'badge-outside',icon:'☀️'}
+                                         :{mode:'out',text:'⛅ 外干しOK（乾くのはゆっくり）',cls:'badge-either',icon:'⛅'};
+  else if(weather==='rainy') rec={mode:'in',text:'🏠 雨の日なので室内干し',cls:'badge-inside',icon:'🌧️'};
+  else if(out.slowest.sim.rainHit&&i<=o) rec={mode:'in',text:'🏠 雨の予報あり・室内干しがおすすめ',cls:'badge-inside',icon:'🌧️'};
+  else if(out.slowest.sim.rainHit) rec={mode:'out',text:'☂ 外干しOK・雨の間は取り込みを',cls:'badge-either',icon:'🌦️'};
+  else if(oDur<=240)         rec={mode:'out',text:'☀️ 外干しがおすすめ',cls:'badge-outside',icon:'☀️'};
+  else if(o<=i)              rec={mode:'out',text:'⛅ 外干しOK（乾くのはゆっくり）',cls:'badge-either',icon:'⛅'};
+  else                       rec={mode:'in',text:'🏠 室内干しのほうが早く乾きます',cls:'badge-inside',icon:'🌥️'};
+  plan={sd,K,n,out,in:inn,rec,recommend:rec.mode,weather};
+}
+
+function renderPlan(){
+  const {sd,K,n,rec}=plan, cur=plan[viewMode];
+  const sim=cur.slowest.sim, now=Date.now();
+
+  const badge=document.getElementById('resultBadge');
+  badge.textContent=rec.text;badge.className=`recommendation-badge ${rec.cls}`;
+  document.getElementById('resultIcon').textContent=rec.icon;
+
+  // タブ（両方の「全部乾く時刻」を並べる）
+  const tabTime=m=>{const f=plan[m].slowest.sim.finish;return f?dayTag(f,sd)+fmtTime(f):'--:--';};
+  document.getElementById('modeTimeOut').innerHTML=tabTime('out');
+  document.getElementById('modeTimeIn').innerHTML=tabTime('in');
+  document.querySelectorAll('.mode-tab').forEach(t=>t.classList.toggle('active',t.dataset.mode===viewMode));
+  // 外干し・室内干しのタブは、途中で天気が変わるときだけ出す
+  document.getElementById('modeTabs').classList.toggle('hidden',plan.weather!=='mixed'||cur.allDone);
+  document.getElementById('indoorOpts').classList.toggle('visible',!cur.allDone&&(viewMode==='in'||(plan.weather==='mixed'&&plan.out.slowest.sim.rainHit)));
+  renderIndoorChoices();
+
+  const dayEl=document.getElementById('finishDay'), label=document.querySelector('.dry-time-label');
+  const added=new Set(session.entries.map(e=>e.start)).size>1;
+  calculatedDryMin=sim.finish?Math.max(1,Math.round((sim.finish-sd)/60000)):0;
+  if(cur.allDone){
+    const last=new Date(Math.max(...session.entries.map(e=>e.doneAt)));
+    label.textContent='ぜんぶ乾きました';
+    dayEl.textContent=dayLabel(last);dayEl.className='dry-time-day';
+    document.getElementById('finishTime').textContent=fmtTime(last);
+    document.getElementById('countdownText').textContent='おつかれさまでした！';
+  }else if(sim.finish){
+    label.textContent='全部乾く予想時刻';
+    // 乾く日を時刻の上に出す（干し始めと日付が変わるときは色を変える）
+    dayEl.textContent=`${dayLabel(sim.finish)}${dayDiff(sim.finish)<=2?' '+mdw(sim.finish):''}`;
+    dayEl.className='dry-time-day'+(sameDay(sim.finish,sd)?'':' next');
+    document.getElementById('finishTime').textContent=fmtTime(sim.finish);
+    const left=sim.finish-now;
+    document.getElementById('countdownText').textContent=
+      `${dayLabel(sd)} ${fmtTime(sd)} から${viewMode==='in'?'室内に':''}干し${added?'始め（途中で追加あり）':'て'} 約${fmtDuration(calculatedDryMin)}`+
+      (now>sd&&left>0?` ・ あと約${fmtDuration(Math.max(1,Math.round(left/60000)))}`:'');
+  }else{
+    label.textContent='全部乾く予想時刻';
+    dayEl.textContent='';
+    document.getElementById('finishTime').textContent='--:--';
+    document.getElementById('countdownText').textContent='予報の期間内には乾ききらない見込みです';
+  }
+
+  const warn=document.getElementById('dryWarn');warn.innerHTML='';
+  if(viewMode==='out'&&!cur.allDone){
+    if(sim.rainHit){
+      const first=sim.used.find(u=>u.env.rainIn), rd=new Date(Math.max(first.h.t,cur.slowest.e.start));
+      warn.innerHTML=rainAlertHTML(`${dayLabel(rd)!==dayLabel(sd)?dayLabel(rd)+' ':''}${pad(rd.getHours())}時ごろから雨`,
+        '雨の間は取り込んで、室内で乾かす計算にしています');
+    }
+    else if(sim.finish){
+      const f=sim.finish.getTime();
+      const later=forecast.hours.find(x=>x.t+3600e3>f&&x.t<f+3*3600e3&&x.precip>=0.1);
+      if(later){const rd=new Date(later.t);
+        warn.innerHTML=rainAlertHTML(`${dayLabel(rd)!==dayLabel(sd)?dayLabel(rd)+' ':''}${pad(rd.getHours())}時ごろから雨`,
+          '乾いたら早めに取り込みましょう');}
+    }
+  }
+
+  renderItemResults(cur);
+  renderFactors(sim,K,n);
+  document.getElementById('driedBtn').style.display=cur.allDone?'none':'';
+  document.querySelector('.add-panel').style.display=cur.allDone?'none':'';
+}
+
+function renderIndoorChoices(){
+  const el=document.getElementById('indoorChoices');el.innerHTML='';
+  Object.entries(INDOOR_OPTIONS).forEach(([k,o])=>{
+    const b=document.createElement('button');
+    b.className='choice-btn'+(indoorOpts.includes(k)?' selected':'');
+    b.textContent=o.label;
+    b.onclick=()=>{
+      indoorOpts=indoorOpts.includes(k)?indoorOpts.filter(x=>x!==k):[...indoorOpts,k];
+      saveIndoor();buildPlan();renderPlan();
+    };
+    el.appendChild(b);
+  });
+}
+
+// 1枚ずつの状態：これから / 乾燥中 / そろそろ乾燥完了 / 乾燥完了
+function itemState(r,now){
+  const e=r.e, f=r.sim.finish?r.sim.finish.getTime():null;
+  if(e.doneAt)          return {key:'done',  label:'乾燥完了 ✓', prog:1};
+  if(now<e.start)       return {key:'wait',  label:'これから',   prog:0};
+  if(f&&now>=f)         return {key:'ready', label:'そろそろ乾燥完了', prog:1};
+  const p=f?(now-e.start)/(f-e.start):0;
+  return {key:'drying',label:'乾燥中',left:f?Math.max(1,Math.round((f-now)/60000)):null,prog:Math.min(.97,Math.max(.03,p))};
+}
+
+function renderItemResults(cur){
+  const {results,slowest}=cur, sd=plan.sd, now=Date.now();
+  const list=document.getElementById('itemResults'), keepScroll=list.scrollLeft;
+  list.innerHTML='';
+  const ft=r=>r.e.doneAt?Infinity+1:(r.sim.finish?r.sim.finish.getTime():Infinity);
+  const multi=results.filter(r=>!r.e.doneAt).length>1;
+  // まだ乾いていないものを早い順に、乾燥完了したものは最後に
+  [...results].sort((a,b)=>(!!a.e.doneAt-!!b.e.doneAt)||ft(a)-ft(b)||a.W-b.W).forEach(r=>{
+    const it=r.it, e=r.e, st=itemState(r,now), isSlow=multi&&r===slowest&&!e.doneAt;
+    const min=r.sim.finish?Math.max(1,Math.round((r.sim.finish-e.start)/60000)):null;
+    const timeHTML=e.doneAt?dayTag(new Date(e.doneAt),sd)+fmtTime(new Date(e.doneAt))
+                  :(min!=null?dayTag(r.sim.finish,sd)+fmtTime(r.sim.finish):'--:--');
+    const durText=e.doneAt?`${fmtDuration(Math.max(1,Math.round((e.doneAt-e.start)/60000)))}で乾いた`
+                 :st.left!=null?`あと約${fmtDuration(st.left)}`
+                 :(min!=null?'予測 約'+fmtDuration(min):'乾かない見込み');
+    const card=document.createElement('div');
+    card.className='item-card'+(isSlow?' slowest':'')+(st.key==='done'?' is-done':'')+(st.key==='wait'?' is-wait':'');
+    card.innerHTML=
+      (session.entries.length>1?`<button class="card-remove" data-a="remove" aria-label="この洗濯物を消す">×</button>`:'')+
+      (isSlow?'<span class="slow-tag">いちばん遅い</span>':'')+
+      `<div class="item-card-name">${it.name}${it.count>1?`<small>×${it.count}</small>`:''}</div>`+
+      `<div class="item-card-sub">${it.material}・${it.thickness}${it.shape?`<br>${it.shapeNote}`:''}</div>`+
+      (e.start!==sd.getTime()?`<div class="added-tag">＋${fmtTime(new Date(e.start))}から追加</div>`:'')+
+      `<div class="item-card-time">${timeHTML}</div>`+
+      `<div class="item-card-dur">${durText}</div>`+
+      `<span class="item-status ${st.key}">${st.label}</span>`+
+      `<div class="item-card-bar"><span class="${st.key==='drying'?'progress':''}" style="width:${Math.round(st.prog*100)}%"></span></div>`+
+      `<div class="item-card-actions">`+
+        (e.doneAt?`<button class="card-btn" data-a="undo">取り消す</button>`
+                 :`<button class="card-btn done-btn" data-a="done" ${now<e.start?'disabled':''}>乾いた ✓</button>`)+
+      `</div>`;
+    card.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+      const a=b.dataset.a;
+      if(a==='done')markItemDried(e.id);
+      else if(a==='undo')undoItem(e.id);
+      else if(a==='remove')removeEntry(e.id);
+    });
+    list.appendChild(card);
+  });
+  list.scrollLeft=keepScroll;
+  document.getElementById('scrollHint').textContent=results.length>2?`${results.length}件 · 横にスクロール →`:'';
+  requestAnimationFrame(updateScrollFade);
+}
+// 右端まで見たら右側のぼかしを消す
+function updateScrollFade(){
+  const sc=document.getElementById('itemResults');
+  document.getElementById('itemScrollWrap').classList.toggle('at-end',sc.scrollLeft+sc.clientWidth>=sc.scrollWidth-4);
+}
+
+function renderFactors(sim,K,n){
+  const box=document.getElementById('factorList');
+  const indoor=viewMode==='in';
 
   // 干している間の平均（時間で重みづけ）
-  const dry=sim.used.filter(u=>!u.rain), tot=dry.reduce((s,u)=>s+u.dur,0)||1;
+  const dry=sim.used, tot=dry.reduce((s,u)=>s+u.dur,0)||1;
   const avg=f=>dry.reduce((s,u)=>s+f(u)*u.dur,0)/tot;
-  group('干している間の平均（予報）');
-  row('気温',  `${avg(u=>u.h.temp).toFixed(1)} °C`);
-  row('湿度',  `${avg(u=>u.h.humid).toFixed(0)} %`);
-  row('風速',  `${avg(u=>u.h.wind).toFixed(1)} m/s`);
-  row('日射量',`${avg(u=>u.h.solar).toFixed(2)} kW/m²`);
+  const tile=(label,val,unit)=>`<div class="bd-tile"><div class="t-label">${label}</div><div class="t-val">${val}<span class="t-unit">${unit}</span></div></div>`;
+  let tiles=tile(indoor?'室温':'気温',avg(u=>u.env.temp).toFixed(1),'°C')+tile('湿度',avg(u=>u.env.humid).toFixed(0),'%');
+  if(indoor) tiles+=tile('空気の流れ',avg(u=>u.env.air??u.env.wind*WIND_HEIGHT).toFixed(1),'m/s');
+  else       tiles+=tile('風速',avg(u=>u.env.air??u.env.wind).toFixed(1),'m/s')+tile('日射量',avg(u=>u.env.solar||0).toFixed(2),'kW/m²');
+  const rainH=indoor?0:dry.filter(u=>u.env.rainIn).reduce((s,u)=>s+u.dur,0);
 
-  // 蒸発の内訳
+  // 何のおかげで乾くか
   const aero=dry.reduce((s,u)=>s+u.p.aero*u.dur,0), rad=dry.reduce((s,u)=>s+u.p.rad*u.dur,0);
-  const aeroPct=Math.round(100*aero/((aero+rad)||1));
-  group('何のおかげで乾くか');
-  row(`風と空気の乾き <span style="font-size:10px;color:#bbb">(飽差 ${(avg(u=>u.p.vpd)*10).toFixed(1)} hPa)</span>`,`${aeroPct} %`,'effect-minus');
-  row('日ざし',`${100-aeroPct} %`,'effect-minus');
+  const aeroPct=Math.round(100*aero/((aero+rad)||1)), radPct=100-aeroPct;
+  const vpd=avg(u=>u.p.vpd)*10;                          // hPa
+  const vpdWord=vpd>=10?'よく乾く空気':vpd>=5?'ふつう':'乾きにくい空気';
 
-  group('衣類条件');
-  row('厚さ',`${selectedThickness} → ${WATER_BASE[selectedThickness]} g/m²`);
-  const mf=MATERIAL_WATER[selectedMaterial];
-  row('素材',`${selectedMaterial} → ×${mf.toFixed(2)}`,mf<1?'effect-minus':mf>1?'effect-plus':'effect-zero');
-  row('乾かす水分量',`${Math.round(W)} g/m²`);
+  // 衣類条件：服ごとの「含んでいる水の量」（同じ条件のものはまとめる）
+  const cur=plan[viewMode], active=cur.results.filter(r=>!r.e.doneAt);
+  const rows=[];
+  (active.length?active:cur.results).forEach(r=>{
+    const key=`${r.it.name}|${r.it.material}|${r.it.thickness}`;
+    const hit=rows.find(x=>x.key===key);
+    if(hit){hit.count+=r.it.count||1;hit.slow=hit.slow||r===cur.slowest;}
+    else rows.push({key,it:r.it,W:r.W,count:r.it.count||1,slow:r===cur.slowest});
+  });
+  rows.sort((a,b)=>b.W-a.W);
+  const maxW=Math.max(...rows.map(r=>r.W));
+  const items=rows.map(r=>
+    `<div class="bd-item${r.slow&&rows.length>1?' slow':''}">`+
+      `<div class="bd-item-name">${r.it.name}${r.count>1?` ×${r.count}`:''}<small>${r.it.material}・${r.it.thickness}${r.it.shape?'・'+r.it.shapeNote:''}</small></div>`+
+      `<div class="bd-item-bar"><span style="width:${Math.max(6,Math.round(100*r.W/maxW))}%"></span></div>`+
+      `<div class="bd-item-val">${Math.round(r.W)}<small> g/m²</small></div>`+
+    `</div>`).join('');
 
-  group('あなたの記録による補正');
-  row('補正係数',`×${(K/K0).toFixed(2)}`+(n?`（記録 ${n} 件から学習）`:'（まだ記録なし）'),
-      K/K0>1.05?'effect-minus':K/K0<0.95?'effect-plus':'effect-zero');
+  const ratio=K/K0;
+  box.innerHTML=`<div class="bd-card">
+    <div class="bd-head">干している間の平均 <small>${indoor?'室内の推定':'予報より'}</small></div>
+    <div class="bd-tiles">${tiles}</div>
+    ${rainH>0?`<div class="bd-note"><span class="warn">☂ 雨で取り込む時間 約${fmtDuration(Math.round(rainH*60))}</span></div>`:''}
 
-  const r=document.createElement('div');r.className='factor-row';
-  r.innerHTML=`<span style="font-weight:700;color:var(--text)">予測乾燥時間</span>
-               <span class="factor-effect" style="font-size:16px">${sim.finish?fmtDuration(calculatedDryMin):'乾かない見込み'}</span>`;
-  list.appendChild(r);
+    <div class="bd-head">何のおかげで乾くか ${session.entries.length>1?'<small>いちばん遅いもの</small>':''}</div>
+    <div class="bd-split"><span class="aero" style="width:${aeroPct}%"></span>${indoor?'':`<span class="rad" style="width:${radPct}%"></span>`}</div>
+    <div class="bd-legend">
+      <span><i style="background:#8fb89b"></i>風と空気の乾き <b>${aeroPct}%</b></span>
+      ${indoor?'':`<span><i style="background:#e2b86a"></i>日ざし <b>${radPct}%</b></span>`}
+    </div>
+    <div class="bd-note">空気の乾き具合（飽差）<b>${vpd.toFixed(1)} hPa</b> … ${vpdWord}</div>
+
+    <div class="bd-head">衣類条件 <small>含んでいる水の量（多いほど乾きにくい）</small></div>
+    <div class="bd-items">${items}</div>
+
+    <div class="bd-head">あなたの記録による補正</div>
+    <div class="bd-note"><b>×${ratio.toFixed(2)}</b> … ${n?`記録 ${n} 件から学習（${ratio>1.05?'予測より早く乾く傾向':ratio<0.95?'予測より遅く乾く傾向':'ほぼ予測どおり'}）`:'まだ記録なし。「乾いた ✓」を押すと学習します'}</div>
+
+    <div class="bd-total"><span>全部乾くまで</span><b>${sim.finish?fmtDuration(calculatedDryMin):'乾かない見込み'}</b></div>
+  </div>`;
+}
+
+/* ---------- 途中で追加 ---------- */
+// 追加した洗濯物は「今」から干し始めたものとして計算（まだ干し始め前の予定なら、その時刻から）
+function addStart(){
+  const now=new Date();now.setSeconds(0,0);
+  return Math.max(now.getTime(),sessionStart());
+}
+function openAddForm(){
+  const t=document.getElementById('addType'),m=document.getElementById('addMat'),k=document.getElementById('addThick');
+  t.innerHTML=ITEM_PRESETS.map((p,i)=>`<option value="${i}">${p.name}</option>`).join('');
+  m.innerHTML=materialOptions.map(o=>`<option>${o}</option>`).join('');
+  k.innerHTML=thicknessOptions.map(o=>`<option>${o}</option>`).join('');
+  const sync=()=>{const p=ITEM_PRESETS[t.value];m.value=p.material;k.value=p.thickness;};
+  t.onchange=sync;sync();
+  const st=new Date(addStart());
+  document.getElementById('addStartLabel').textContent=`${dayLabel(st)} ${fmtTime(st)} から干すものとして追加します`;
+  document.getElementById('addForm').classList.add('visible');
+  document.querySelector('.add-panel').classList.add('open');
+}
+function closeAddForm(){
+  document.getElementById('addForm').classList.remove('visible');
+  document.querySelector('.add-panel').classList.remove('open');
+}
+function confirmAdd(){
+  const p=ITEM_PRESETS[document.getElementById('addType').value];
+  const item={...p,material:document.getElementById('addMat').value,thickness:document.getElementById('addThick').value,count:1};
+  session.entries.push({id:uid(),item,start:addStart(),doneAt:null});
+  saveSession();closeAddForm();
+  buildPlan();renderPlan();
+  const sc=document.getElementById('itemResults');sc.scrollTo({left:sc.scrollWidth,behavior:'smooth'});
+}
+function removeEntry(id){
+  if(session.entries.length<=1)return;
+  const e=session.entries.find(x=>x.id===id);
+  if(e?.recId)saveRecords(loadRecords().filter(r=>r.id!==e.recId));
+  session.entries=session.entries.filter(x=>x.id!==id);
+  saveSession();buildPlan();renderPlan();loadMemory();
 }
 
 /* ---------- 記録と学習 ---------- */
-function markDried(){
-  if(!lastCalc||!forecast)return;
-  const now=Date.now();
-  // 干し始めの時刻から今まで。まだ干し始めの時刻前なら記録しない
-  const actual=Math.round((now-lastCalc.start)/60000);
-  const btn=document.getElementById('driedBtn');
-  if(actual<10){
-    btn.innerHTML='<i class="ti ti-alert-circle"></i> 干し始めから10分以上たってから押してください';btn.style.color='var(--terra)';return;
-  }
-  // この実測時間で乾いたなら K はいくつだったか → K_i = 水分量 ÷ 蒸発しやすさの積算
-  const pot=potentialBetween(lastCalc.start,now);
-  const k=pot>0?Math.min(K0*5,Math.max(K0/5,lastCalc.W/pot)):null;
+// 実際に乾いた時間から「その回の K」を逆算して記録する
+//  K_i = 水分量 ÷ 干し始めから今までの蒸発しやすさの積算
+function makeRecord(e,now){
+  const actual=Math.round((now-e.start)/60000);
+  if(actual<10)return null;                 // 10分未満は押し間違いとみなして学習しない
+  const W=itemWater(e.item);
+  const pot=potentialBetween(e.start,now,viewMode,indoorOpts);
+  const k=pot>0?Math.min(K0*5,Math.max(K0/5,W/pot)):null;
+  const r=plan[viewMode].results.find(x=>x.e.id===e.id);
+  const predicted=r?.sim.finish?Math.max(1,Math.round((r.sim.finish-e.start)/60000)):null;
+  return {id:uid(),region:placeName(),date:new Date().toLocaleDateString('ja-JP'),
+    predicted,actual,items:e.item.name,mode:viewMode,k};
+}
+function addRecord(rec){const recs=loadRecords();recs.unshift(rec);if(recs.length>30)recs.length=30;saveRecords(recs);}
 
-  const rec={region:lastCalc.region,date:new Date().toLocaleDateString('ja-JP'),
-    predicted:lastCalc.predicted,actual,material:lastCalc.material,thickness:lastCalc.thickness,k};
-  const recs=loadRecords();recs.unshift(rec);if(recs.length>30)recs.length=30;
-  saveRecords(recs);
-  lastCalc=null;
-  btn.innerHTML='<i class="ti ti-check"></i> 記録しました！次の予測に反映されます';btn.style.color='var(--green)';
-  loadMemory();
+function markItemDried(id){
+  const e=session.entries.find(x=>x.id===id); if(!e||e.doneAt)return;
+  const now=Date.now(), rec=makeRecord(e,now);
+  if(rec){addRecord(rec);e.recId=rec.id;}
+  e.doneAt=now;
+  saveSession();buildPlan();renderPlan();loadMemory();
+}
+function undoItem(id){
+  const e=session.entries.find(x=>x.id===id); if(!e)return;
+  if(e.recId)saveRecords(loadRecords().filter(r=>r.id!==e.recId));
+  e.doneAt=null;delete e.recId;
+  saveSession();buildPlan();renderPlan();loadMemory();
+}
+// 残りをまとめて「乾いた」にする（学習に使うのは、いちばん遅いもの1つだけ）
+function markAllDried(){
+  const now=Date.now(), cur=plan[viewMode];
+  const active=session.entries.filter(e=>!e.doneAt&&e.start<=now);
+  if(!active.length)return;
+  const slow=cur.slowest.e.doneAt?null:cur.slowest.e;
+  if(slow&&slow.start<=now){const rec=makeRecord(slow,now);if(rec){addRecord(rec);slow.recId=rec.id;}}
+  active.forEach(e=>e.doneAt=now);
+  saveSession();buildPlan();renderPlan();loadMemory();
 }
 function loadMemory(){
-  const recs=loadRecords();if(!recs.length)return;
+  const recs=loadRecords();
   const mc=document.getElementById('memoryCard'),ml=document.getElementById('memoryList');
+  if(!recs.length){mc.style.display='none';return;}
   mc.style.display='block';ml.innerHTML='';
   recs.slice(0,5).forEach(r=>{
     const row=document.createElement('div');row.className='memory-row';
-    row.innerHTML=`<span>${r.date} ${r.region}</span><span>予測 ${r.predicted?fmtDuration(r.predicted):'--'} → 実際 ${fmtDuration(r.actual)}</span>`;
+    row.innerHTML=`<span>${r.date} ${r.region}${r.items&&!String(r.items).includes('、')?`（${r.items}）`:''}</span><span>予測 ${r.predicted?fmtDuration(r.predicted):'--'} → 実際 ${fmtDuration(r.actual)}</span>`;
     ml.appendChild(row);
   });
+}
+
+/* ---------- 続きから見る ---------- */
+function checkResume(){
+  const s=storedSession(), bn=document.getElementById('resumeBanner');
+  const active=s?.entries?.filter(e=>!e.doneAt)||[];
+  const fresh=s&&Date.now()-Math.max(...s.entries.map(e=>e.start))<3*864e5;
+  if(!active.length||!fresh||!PREF_COORDS[s.pref]){bn.classList.remove('visible');return;}
+  const where=s.city?cityLabel(s.city):s.pref;
+  document.getElementById('resumeText').textContent=`${where}で干している洗濯物（${active.length}件）があります`;
+  bn.classList.add('visible');
+}
+async function resumeSession(){
+  const s=storedSession(); if(!s)return;
+  session=s;
+  selectedRegionIdx=Math.max(0,REGIONS.findIndex(r=>r.prefs.includes(s.pref)));
+  selectPref(s.pref,s.city);
+  loadedPref=`${selectedRegion}/${selectedCity}`;
+  startDayOffset=0;updateCurrentTime();
+  goToStep(2);
+  await loadWeather();
+  if(!forecast)return;              // 取得できなかったら②でエラーを見せる
+  buildPlan();
+  viewMode=s.mode||plan.recommend;
+  closeAddForm();renderPlan();loadMemory();goToStep(3);
 }
 
 /* ---------- UI ---------- */
@@ -825,26 +1537,114 @@ function buildRegionUI(){
     b.textContent=pref;b.onclick=()=>selectPref(pref);grid.appendChild(b);
   });
 }
-function selectPref(pref){
+function selectPref(pref,city=null){
+  if(pref!==selectedRegion)document.getElementById('cityFilter').value='';
   selectedRegion=pref;
-  document.getElementById('toStep2Btn').disabled=false;
-  document.getElementById('bannerPrefName').textContent=pref;
-  document.getElementById('selectedPrefBanner').classList.add('visible');
+  selectedCity=city;
+  const hasCities=(MUNI[pref]||[]).length>0;
+  document.getElementById('citySection').classList.toggle('visible',hasCities);
+  // 市区町村データがないときは都道府県だけで進める
+  document.getElementById('toStep2Btn').disabled=hasCities&&!city;
+  updateBanner();
   buildRegionUI();
+  renderCities();
 }
-
-function renderChoices(id,opts,cur,fn){
-  const el=document.getElementById(id);el.innerHTML='';
-  opts.forEach(o=>{
+function selectCity(city){
+  selectedCity=city;
+  document.getElementById('toStep2Btn').disabled=false;
+  updateBanner();
+  renderCities();
+}
+function updateBanner(){
+  document.getElementById('bannerPrefName').textContent=placeName();
+  document.getElementById('selectedPrefBanner').classList.add('visible');
+}
+function renderCities(){
+  const grid=document.getElementById('cityGrid');grid.innerHTML='';
+  const q=document.getElementById('cityFilter').value.trim();
+  const list=(MUNI[selectedRegion]||[]).filter(m=>!q||m[0].includes(q));
+  if(!list.length){grid.innerHTML='<div class="city-empty">見つかりませんでした</div>';return;}
+  list.forEach(([c])=>{
     const b=document.createElement('button');
-    b.className='choice-btn'+(o===cur?' selected':'');
-    b.textContent=o;b.onclick=()=>{fn(o);renderConditionChoices();};
-    el.appendChild(b);
+    b.className='pref-btn'+(c===selectedCity?' selected':'');
+    b.textContent=cityLabel(c);b.title=c;
+    b.onclick=()=>selectCity(c);grid.appendChild(b);
   });
 }
-function renderConditionChoices(){
-  renderChoices('materialChoices',materialOptions,selectedMaterial,v=>selectedMaterial=v);
-  renderChoices('thicknessChoices',thicknessOptions,selectedThickness,v=>selectedThickness=v);
+
+// 現在地からいちばん近い市区町村を選ぶ
+function locate(){
+  const btn=document.getElementById('locateBtn'),msg=document.getElementById('locateMsg');
+  msg.textContent='';
+  if(!navigator.geolocation){msg.textContent='このブラウザでは現在地を使えません';return;}
+  btn.disabled=true;
+  navigator.geolocation.getCurrentPosition(pos=>{
+    btn.disabled=false;
+    const {latitude:la,longitude:lo}=pos.coords, cos=Math.cos(la*Math.PI/180);
+    let best=null,bd=Infinity;
+    for(const [pref,list] of Object.entries(MUNI))for(const [c,y,x] of list){
+      const d=(y-la)**2+((x-lo)*cos)**2;if(d<bd){bd=d;best=[pref,c];}
+    }
+    if(!best){msg.textContent='近くの市区町村が見つかりませんでした';return;}
+    selectedRegionIdx=REGIONS.findIndex(r=>r.prefs.includes(best[0]));
+    document.getElementById('cityFilter').value='';
+    selectPref(best[0],best[1]);
+    document.querySelector('#cityGrid .selected')?.scrollIntoView({block:'nearest'});
+  },()=>{btn.disabled=false;msg.textContent='現在地を取得できませんでした（位置情報の許可を確認してください）';},
+  {timeout:10000,maximumAge:600000});
+}
+
+function renderPresets(){
+  const el=document.getElementById('itemPresets');el.innerHTML='';
+  ITEM_PRESETS.forEach(p=>{
+    const b=document.createElement('button');b.className='item-chip';b.textContent=p.name;
+    b.onclick=()=>addItem(p);el.appendChild(b);
+  });
+}
+function addItem(p){
+  // 同じ服・同じ条件がもうあれば枚数を増やす
+  const same=laundryItems.find(i=>i.name===p.name&&i.material===p.material&&i.thickness===p.thickness);
+  if(same)same.count++;else laundryItems.push({...p,count:1});
+  saveItems();renderLaundry();
+}
+function renderLaundry(){
+  const el=document.getElementById('laundryList');el.innerHTML='';
+  document.getElementById('calcBtn').disabled=!forecast||!laundryItems.length||!hourAt(startDate().getTime());
+  const sum=document.getElementById('laundrySummary');
+  if(!laundryItems.length){sum.innerHTML='';el.innerHTML='<div class="laundry-empty">上のボタンから干すものを追加してください</div>';return;}
+  const pcs=laundryItems.reduce((a,i)=>a+i.count,0);
+  sum.innerHTML=`<span>干すもの</span><span><b>${laundryItems.length}</b> 種類・<b>${pcs}</b> 枚</span>`;
+  // 乾きにくさ（含んでいる水の量）を5段階で表示
+  const level=it=>{const w=itemWater(it);return w<80?1:w<130?2:w<190?3:w<260?4:5;};
+  const words=['','すぐ乾く','乾きやすい','ふつう','乾きにくい','とても乾きにくい'];
+  laundryItems.forEach((it,idx)=>{
+    const row=document.createElement('div');row.className='laundry-item';
+    const opt=(list,cur)=>list.map(o=>`<option${o===cur?' selected':''}>${o}</option>`).join('');
+    row.innerHTML=`
+      <div class="li-head">
+        <span class="li-name">${it.name}</span>
+        <span class="li-count"><button data-a="dec" aria-label="減らす">−</button><span>×${it.count}</span><button data-a="inc" aria-label="増やす">＋</button></span>
+        <button class="li-remove" data-a="del" aria-label="削除">×</button>
+      </div>
+      <div class="li-selects">
+        <label><span>素材</span><select data-k="material">${opt(materialOptions,it.material)}</select></label>
+        <label><span>厚さ</span><select data-k="thickness">${opt(thicknessOptions,it.thickness)}</select></label>
+      </div>
+      <div class="li-dry${level(it)>=4?' hard':''}">
+        <span>乾きにくさ</span>
+        <span class="li-dots">${[1,2,3,4,5].map(i=>`<i class="${i<=level(it)?'on':''}"></i>`).join('')}</span>
+        <span class="li-dry-word">${words[level(it)]}</span>
+      </div>`;
+    row.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+      const a=b.dataset.a;
+      if(a==='inc')it.count++;
+      else if(a==='dec')it.count=Math.max(1,it.count-1);
+      else laundryItems.splice(idx,1);
+      saveItems();renderLaundry();
+    });
+    row.querySelectorAll('select').forEach(sel=>sel.onchange=()=>{it[sel.dataset.k]=sel.value;saveItems();renderLaundry();});
+    el.appendChild(row);
+  });
 }
 
 function updateCurrentTime(){
@@ -875,9 +1675,12 @@ let loadedPref=null;
 function goToStep(n){
   document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('active',i===n-1));
   updateProgress(n);
+  if(n===1)checkResume();
   if(n===2){
-    if(loadedPref!==selectedRegion){loadedPref=selectedRegion;updateCurrentTime();loadWeather();}
-    renderConditionChoices();
+    const key=`${selectedRegion}/${selectedCity}`;
+    if(loadedPref!==key){loadedPref=key;startDayOffset=0;updateCurrentTime();loadWeather();}
+    renderDateChips();
+    renderLaundry();
   }
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -894,8 +1697,22 @@ function setupDrum(id,fn){
 setupDrum('hUp',()=>adjustHour(1));setupDrum('hDn',()=>adjustHour(-1));
 setupDrum('mUp',()=>adjustMin(1)); setupDrum('mDn',()=>adjustMin(-1));
 document.getElementById('toStep2Btn').addEventListener('click',()=>goToStep(2));
+document.getElementById('locateBtn').addEventListener('click',locate);
+document.getElementById('cityFilter').addEventListener('input',renderCities);
+renderPresets();
+document.getElementById('itemResults').addEventListener('scroll',updateScrollFade,{passive:true});
+document.querySelectorAll('.mode-tab').forEach(t=>t.addEventListener('click',()=>{
+  if(!plan)return; viewMode=t.dataset.mode; session.mode=viewMode; saveSession(); renderPlan();
+}));
+document.getElementById('addToggle').addEventListener('click',openAddForm);
+document.getElementById('addCancel').addEventListener('click',closeAddForm);
+document.getElementById('addConfirm').addEventListener('click',confirmAdd);
+document.getElementById('resumeBtn').addEventListener('click',resumeSession);
+// 結果画面を開いている間は、1分ごとに「乾燥中・あと◯分」を更新
+setInterval(()=>{if(plan&&session&&document.getElementById('step3').classList.contains('active'))renderPlan();},60000);
 
 buildRegionUI();
+checkResume();
 </script>
 </body>
 </html>
