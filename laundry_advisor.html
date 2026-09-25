@@ -184,6 +184,17 @@ h1 {
   background: var(--green-bg); border-color: var(--green); color: var(--green);
   font-weight: 700; box-shadow: 3px 3px 0 var(--green-dk); transform: translate(-1px,-1px);
 }
+.weather-note { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.6; }
+.weather-note.warn { color: var(--terra); }
+.weather-note .retry-btn {
+  margin-left: 6px; background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 8px 3px 8px 3px; padding: 2px 10px; font-family: var(--round);
+  font-size: 12px; color: var(--text); cursor: pointer;
+}
+.weather-source { font-size: 10px; color: var(--border2); margin-top: 6px; }
+.weather-source a { color: inherit; }
+.dry-time-warn { font-size: 12px; color: var(--terra); margin-top: 8px; line-height: 1.6; }
+.dry-time-warn:empty { display: none; }
 .condition-hint { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.6; }
 
 /* ── TIME DRUM ── */
@@ -407,6 +418,8 @@ h1 {
         <div class="weather-metric"><div class="label">風速</div><div><span class="value" id="wWind">--</span><span class="unit">m/s</span></div></div>
         <div class="weather-metric"><div class="label">日射量</div><div><span class="value" id="wSolar">--</span><span class="unit">kW/m²</span></div></div>
       </div>
+      <div class="weather-note" id="weatherNote">予報を取得しています…</div>
+      <div class="weather-source" id="weatherSource"></div>
     </div>
     <div class="card">
       <div class="card-title"><i class="ti ti-shirt"></i><span>洗濯物の条件</span></div>
@@ -437,7 +450,7 @@ h1 {
         </div>
       </div>
     </div>
-    <button class="primary-btn" onclick="calculate()">計算する →</button>
+    <button class="primary-btn" id="calcBtn" onclick="calculate()" disabled>計算する →</button>
   </div>
 
   <!-- Step 3 -->
@@ -451,6 +464,7 @@ h1 {
       <div class="dry-time-label">乾き上がる予想時刻</div>
       <div class="dry-time-finish" id="finishTime">--:--</div>
       <div class="dry-time-countdown" id="countdownText"></div>
+      <div class="dry-time-warn" id="dryWarn"></div>
     </div>
     <div class="section-label">乾燥時間の内訳</div>
     <div class="factor-list" id="factorList"></div>
@@ -466,6 +480,13 @@ h1 {
 </div>
 
 <script>
+/* =========================================================
+   洗濯ものナビ
+   ・天気   : Open-Meteo 経由で気象庁の数値予報モデル（jma_seamless）を取得
+   ・乾燥時間: ペンマン式ベースの蒸発量を1時間ごとに積算して計算
+   ・補正   : 「乾いた！」の記録から補正係数 K を学習
+   ========================================================= */
+
 const REGIONS=[
   {name:'北海道',     prefs:['北海道']},
   {name:'東北',       prefs:['青森県','岩手県','宮城県','秋田県','山形県','福島県']},
@@ -477,62 +498,318 @@ const REGIONS=[
   {name:'九州・沖縄', prefs:['福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県']},
 ];
 
-let csvData={}, selectedRegionIdx=0, selectedRegion=null;
-let startHour=9, startMin=0, currentWeather=null, calculatedDryMin=0, startedAt=null;
-let selectedMaterial='綿', selectedThickness='普通', lrWeights=null;
+// 都道府県庁所在地の緯度・経度
+const PREF_COORDS={
+  '北海道':[43.064,141.347],'青森県':[40.824,140.740],'岩手県':[39.704,141.153],'宮城県':[38.269,140.872],
+  '秋田県':[39.719,140.102],'山形県':[38.240,140.363],'福島県':[37.750,140.468],'茨城県':[36.342,140.447],
+  '栃木県':[36.566,139.884],'群馬県':[36.391,139.061],'埼玉県':[35.857,139.649],'千葉県':[35.605,140.123],
+  '東京都':[35.690,139.692],'神奈川県':[35.448,139.643],'新潟県':[37.902,139.023],'富山県':[36.695,137.211],
+  '石川県':[36.594,136.626],'福井県':[36.065,136.222],'山梨県':[35.664,138.568],'長野県':[36.651,138.181],
+  '岐阜県':[35.391,136.722],'静岡県':[34.977,138.383],'愛知県':[35.180,136.907],'三重県':[34.730,136.509],
+  '滋賀県':[35.004,135.868],'京都府':[35.021,135.756],'大阪府':[34.686,135.520],'兵庫県':[34.691,135.183],
+  '奈良県':[34.685,135.833],'和歌山県':[34.226,135.168],'鳥取県':[35.504,134.238],'島根県':[35.472,133.051],
+  '岡山県':[34.662,133.935],'広島県':[34.397,132.460],'山口県':[34.186,131.471],'徳島県':[34.066,134.559],
+  '香川県':[34.340,134.043],'愛媛県':[33.842,132.766],'高知県':[33.560,133.531],'福岡県':[33.607,130.418],
+  '佐賀県':[33.249,130.299],'長崎県':[32.745,129.874],'熊本県':[32.790,130.742],'大分県':[33.238,131.613],
+  '宮崎県':[31.911,131.424],'鹿児島県':[31.560,130.558],'沖縄県':[26.212,127.681],
+};
 
-const materialOptions=['綿','ポリエステル','混紡','ウール'];
-const thicknessOptions=['薄手','普通','厚手'];
-const materialAdj ={'綿':0,'ポリエステル':-10,'混紡':-5,'ウール':15};
-const thicknessAdj={'薄手':-12,'普通':0,'厚手':18};
+let selectedRegionIdx=0, selectedRegion=null;
+let startHour=9, startMin=0, calculatedDryMin=0;
+let selectedMaterial='綿', selectedThickness='普通';
+let forecast=null;        // {hours:[{t,temp,humid,wind,solar,precip}], model, fetchedAt}
+let lastCalc=null;        // 直近の計算（記録・学習に使う）
+let weatherReqId=0;
 
-function matMul(A,B){return Array.from({length:A.length},(_,i)=>Array.from({length:B[0].length},(_,j)=>A[i].reduce((s,_,k)=>s+A[i][k]*B[k][j],0)));}
-function matTrans(A){return A[0].map((_,j)=>A.map(r=>r[j]));}
-function matInv(M){
-  const n=M.length,A=M.map((r,i)=>[...r,...Array.from({length:n},(_,j)=>i===j?1:0)]);
-  for(let c=0;c<n;c++){
-    let p=c;for(let r=c+1;r<n;r++)if(Math.abs(A[r][c])>Math.abs(A[p][c]))p=r;
-    [A[c],A[p]]=[A[p],A[c]];
-    const d=A[c][c];if(Math.abs(d)<1e-12)return null;
-    for(let j=0;j<2*n;j++)A[c][j]/=d;
-    for(let r=0;r<n;r++){if(r===c)continue;const f=A[r][c];for(let j=0;j<2*n;j++)A[r][j]-=f*A[c][j];}
+/* ---------- 衣類条件：含んでいる水分量 ---------- */
+// 脱水後に 1m² あたり含んでいる水 [g/m²]（綿換算）
+const WATER_BASE={'薄手':100,'普通':180,'厚手':350};
+// 素材ごとの水の含みやすさ（綿=1）
+const MATERIAL_WATER={'綿':1.0,'ポリエステル':0.45,'混紡':0.7,'ウール':1.15};
+const materialOptions=Object.keys(MATERIAL_WATER);
+const thicknessOptions=Object.keys(WATER_BASE);
+function waterAmount(){return WATER_BASE[selectedThickness]*MATERIAL_WATER[selectedMaterial];}
+
+/* ---------- 蒸発の物理モデル（ペンマン式ベース） ---------- */
+const GAMMA=0.0665;          // 乾湿計定数 [kPa/K]
+const LAMBDA=2.45e6;         // 蒸発潜熱 [J/kg]
+const WIND_HEIGHT=0.6;       // 高さ10mの風速 → 物干しの高さ(約1.5m)への換算
+const ABSORB=0.6;            // 布の日射吸収率
+const VERTICAL=0.5;          // 水平面の日射量 → 吊るした布が受ける割合
+
+function svp(T){return 0.6108*Math.exp(17.27*T/(T+237.3));}   // 飽和水蒸気圧 [kPa]
+
+// 1時間あたりの蒸発しやすさ [g/m²/h]（K をかける前の値）
+function evapParts(w){
+  const es=svp(w.temp), ea=es*w.humid/100, vpd=Math.max(0,es-ea);
+  const delta=4098*es/Math.pow(w.temp+237.3,2);               // 飽和水蒸気圧曲線の傾き
+  const hc=5.7+3.8*(w.wind*WIND_HEIGHT);                        // 対流熱伝達率 [W/m²K]
+  const rabs=ABSORB*VERTICAL*w.solar*1000;                      // 布が吸収する日射 [W/m²]
+  const toG=3600*1000/LAMBDA/(delta+GAMMA);                     // W/m² → g/m²/h
+  return {aero:2*hc*vpd*toG, rad:delta*rabs*toG, vpd};          // aero は布の両面
+}
+
+// 基準：25℃・湿度50%・風2.5m/s・日射0.6kW/m² で、綿の普通の厚さが約2.5時間で乾く
+const REF_WEATHER={temp:25,humid:50,wind:2.5,solar:0.6}, REF_HOURS=2.5;
+const K0=(()=>{const p=evapParts(REF_WEATHER);return WATER_BASE['普通']/((p.aero+p.rad)*REF_HOURS);})();
+
+/* ---------- 記録からの補正係数 K ---------- */
+const PRIOR_N=3;   // 初期値を「3件ぶんの記録」として扱う（記録が少ないうちは大きく動かない）
+function loadRecords(){try{return JSON.parse(localStorage.getItem('laundry_records')||'[]');}catch(e){return [];}}
+function saveRecords(r){try{localStorage.setItem('laundry_records',JSON.stringify(r));}catch(e){}}
+function currentK(){
+  const ks=loadRecords().map(r=>r.k).filter(k=>k>0&&isFinite(k));
+  const logSum=PRIOR_N*Math.log(K0)+ks.reduce((s,k)=>s+Math.log(k),0);
+  return {K:Math.exp(logSum/(PRIOR_N+ks.length)), n:ks.length};
+}
+
+/* ---------- 天気の取得 ---------- */
+const HOURLY_VARS='temperature_2m,relative_humidity_2m,wind_speed_10m,shortwave_radiation,precipitation';
+
+async function fetchOpenMeteo(pref,model){
+  const [lat,lon]=PREF_COORDS[pref];
+  const p=new URLSearchParams({latitude:lat,longitude:lon,hourly:HOURLY_VARS,
+    wind_speed_unit:'ms',timezone:'Asia/Tokyo',timeformat:'unixtime',forecast_days:3});
+  if(model)p.set('models',model);
+  const res=await fetch('https://api.open-meteo.com/v1/forecast?'+p);
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  const j=await res.json(), H=j.hourly;
+  const col=name=>H[name]??H[Object.keys(H).find(k=>k.startsWith(name))];
+  const T=col('temperature_2m'),RH=col('relative_humidity_2m'),WS=col('wind_speed_10m'),
+        SW=col('shortwave_radiation'),PR=col('precipitation');
+  const hours=[];
+  H.time.forEach((t,i)=>{
+    if([T[i],RH[i],WS[i],SW[i]].some(v=>v==null))return;
+    hours.push({t:t*1000,temp:T[i],humid:RH[i],wind:WS[i],solar:SW[i]/1000,precip:PR?.[i]??0});
+  });
+  return hours;
+}
+
+async function loadWeather(){
+  const pref=selectedRegion, id=++weatherReqId;
+  forecast=null;
+  document.getElementById('calcBtn').disabled=true;
+  document.getElementById('weatherTitle').textContent=`${pref}の天気`;
+  ['wTemp','wHumid','wWind','wSolar'].forEach(k=>document.getElementById(k).textContent='--');
+  setNote('予報を取得しています…');
+  document.getElementById('weatherSource').textContent='';
+  try{
+    let hours=[], model='気象庁 数値予報モデル';
+    try{hours=await fetchOpenMeteo(pref,'jma_seamless');}catch(e){}
+    if(hours.length<24){hours=await fetchOpenMeteo(pref,null);model='Open-Meteo 標準モデル';}
+    if(id!==weatherReqId)return;          // 途中で別の県を選んだ
+    if(!hours.length)throw new Error('empty');
+    forecast={hours,model,fetchedAt:new Date()};
+    document.getElementById('weatherSource').innerHTML=
+      `出典：${model}（<a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> 経由）・${fmtTime(forecast.fetchedAt)} 取得`;
+    document.getElementById('calcBtn').disabled=false;
+    updateWeatherCard();
+  }catch(e){
+    if(id!==weatherReqId)return;
+    setNote('天気予報を取得できませんでした。通信状況を確認してください。',true,true);
   }
-  return A.map(r=>r.slice(n));
 }
-function trainModel(){
-  const all=Object.values(csvData).flat();if(all.length<5)return;
-  const X=all.map(r=>[1,r.temp,r.humid,r.wind,r.solar]),y=all.map(r=>[r.dryMin]);
-  const Xt=matTrans(X),inv=matInv(matMul(Xt,X));if(!inv)return;
-  lrWeights=matMul(matMul(inv,Xt),y).map(r=>r[0]);
-}
-function predict(t,h,w,s){
-  if(!lrWeights)return null;
-  const [w0,w1,w2,w3,w4]=lrWeights;
-  return Math.max(10,Math.round(w0+w1*t+w2*h+w3*w+w4*s));
-}
-function getAdj(){return (materialAdj[selectedMaterial]??0)+(thicknessAdj[selectedThickness]??0);}
 
-async function loadCSV(){
-  for(const fn of ['laundry_data_47_prefectures.csv','laundry_data_extended.csv','weather_data.csv']){
-    try{
-      const res=await fetch(fn);if(!res.ok)continue;
-      (await res.text()).trim().split('\n').slice(1).forEach(line=>{
-        const c=line.split(',');if(c.length<6)return;
-        const pref=c[0].trim(),temp=parseFloat(c[1]),humid=parseFloat(c[2]),
-              wind=parseFloat(c[3]),solar=parseFloat(c[4]),dryMin=parseFloat(c[5]);
-        if(isNaN(dryMin))return;
-        if(!csvData[pref])csvData[pref]=[];
-        csvData[pref].push({temp,humid,wind,solar,dryMin});
-      });
-      trainModel();return;
-    }catch(e){}
+function setNote(text,warn=false,retry=false){
+  const el=document.getElementById('weatherNote');
+  el.className='weather-note'+(warn?' warn':'');
+  el.textContent=text;
+  if(retry){
+    const b=document.createElement('button');b.className='retry-btn';b.textContent='もう一度';
+    b.onclick=loadWeather;el.appendChild(b);
   }
-  alert('CSVファイルが見つかりませんでした。\nlaundry_data_47_prefectures.csv を同じフォルダに置いてください。');
 }
 
-function pickRandom(p){const r=csvData[p];if(!r||!r.length)return null;return r[Math.floor(Math.random()*r.length)];}
-function guessIcon(h,s){if(h>=80)return'🌧️';if(h>=70)return'🌥️';if(s>=0.7)return'☀️';if(s>=0.5)return'🌤️';if(h<=55&&s>=0.4)return'☀️';return'⛅';}
+/* ---------- 時刻まわり ---------- */
+function pad(n){return String(n).padStart(2,'0');}
+function fmtTime(d){return `${pad(d.getHours())}:${pad(d.getMinutes())}`;}
+function fmtDuration(min){const h=Math.floor(min/60),m=min%60;return `${h>0?h+'時間':''}${m>0||h===0?m+'分':''}`;}
 
+// 干し始める日時（6時間以上前の時刻を選んだら「明日」とみなす）
+function startDate(){
+  const now=new Date(), d=new Date(now);
+  d.setHours(startHour,startMin,0,0);
+  if(now-d>6*3600e3)d.setDate(d.getDate()+1);
+  return d;
+}
+function dayLabel(d){const t=new Date();t.setHours(0,0,0,0);const x=new Date(d);x.setHours(0,0,0,0);
+  const diff=Math.round((x-t)/864e5);return diff===0?'今日':diff===1?'明日':diff===2?'あさって':`${x.getMonth()+1}/${x.getDate()}`;}
+function hourAt(ms){return forecast?.hours.find(h=>ms>=h.t&&ms<h.t+3600e3)??null;}
+
+function updateWeatherCard(){
+  if(!forecast)return;
+  const sd=startDate(), h=hourAt(sd.getTime());
+  if(!h){setNote('この時刻の予報がありません。時刻を変えてください。',true);document.getElementById('calcBtn').disabled=true;return;}
+  document.getElementById('calcBtn').disabled=false;
+  document.getElementById('weatherTitle').textContent=
+    `${selectedRegion}　${dayLabel(sd)} ${pad(sd.getHours())}時の予報 ${guessIcon(h)}`;
+  document.getElementById('wTemp').textContent =h.temp.toFixed(1);
+  document.getElementById('wHumid').textContent=h.humid.toFixed(0);
+  document.getElementById('wWind').textContent =h.wind.toFixed(1);
+  document.getElementById('wSolar').textContent=h.solar.toFixed(2);
+  // 干し始めから12時間以内の雨
+  const rain=forecast.hours.find(x=>x.t+3600e3>sd.getTime()&&x.t<sd.getTime()+12*3600e3&&x.precip>=0.1);
+  if(rain){const rd=new Date(rain.t);setNote(`☂ ${dayLabel(rd)} ${pad(rd.getHours())}時ごろから雨の予報があります（${rain.precip.toFixed(1)}mm/h）`,true);}
+  else setNote('干し始めから12時間は雨の予報なし');
+}
+
+function guessIcon(h){
+  if(h.precip>=0.1)return'🌧️';
+  if(h.solar>=0.5)return'☀️';
+  if(h.solar>=0.25)return'🌤️';
+  if(h.solar>0)return'⛅';
+  return h.humid>=85?'🌥️':'🌙';
+}
+
+/* ---------- 乾燥シミュレーション ---------- */
+// 干し始めから1時間ごとに「K × 蒸発しやすさ」を積算し、含んだ水がなくなる時刻を求める
+// 雨の時間（降水量0.1mm/h以上）は外干しでは乾かないものとして 0 にする
+function simulate(start,W,K){
+  let rem=W, t=start.getTime(), finish=null, rainHit=false;
+  const used=[];
+  while(true){
+    const h=hourAt(t); if(!h)break;
+    const hourEnd=h.t+3600e3, dtH=(hourEnd-t)/3600e3;
+    const rain=h.precip>=0.1; if(rain)rainHit=true;
+    const p=evapParts(h), rate=rain?0:K*(p.aero+p.rad);
+    if(rate*dtH>=rem){const need=rem/rate;used.push({h,p,dur:need,rain});finish=new Date(t+need*3600e3);break;}
+    used.push({h,p,dur:dtH,rain});
+    rem-=rate*dtH; t=hourEnd;
+  }
+  return {finish,used,rainHit,remaining:rem};
+}
+
+// start〜end の「蒸発しやすさ」の積算 [g/m²]（K をかける前）
+function potentialBetween(start,end){
+  let t=start, sum=0;
+  while(t<end){
+    const h=hourAt(t); if(!h)break;
+    const segEnd=Math.min(end,h.t+3600e3);
+    if(h.precip<0.1){const p=evapParts(h);sum+=(p.aero+p.rad)*(segEnd-t)/3600e3;}
+    t=segEnd;
+  }
+  return sum;
+}
+
+/* ---------- 計算 ---------- */
+function calculate(){
+  if(!forecast)return;
+  const sd=startDate(), W=waterAmount(), {K,n}=currentK();
+  const sim=simulate(sd,W,K);
+  const warn=document.getElementById('dryWarn');
+
+  if(sim.finish){
+    calculatedDryMin=Math.max(1,Math.round((sim.finish-sd)/60000));
+    document.getElementById('finishTime').textContent=fmtTime(sim.finish);
+    document.getElementById('countdownText').textContent=
+      `${dayLabel(sd)} ${fmtTime(sd)} から干して約 ${fmtDuration(calculatedDryMin)}`+
+      (dayLabel(sim.finish)!==dayLabel(sd)?`（${dayLabel(sim.finish)}）`:'');
+  }else{
+    calculatedDryMin=0;
+    document.getElementById('finishTime').textContent='--:--';
+    document.getElementById('countdownText').textContent='予報の期間内（約3日）には乾ききらない見込みです';
+  }
+  warn.textContent=sim.rainHit?'☂ 途中で雨の予報があります。雨の時間は外では乾かない計算にしています。':'';
+  if(!sim.rainHit&&sim.finish){
+    const f=sim.finish.getTime();
+    const later=forecast.hours.find(x=>x.t+3600e3>f&&x.t<f+3*3600e3&&x.precip>=0.1);
+    if(later)warn.textContent=`☂ ${pad(new Date(later.t).getHours())}時ごろから雨の予報。乾いたら早めに取り込みましょう。`;
+  }
+
+  // おすすめ判定
+  let recText,recClass,icon;
+  if(sim.rainHit||!sim.finish){recText='🏠 室内干しがおすすめ';recClass='badge-inside';icon='🌧️';}
+  else if(calculatedDryMin>480){recText='🏠 乾くまで長いので室内干しも検討';recClass='badge-inside';icon='🌥️';}
+  else if(calculatedDryMin<=240){recText='☀️ 外干しがおすすめ';recClass='badge-outside';icon='☀️';}
+  else{recText='⛅ 外干しOK（乾くのはゆっくり）';recClass='badge-either';icon='⛅';}
+  const badge=document.getElementById('resultBadge');
+  badge.textContent=recText;badge.className=`recommendation-badge ${recClass}`;
+  document.getElementById('resultIcon').textContent=icon;
+
+  renderFactors(sim,W,K,n);
+  lastCalc={start:sd.getTime(),W,region:selectedRegion,predicted:calculatedDryMin,
+            material:selectedMaterial,thickness:selectedThickness};
+
+  const btn=document.getElementById('driedBtn');
+  btn.innerHTML='<i class="ti ti-checks"></i> 乾いた！（実際の時間を記録）';btn.style.color='';
+  loadMemory();goToStep(3);
+}
+
+function renderFactors(sim,W,K,n){
+  const list=document.getElementById('factorList');list.innerHTML='';
+  const row=(name,val,cls='')=>{
+    const r=document.createElement('div');r.className='factor-row';
+    r.innerHTML=`<span class="factor-name">${name}</span><span class="factor-effect ${cls}">${val}</span>`;
+    list.appendChild(r);
+  };
+  const group=t=>{const g=document.createElement('div');g.className='factor-group-label';g.textContent=t;list.appendChild(g);};
+
+  // 干している間の平均（時間で重みづけ）
+  const dry=sim.used.filter(u=>!u.rain), tot=dry.reduce((s,u)=>s+u.dur,0)||1;
+  const avg=f=>dry.reduce((s,u)=>s+f(u)*u.dur,0)/tot;
+  group('干している間の平均（予報）');
+  row('気温',  `${avg(u=>u.h.temp).toFixed(1)} °C`);
+  row('湿度',  `${avg(u=>u.h.humid).toFixed(0)} %`);
+  row('風速',  `${avg(u=>u.h.wind).toFixed(1)} m/s`);
+  row('日射量',`${avg(u=>u.h.solar).toFixed(2)} kW/m²`);
+
+  // 蒸発の内訳
+  const aero=dry.reduce((s,u)=>s+u.p.aero*u.dur,0), rad=dry.reduce((s,u)=>s+u.p.rad*u.dur,0);
+  const aeroPct=Math.round(100*aero/((aero+rad)||1));
+  group('何のおかげで乾くか');
+  row(`風と空気の乾き <span style="font-size:10px;color:#bbb">(飽差 ${(avg(u=>u.p.vpd)*10).toFixed(1)} hPa)</span>`,`${aeroPct} %`,'effect-minus');
+  row('日ざし',`${100-aeroPct} %`,'effect-minus');
+
+  group('衣類条件');
+  row('厚さ',`${selectedThickness} → ${WATER_BASE[selectedThickness]} g/m²`);
+  const mf=MATERIAL_WATER[selectedMaterial];
+  row('素材',`${selectedMaterial} → ×${mf.toFixed(2)}`,mf<1?'effect-minus':mf>1?'effect-plus':'effect-zero');
+  row('乾かす水分量',`${Math.round(W)} g/m²`);
+
+  group('あなたの記録による補正');
+  row('補正係数',`×${(K/K0).toFixed(2)}`+(n?`（記録 ${n} 件から学習）`:'（まだ記録なし）'),
+      K/K0>1.05?'effect-minus':K/K0<0.95?'effect-plus':'effect-zero');
+
+  const r=document.createElement('div');r.className='factor-row';
+  r.innerHTML=`<span style="font-weight:700;color:var(--text)">予測乾燥時間</span>
+               <span class="factor-effect" style="font-size:16px">${sim.finish?fmtDuration(calculatedDryMin):'乾かない見込み'}</span>`;
+  list.appendChild(r);
+}
+
+/* ---------- 記録と学習 ---------- */
+function markDried(){
+  if(!lastCalc||!forecast)return;
+  const now=Date.now();
+  // 干し始めの時刻から今まで。まだ干し始めの時刻前なら記録しない
+  const actual=Math.round((now-lastCalc.start)/60000);
+  const btn=document.getElementById('driedBtn');
+  if(actual<10){
+    btn.innerHTML='<i class="ti ti-alert-circle"></i> 干し始めから10分以上たってから押してください';btn.style.color='var(--terra)';return;
+  }
+  // この実測時間で乾いたなら K はいくつだったか → K_i = 水分量 ÷ 蒸発しやすさの積算
+  const pot=potentialBetween(lastCalc.start,now);
+  const k=pot>0?Math.min(K0*5,Math.max(K0/5,lastCalc.W/pot)):null;
+
+  const rec={region:lastCalc.region,date:new Date().toLocaleDateString('ja-JP'),
+    predicted:lastCalc.predicted,actual,material:lastCalc.material,thickness:lastCalc.thickness,k};
+  const recs=loadRecords();recs.unshift(rec);if(recs.length>30)recs.length=30;
+  saveRecords(recs);
+  lastCalc=null;
+  btn.innerHTML='<i class="ti ti-check"></i> 記録しました！次の予測に反映されます';btn.style.color='var(--green)';
+  loadMemory();
+}
+function loadMemory(){
+  const recs=loadRecords();if(!recs.length)return;
+  const mc=document.getElementById('memoryCard'),ml=document.getElementById('memoryList');
+  mc.style.display='block';ml.innerHTML='';
+  recs.slice(0,5).forEach(r=>{
+    const row=document.createElement('div');row.className='memory-row';
+    row.innerHTML=`<span>${r.date} ${r.region}</span><span>予測 ${r.predicted?fmtDuration(r.predicted):'--'} → 実際 ${fmtDuration(r.actual)}</span>`;
+    ml.appendChild(row);
+  });
+}
+
+/* ---------- UI ---------- */
 function buildRegionUI(){
   const tabs=document.getElementById('regionTabs');tabs.innerHTML='';
   REGIONS.forEach((reg,idx)=>{
@@ -543,11 +820,9 @@ function buildRegionUI(){
   });
   const grid=document.getElementById('prefGrid');grid.innerHTML='';
   REGIONS[selectedRegionIdx].prefs.forEach(pref=>{
-    const has=!!csvData[pref];
     const b=document.createElement('button');
     b.className='pref-btn'+(pref===selectedRegion?' selected':'');
-    b.textContent=pref;b.disabled=!has;b.style.opacity=has?'1':'0.35';
-    b.onclick=()=>selectPref(pref);grid.appendChild(b);
+    b.textContent=pref;b.onclick=()=>selectPref(pref);grid.appendChild(b);
   });
 }
 function selectPref(pref){
@@ -573,115 +848,18 @@ function renderConditionChoices(){
 }
 
 function updateCurrentTime(){
-  const n=new Date(),h=String(n.getHours()).padStart(2,'0'),m=String(n.getMinutes()).padStart(2,'0');
-  document.getElementById('currentTimeDisplay').textContent=`現在 ${h}:${m}`;
+  const n=new Date();
+  document.getElementById('currentTimeDisplay').textContent=`現在 ${fmtTime(n)}`;
   startHour=n.getHours();startMin=n.getMinutes();updateDrum();
 }
 function adjustHour(d){startHour=(startHour+d+24)%24;updateDrum();}
 function adjustMin(d) {startMin =(startMin +d+60)%60;updateDrum();}
 function updateDrum(){
-  document.getElementById('hourDisplay').textContent=String(startHour).padStart(2,'0');
-  document.getElementById('minDisplay').textContent =String(startMin ).padStart(2,'0');
-}
-
-function loadWeather(){
-  const row=pickRandom(selectedRegion);if(!row){alert('データが見つかりませんでした');return;}
-  currentWeather=row;
-  document.getElementById('weatherTitle').textContent=`${selectedRegion}の今日の天気 ${guessIcon(row.humid,row.solar)}`;
-  document.getElementById('wTemp').textContent =row.temp.toFixed(1);
-  document.getElementById('wHumid').textContent=row.humid.toFixed(0);
-  document.getElementById('wWind').textContent =row.wind.toFixed(1);
-  document.getElementById('wSolar').textContent=row.solar.toFixed(2);
-}
-
-function calculate(){
-  const w=currentWeather;
-  const base=predict(w.temp,w.humid,w.wind,w.solar);
-  calculatedDryMin=base!=null?Math.max(10,Math.round(base+getAdj())):Math.round(w.dryMin+getAdj());
-  const tot=startHour*60+startMin+calculatedDryMin;
-  const fH=Math.floor(tot/60)%24,fM=tot%60;
-  document.getElementById('finishTime').textContent=`${String(fH).padStart(2,'0')}:${String(fM).padStart(2,'0')}`;
-  const hrs=Math.floor(calculatedDryMin/60),mins=calculatedDryMin%60;
-  document.getElementById('countdownText').textContent=
-    `${String(startHour).padStart(2,'0')}:${String(startMin).padStart(2,'0')} から干して約 ${hrs>0?hrs+'時間':''}${mins>0?mins+'分':''}`;
-
-  let recText,recClass,icon;
-  if(w.humid>=75||w.wind<1.0){recText='🏠 室内干しがおすすめ';recClass='badge-inside';icon='🌧️';}
-  else if(w.humid<65&&w.wind>=2.0){recText='☀️ 外干しがおすすめ';recClass='badge-outside';icon='☀️';}
-  else{recText='⛅ どちらでもOK';recClass='badge-either';icon='⛅';}
-  const badge=document.getElementById('resultBadge');
-  badge.textContent=recText;badge.className=`recommendation-badge ${recClass}`;
-  document.getElementById('resultIcon').textContent=icon;
-
-  const [w0,w1,w2,w3,w4]=lrWeights??[0,0,0,0,0];
-  const wC=[
-    {name:'気温',   val:`${w.temp.toFixed(1)} °C`,     coef:w1,input:w.temp},
-    {name:'湿度',   val:`${w.humid.toFixed(0)} %`,     coef:w2,input:w.humid},
-    {name:'風速',   val:`${w.wind.toFixed(1)} m/s`,    coef:w3,input:w.wind},
-    {name:'日射量', val:`${w.solar.toFixed(2)} kW/m²`, coef:w4,input:w.solar},
-  ];
-  const cC=[
-    {name:'素材',val:selectedMaterial, adj:materialAdj[selectedMaterial]??0},
-    {name:'厚さ',val:selectedThickness,adj:thicknessAdj[selectedThickness]??0},
-  ];
-  const list=document.getElementById('factorList');list.innerHTML='';
-
-  const hdr=document.createElement('div');hdr.className='factor-row';hdr.style.fontSize='11px';
-  hdr.innerHTML=`<span style="color:var(--muted)">項目（係数）</span><span style="color:var(--muted)">値 / 寄与(分)</span>`;
-  list.appendChild(hdr);
-
-  wC.forEach(f=>{
-    const c=Math.round(f.coef*f.input),sign=c>=0?'+':'';
-    const cls=c<=-5?'effect-minus':c>=5?'effect-plus':'effect-zero';
-    const r=document.createElement('div');r.className='factor-row';
-    r.innerHTML=`<span class="factor-name">${f.name} <span style="font-size:10px;color:#bbb">(${f.coef>=0?'+':''}${f.coef.toFixed(2)})</span></span>
-                 <span class="factor-effect ${cls}">${f.val} → ${sign}${c}分</span>`;
-    list.appendChild(r);
-  });
-
-  const grp=document.createElement('div');grp.className='factor-group-label';grp.textContent='衣類条件の補正';list.appendChild(grp);
-
-  cC.forEach(f=>{
-    const sign=f.adj>=0?'+':'';const cls=f.adj<=-5?'effect-minus':f.adj>=5?'effect-plus':'effect-zero';
-    const r=document.createElement('div');r.className='factor-row';
-    r.innerHTML=`<span class="factor-name">${f.name}</span><span class="factor-effect ${cls}">${f.val} → ${sign}${f.adj}分</span>`;
-    list.appendChild(r);
-  });
-
-  const tot2=document.createElement('div');tot2.className='factor-row';
-  tot2.innerHTML=`<span style="font-weight:700;color:var(--text)">予測乾燥時間</span>
-                  <span class="factor-effect" style="font-size:16px">${hrs>0?hrs+'時間':''}${mins>0?mins+'分':''}</span>`;
-  list.appendChild(tot2);
-
-  const btn=document.getElementById('driedBtn');
-  btn.innerHTML='<i class="ti ti-checks"></i> 乾いた！（実際の時間を記録）';btn.style.color='';
-  startedAt=Date.now();loadMemory();goToStep(3);
-}
-
-function markDried(){
-  if(!startedAt)return;
-  const actual=Math.round((Date.now()-startedAt)/60000);
-  const rec={region:selectedRegion,date:new Date().toLocaleDateString('ja-JP'),
-    predicted:calculatedDryMin,actual:actual>0?actual:calculatedDryMin,
-    material:selectedMaterial,thickness:selectedThickness};
-  const recs=JSON.parse(localStorage.getItem('laundry_records')||'[]');
-  recs.unshift(rec);if(recs.length>5)recs.pop();
-  localStorage.setItem('laundry_records',JSON.stringify(recs));
-  const btn=document.getElementById('driedBtn');
-  btn.innerHTML='<i class="ti ti-check"></i> 記録しました！';btn.style.color='var(--green)';
-  loadMemory();
-}
-function loadMemory(){
-  try{
-    const recs=JSON.parse(localStorage.getItem('laundry_records')||'[]');if(!recs.length)return;
-    const mc=document.getElementById('memoryCard'),ml=document.getElementById('memoryList');
-    mc.style.display='block';ml.innerHTML='';
-    recs.forEach(r=>{
-      const row=document.createElement('div');row.className='memory-row';
-      row.innerHTML=`<span>${r.date} ${r.region}</span><span>予測 ${r.predicted}分 → 実際 ${r.actual}分</span>`;
-      ml.appendChild(row);
-    });
-  }catch(e){}
+  document.getElementById('hourDisplay').textContent=pad(startHour);
+  document.getElementById('minDisplay').textContent =pad(startMin);
+  const sd=startDate();
+  document.getElementById('currentTimeDisplay').textContent=`現在 ${fmtTime(new Date())}　→　${dayLabel(sd)} ${fmtTime(sd)} に干す`;
+  updateWeatherCard();
 }
 
 function updateProgress(n){
@@ -693,10 +871,14 @@ function updateProgress(n){
     if(line)line.className=i<n?'prog-line done':'prog-line';
   });
 }
+let loadedPref=null;
 function goToStep(n){
   document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('active',i===n-1));
   updateProgress(n);
-  if(n===2){loadWeather();updateCurrentTime();renderConditionChoices();}
+  if(n===2){
+    if(loadedPref!==selectedRegion){loadedPref=selectedRegion;updateCurrentTime();loadWeather();}
+    renderConditionChoices();
+  }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -713,7 +895,7 @@ setupDrum('hUp',()=>adjustHour(1));setupDrum('hDn',()=>adjustHour(-1));
 setupDrum('mUp',()=>adjustMin(1)); setupDrum('mDn',()=>adjustMin(-1));
 document.getElementById('toStep2Btn').addEventListener('click',()=>goToStep(2));
 
-(async()=>{await loadCSV();buildRegionUI();updateCurrentTime();})();
+buildRegionUI();
 </script>
 </body>
 </html>
