@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>認証</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="auth-wrap">
+  <!-- 上部タブボタン -->
+  <div class="auth-tabs">
+    <button type="button" class="tab-btn active" id="tabLogin" onclick="switchMode('login')"><i class="ti ti-login"></i> ログイン</button>
+    <button type="button" class="tab-btn" id="tabSignup" onclick="switchMode('signup')"><i class="ti ti-user-plus"></i> 新規登録</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <i class="ti ti-user-circle" id="titleIcon"></i>
+      <span id="authTitle">ログイン</span>
+    </div>
+
+    <!-- エラー／成功メッセージ表示欄 -->
+    <div class="auth-error" id="authError" style="display:none"></div>
+
+    <!-- ユーザー名（新規登録時のみ表示） -->
+    <div class="auth-field" id="usernameField" style="display:none">
+      <label for="authUsername">ユーザー名</label>
+      <input type="text" id="authUsername" placeholder="たろう" autocomplete="nickname" maxlength="20">
+    </div>
+
+    <!-- メールアドレス -->
+    <div class="auth-field">
+      <label for="authEmail">メールアドレス</label>
+      <input type="email" id="authEmail" placeholder="you@example.com" autocomplete="username">
+    </div>
+
+    <!-- パスワード -->
+    <div class="auth-field">
+      <label for="authPassword">パスワード</label>
+      <input type="password" id="authPassword" placeholder="6文字以上" autocomplete="current-password">
+    </div>
+
+    <!-- パスワード確認用（新規登録時のみ表示） -->
+    <div class="auth-field" id="passwordConfirmField" style="display:none">
+      <label for="authPasswordConfirm">パスワード（確認用）</label>
+      <input type="password" id="authPasswordConfirm" placeholder="もう一度入力してください" autocomplete="new-password">
+    </div>
+
+    <p class="auth-note">※アカウント情報はこの端末のブラウザ内に保存されます</p>
+
+    <!-- 実行ボタン -->
+    <button type="button" class="primary-btn" id="authSubmitBtn" onclick="handleAuthSubmit()">ログイン</button>
+
+    <!-- 下部リンク -->
+    <button type="button" class="auth-toggle" id="authToggleBtn" onclick="toggleAuthMode()">アカウントをお持ちでない方はこちら（新規登録）</button>
+  </div>
+
+  <button type="button" class="dry-btn" onclick="continueAsGuest()"><i class="ti ti-user"></i> ログインせずに使ってみる</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
