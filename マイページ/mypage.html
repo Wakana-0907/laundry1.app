@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>マイページ</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="mypage.css">
+</head>
+<body>
+<div class="app">
+  <h1>マイページ</h1>
+
+  <div class="guest-banner" id="guestBanner" style="display:none">
+    <i class="ti ti-info-circle"></i>
+    <span>ゲストとして利用中です。<a href="login.html">ログイン</a>すると、記録やお気に入り設定がアカウントに保存されます。</span>
+  </div>
+
+  <div class="card" id="profileCard" style="display:none">
+    <div class="card-title"><i class="ti ti-user-circle"></i>プロフィール</div>
+    <div class="row"><span class="k">ユーザー名</span><span class="v" id="pUsername">--</span></div>
+    <div class="row"><span class="k">メールアドレス</span><span class="v" id="pEmail">--</span></div>
+    <div class="row"><span class="k">登録日</span><span class="v" id="pCreated">--</span></div>
+  </div>
+
+  <div class="card" id="recordCard">
+    <div class="card-title"><i class="ti ti-history"></i>過去の乾燥記録</div>
+    <div id="recordList"><div class="empty-note">まだ記録がありません。</div></div>
+  </div>
+
+  <div class="card" id="accountCard" style="display:none">
+    <div class="card-title"><i class="ti ti-shield-lock"></i>アカウント管理</div>
+    <button class="btn" onclick="logout()">ログアウト</button>
+    <div class="divider"></div>
+    <div class="field">
+      <label>新しいパスワード（変更する場合のみ）</label>
+      <input type="password" id="newPassword" placeholder="6文字以上">
+    </div>
+    <button class="btn" onclick="changePassword()">パスワードを変更</button>
+    <div class="msg ok" id="pwMsg">変更しました。</div>
+    <div class="msg err" id="pwErr"></div>
+    <button class="btn danger" onclick="deleteAccount()">アカウントを削除</button>
+  </div>
+</div>
+
+<script src="mypage.js"></script>
+</body>
+</html>
